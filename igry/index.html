@@ -3380,21 +3380,137 @@ footer a:hover { color: var(--neon); }
       if (spatter.length > 160) spatter.splice(0, spatter.length - 160);
     }
 
+    /* где на самом деле лежит тушь знака: рамка по пикселям шрифта, а не по em-квадрату.
+       Траектории черт нарисованы в своей рамке — натягиваем их на рамку шрифта,
+       иначе кисть идёт мимо черты (Ma Shan Zheng шире и ниже em-квадрата).       */
+    function inkBox(ch) {
+      var c = document.createElement("canvas"), w = Math.ceil(W), h = Math.ceil(H);
+      c.width = w; c.height = h;
+      var x = c.getContext("2d");
+      x.font = size + 'px "Ma Shan Zheng", serif'; x.textAlign = "center"; x.textBaseline = "middle"; x.fillStyle = "#000";
+      x.fillText(ch.hz, W * ch.cx, H * ch.cy);
+      var a = x.getImageData(0, 0, w, h).data, x0 = w, y0 = h, x1 = 0, y1 = 0;
+      for (var yy = 0; yy < h; yy++) for (var xx = 0; xx < w; xx++) {
+        if (a[(yy * w + xx) * 4 + 3] > 90) { if (xx < x0) x0 = xx; if (xx > x1) x1 = xx; if (yy < y0) y0 = yy; if (yy > y1) y1 = yy; }
+      }
+      return x1 > x0 ? [x0, y0, x1, y1] : null;
+    }
     function buildPlan() {
       plan = []; totalTime = 0;
       HERO.forEach(function (ch) {
         var s = size * 0.92;
         var ox = W * ch.cx - s / 2, oy = H * ch.cy - s / 2;
+        var map = function (p) { return [ox + p[0] * s, oy + p[1] * s]; };
+        var box = inkBox(ch);
+        if (box) {
+          var mx0 = 1, my0 = 1, mx1 = 0, my1 = 0;
+          ch.strokes.forEach(function (st) { st.forEach(function (p) { mx0 = Math.min(mx0, p[0]); my0 = Math.min(my0, p[1]); mx1 = Math.max(mx1, p[0]); my1 = Math.max(my1, p[1]); }); });
+          /* осевые линии лежат внутри туши примерно на полширины черты */
+          var inx = (box[2] - box[0]) * 0.07, iny = (box[3] - box[1]) * 0.07;
+          var bx0 = box[0] + inx, by0 = box[1] + iny, bx1 = box[2] - inx, by1 = box[3] - iny;
+          map = function (p) { return [bx0 + (p[0] - mx0) / (mx1 - mx0) * (bx1 - bx0), by0 + (p[1] - my0) / (my1 - my0) * (by1 - by0)]; };
+        }
         ch.strokes.forEach(function (st) {
-          var pts = densify(st, 26).map(function (p) { return [ox + p[0] * s, oy + p[1] * s]; });
+          var pts = densify(st, 26).map(map);
           var len = 0;
           for (var i = 1; i < pts.length; i++) len += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
           /* короткая черта не мгновенная: у кисти есть замах и нажим */
           var dur = Math.max(200, len / size * 480);
-          plan.push({ pts: pts, len: len, t0: totalTime, t1: totalTime + dur });
+          var cum = [0];
+          for (var j = 1; j < pts.length; j++) cum.push(cum[j - 1] + Math.hypot(pts[j][0] - pts[j - 1][0], pts[j][1] - pts[j - 1][1]));
+          plan.push({ pts: pts, cum: cum, len: len, t0: totalTime, t1: totalTime + dur });
           totalTime += dur + 110;          /* пауза: кисть отрывается от бумаги */
         });
       });
+      painted = plan.map(function () { return 0; });
+      lastT = -1;
+    }
+
+    /* ── настоящая кисть ──
+       Знак не «проявляется» полосой одной ширины: ворс ложится ровно на ширину черты
+       в каждой точке. Для этого считаем поле расстояний до края знака: сколько от
+       середины черты до её кромки — такого размера и отпечаток кисти в этой точке.  */
+    var distF = null, dW = 0, dH = 0, painted = [], lastT = -1, headDir = null;
+    function computeDist() {
+      dW = Math.ceil(W); dH = Math.ceil(H);
+      var c = document.createElement("canvas"); c.width = dW; c.height = dH;
+      var x = c.getContext("2d");
+      x.font = size + 'px "Ma Shan Zheng", serif'; x.textAlign = "center"; x.textBaseline = "middle"; x.fillStyle = "#000";
+      HERO.forEach(function (ch) { x.fillText(ch.hz, W * ch.cx, H * ch.cy); });
+      var a = x.getImageData(0, 0, dW, dH).data, n = dW * dH, INF = 1e4;
+      distF = new Float32Array(n);
+      for (var i = 0; i < n; i++) distF[i] = a[i * 4 + 3] > 90 ? INF : 0;
+      var yy, xx, i0, v;
+      for (yy = 1; yy < dH; yy++) for (xx = 0; xx < dW; xx++) {          /* проход сверху вниз */
+        i0 = yy * dW + xx; v = distF[i0]; if (!v) continue;
+        if (xx > 0 && distF[i0 - 1] + 1 < v) v = distF[i0 - 1] + 1;
+        if (distF[i0 - dW] + 1 < v) v = distF[i0 - dW] + 1;
+        if (xx > 0 && distF[i0 - dW - 1] + 1.4 < v) v = distF[i0 - dW - 1] + 1.4;
+        if (xx < dW - 1 && distF[i0 - dW + 1] + 1.4 < v) v = distF[i0 - dW + 1] + 1.4;
+        distF[i0] = v;
+      }
+      for (yy = dH - 2; yy >= 0; yy--) for (xx = dW - 1; xx >= 0; xx--) {  /* и снизу вверх */
+        i0 = yy * dW + xx; v = distF[i0]; if (!v) continue;
+        if (xx < dW - 1 && distF[i0 + 1] + 1 < v) v = distF[i0 + 1] + 1;
+        if (distF[i0 + dW] + 1 < v) v = distF[i0 + dW] + 1;
+        if (xx < dW - 1 && distF[i0 + dW + 1] + 1.4 < v) v = distF[i0 + dW + 1] + 1.4;
+        if (xx > 0 && distF[i0 + dW - 1] + 1.4 < v) v = distF[i0 + dW - 1] + 1.4;
+        distF[i0] = v;
+      }
+    }
+    /* точка середины черты рядом с точкой траектории: траектории нарисованы
+       от руки и не совпадают с осью шрифта пиксель в пиксель — ищем в окрестности
+       место, где до края знака дальше всего, туда и ставим ворс                */
+    function snap(p) {
+      var R = size * 0.1, best = [p[0], p[1], distAt(p[0], p[1])], bs = best[2];
+      for (var dy = -4; dy <= 4; dy++) for (var dx = -4; dx <= 4; dx++) {
+        if (!dx && !dy) continue;
+        var x = p[0] + dx * R / 4, y = p[1] + dy * R / 4;
+        var d = distAt(x, y), off = Math.hypot(dx, dy) * R / 4;
+        var score = d - off * 0.4;
+        if (score > bs) { bs = score; best = [x, y, d]; }
+      }
+      return best;
+    }
+    function distAt(x, y) {
+      var xi = x | 0, yi = y | 0;
+      if (!distF || xi < 0 || yi < 0 || xi >= dW || yi >= dH) return 0;
+      var v = distF[yi * dW + xi];
+      return v > 5000 ? 0 : v;
+    }
+    /* отпечаток ворса: мягкий по краю, чтобы кромка черты не была циркульной */
+    var stampC = document.createElement("canvas"); stampC.width = stampC.height = 64;
+    (function () {
+      var g = stampC.getContext("2d"), gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+      gr.addColorStop(0, "rgba(0,0,0,1)"); gr.addColorStop(.72, "rgba(0,0,0,1)"); gr.addColorStop(1, "rgba(0,0,0,0)");
+      g.fillStyle = gr; g.fillRect(0, 0, 64, 64);
+    })();
+    /* сухая кисть: бумага «просвечивает» тонкими штрихами вдоль черты — 飞白 */
+    var grainC = document.createElement("canvas");
+    function makeGrain() {
+      grainC.width = Math.max(1, Math.ceil(W)); grainC.height = Math.max(1, Math.ceil(H));
+      var g = grainC.getContext("2d"); g.clearRect(0, 0, grainC.width, grainC.height);
+      g.strokeStyle = "#000"; g.lineCap = "round";
+      var n = Math.floor(W * H / 340);
+      for (var i = 0; i < n; i++) {
+        var x = Math.random() * W, y = Math.random() * H, a = Math.random() * Math.PI, l = 2 + Math.random() * size * 0.05;
+        g.globalAlpha = .25 + Math.random() * .75; g.lineWidth = .5 + Math.random() * 1.3;
+        g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * l, y + Math.sin(a) * l); g.stroke();
+      }
+    }
+    function pointAt(s, u) {
+      var c = s.cum, i = 1;
+      while (i < c.length - 1 && c[i] < u) i++;
+      var f = (u - c[i - 1]) / Math.max(1e-6, c[i] - c[i - 1]);
+      var a = s.pts[i - 1], b = s.pts[i];
+      return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, Math.atan2(b[1] - a[1], b[0] - a[0])];
+    }
+    function stamp(mc, p, r) {
+      /* ворс — не идеальный круг: лёгкое дрожание руки и волоски */
+      var j = size * 0.004;
+      var rr = r * (0.94 + Math.random() * 0.12);
+      var x = p[0] + (Math.random() - .5) * j, y = p[1] + (Math.random() - .5) * j;
+      mc.drawImage(stampC, x - rr, y - rr, rr * 2, rr * 2);
     }
 
     function drawText() {
@@ -3422,42 +3538,43 @@ footer a:hover { color: var(--neon); }
       maskC.getContext("2d").setTransform(dpr, 0, 0, dpr, 0, 0);
       drawText();
       buildPlan();
+      computeDist();
+      makeGrain();
       seedMotes();
     }
 
     /* к моменту t кисть прошла часть пути и открыла ровно эту часть знака */
+    /* к моменту t кисть прошла часть пути. Маска копится: дорисовываем только то,
+       что кисть прошла с прошлого кадра — так каждый отпечаток ложится один раз,
+       как тушь на бумагу, и не перерисовывается циркульной линией.              */
     function paintMask(t) {
       var mc = maskC.getContext("2d");
       mc.setTransform(dpr, 0, 0, dpr, 0, 0);
-      mc.clearRect(0, 0, W, H);
-      mc.lineCap = "round";
-      mc.lineJoin = "round";
-      mc.strokeStyle = "#000";
-      headPt = null;
+      if (t < lastT) { mc.clearRect(0, 0, W, H); painted = plan.map(function () { return 0; }); }
+      lastT = t;
+      headPt = null; headDir = null;
 
-      plan.forEach(function (s) {
+      plan.forEach(function (s, idx) {
         var k = clamp((t - s.t0) / (s.t1 - s.t0), 0, 1);
         if (k <= 0) return;
-        /* пока кисть идёт — узкий след за кончиком; черта дописана — ложится всем ворсом */
-        mc.lineWidth = size * (k >= 1 ? 0.30 : 0.145);
-        var d = k * s.len, walked = 0, prev = s.pts[0];
-        mc.beginPath();
-        mc.moveTo(prev[0], prev[1]);
-        for (var i = 1; i < s.pts.length; i++) {
-          var p = s.pts[i];
-          var seg = Math.hypot(p[0] - prev[0], p[1] - prev[1]);
-          if (walked + seg <= d) {
-            mc.lineTo(p[0], p[1]);
-            walked += seg; prev = p;
-          } else {
-            var f = (d - walked) / seg;
-            var hx = prev[0] + (p[0] - prev[0]) * f, hy = prev[1] + (p[1] - prev[1]) * f;
-            mc.lineTo(hx, hy);
-            if (k < 1) headPt = [hx, hy];
-            break;
+        /* рука разгоняется в начале черты и притормаживает к концу */
+        var ke = k >= 1 ? 1 : k * k * (3 - 2 * k);
+        var d = ke * s.len, from = painted[idx];
+        if (d > from) {
+          var step = Math.max(1.2, size * 0.008);
+          for (var u = from; u < d; u += step) {
+            var p = pointAt(s, u);
+            /* нажим: у начала и конца черты кисть чуть тоньше, в середине — весь ворс */
+            var press = 0.82 + 0.18 * Math.sin(Math.PI * clamp(u / s.len, 0, 1));
+            var q = snap(p);
+            /* ворс ложится по оси черты (q) на всю её ширину, плюс узкая дорожка
+               под самой рукой — чтобы след никогда не рвался */
+            stamp(mc, q, Math.max(size * 0.02, q[2] * 1.22 * press + size * 0.008));
+            stamp(mc, p, size * 0.075 * press);
           }
+          painted[idx] = d;
         }
-        mc.stroke();
+        if (k < 1) { var hp = pointAt(s, d); headPt = [hp[0], hp[1]]; headDir = hp[2]; }
       });
     }
 
@@ -3516,17 +3633,30 @@ footer a:hover { color: var(--neon); }
       hctx.globalAlpha = 1;
 
       if (alpha > 0) {
-        var src = textC;                       /* знак дописан — показываем целиком */
-        if (phase === "auto" || phase === "hand") {
-          var rc = revC.getContext("2d");
-          rc.setTransform(1, 0, 0, 1, 0, 0);
-          rc.globalCompositeOperation = "source-over";
-          rc.clearRect(0, 0, revC.width, revC.height);
-          rc.drawImage(textC, 0, 0);
+        var rc = revC.getContext("2d");
+        rc.setTransform(1, 0, 0, 1, 0, 0);
+        rc.globalCompositeOperation = "source-over";
+        rc.globalAlpha = 1;
+        rc.clearRect(0, 0, revC.width, revC.height);
+        rc.drawImage(textC, 0, 0);
+        if (phase === "auto" || phase === "hand") {          /* показываем ровно то, что прошла кисть */
           rc.globalCompositeOperation = "destination-in";
           rc.drawImage(maskC, 0, 0);
-          src = revC;
         }
+        /* сухая кисть: сквозь тушь видна бумага тонкими волосками */
+        rc.globalCompositeOperation = "destination-out";
+        rc.globalAlpha = 0.28;
+        rc.drawImage(grainC, 0, 0, revC.width, revC.height);
+        /* у кончика тушь ещё мокрая — темнее и блестит */
+        if (headPt && (phase === "auto" || phase === "hand")) {
+          rc.globalCompositeOperation = "source-atop";
+          rc.globalAlpha = 0.55;
+          var wr = size * 0.16 * dpr, wg = rc.createRadialGradient(headPt[0] * dpr, headPt[1] * dpr, 0, headPt[0] * dpr, headPt[1] * dpr, wr);
+          wg.addColorStop(0, neon); wg.addColorStop(1, "rgba(0,0,0,0)");
+          rc.fillStyle = wg; rc.fillRect(headPt[0] * dpr - wr, headPt[1] * dpr - wr, wr * 2, wr * 2);
+        }
+        rc.globalAlpha = 1; rc.globalCompositeOperation = "source-over";
+        var src = revC;
 
         hctx.save();
         hctx.globalAlpha = alpha;
@@ -3567,16 +3697,23 @@ footer a:hover { color: var(--neon); }
         hctx.restore();
       }
 
-      /* кончик кисти */
+      /* кисть: ворс тянется за кончиком по ходу движения, на самом кончике — киноварь */
       if (headPt && (phase === "auto" || phase === "hand")) {
+        var ang = headDir == null ? -Math.PI / 2 : headDir;
         hctx.save();
+        hctx.translate(headPt[0], headPt[1]);
+        hctx.rotate(ang);
+        hctx.shadowColor = neon; hctx.shadowBlur = 16;
+        hctx.globalAlpha = 0.85;
+        hctx.fillStyle = css("--ink") || "#161C18";
+        hctx.beginPath();                                   /* капля ворса позади кончика */
+        hctx.moveTo(size * 0.02, 0);
+        hctx.bezierCurveTo(-size * 0.02, -size * 0.045, -size * 0.11, -size * 0.03, -size * 0.13, 0);
+        hctx.bezierCurveTo(-size * 0.11, size * 0.03, -size * 0.02, size * 0.045, size * 0.02, 0);
+        hctx.fill();
         hctx.globalAlpha = 0.95;
         hctx.fillStyle = cinnabar;
-        hctx.shadowColor = neon;
-        hctx.shadowBlur = 18;
-        hctx.beginPath();
-        hctx.arc(headPt[0], headPt[1], size * 0.045, 0, Math.PI * 2);
-        hctx.fill();
+        hctx.beginPath(); hctx.arc(0, 0, size * 0.028, 0, Math.PI * 2); hctx.fill();
         hctx.restore();
       }
       hctx.restore();
@@ -3646,6 +3783,8 @@ footer a:hover { color: var(--neon); }
     }
 
     document.addEventListener("pointermove", handWrite, { passive: true });
+    window.__heroFrame = hframe;                 /* для проверки кадров без rAF */
+    window.__heroDebug = function () { return { plan: plan, W: W, H: H, size: size, ctx: hctx }; };
     heroInk.addEventListener("pointerleave", function () { lastPtr = null; });
     heroInk.addEventListener("click", function () { prog = 0; autoWrite(); });
 
