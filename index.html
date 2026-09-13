@@ -3935,7 +3935,7 @@ footer a:hover { color: var(--neon); }
     /* адрес облачной функции, которая подписывает запрос паролем терминала
        (терминал требует подпись — прямая кнопка банка его не устраивает).
        Пустая строка = функции нет, кнопки оплаты не показываем.           */
-    функция: ""
+    функция: "https://functions.yandexcloud.net/d4efr66l3df4jt67vi26"
   };
 
   (function () {
@@ -3993,7 +3993,7 @@ footer a:hover { color: var(--neon); }
       }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
         .then(function (x) {
           if (x.ok && x.j.url) { location.href = x.j.url; return; }
-          ошибка.textContent = "Не получилось начать оплату: " + (x.j.ошибка || "банк не ответил") + ". Позвоните нам — примем оплату вручную.";
+          ошибка.textContent = "Не получилось начать оплату: " + (x.j.error || "банк не ответил") + (x.j.details ? " (" + x.j.details + ")" : "") + ". Позвоните нам — примем оплату вручную.";
           кнопка.disabled = false; кнопка.textContent = "Перейти к оплате";
         })
         .catch(function () {
