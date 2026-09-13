@@ -214,7 +214,7 @@ header.top {
 .brand .han { font-family: var(--f-brush); font-size: 1.6rem; color: var(--cinnabar); line-height: 1; transition: letter-spacing .35s ease, text-shadow .35s ease; }
 .brand:hover .han { letter-spacing: .12em; text-shadow: 0 0 14px var(--neon-soft); }
 .brand .name { font-family: var(--f-display); font-size: 1.32rem; font-weight: 700; letter-spacing: .06em; }
-.nav { display: flex; gap: 1.15rem; font-size: var(--step--1); }
+.nav { display: flex; gap: 1rem; font-size: var(--step--1); }
 .nav a { position: relative; text-decoration: none; color: var(--ink-2); padding-block: .3rem; transition: color .2s; white-space: nowrap; }
 .nav a .cn {
   position: absolute; left: 50%; top: -.8rem; transform: translate(-50%, 4px);
@@ -227,6 +227,29 @@ header.top {
 .nav a:hover::after, .nav a.on::after { right: 0; }
 .nav a.on { color: var(--ink); }
 .nav a:hover .cn, .nav a.on .cn { opacity: 1; transform: translate(-50%, 0); }
+
+/* телефон — всегда в шапке, шапка прилипает к экрану */
+.top-phone {
+  display: inline-flex; align-items: center; gap: .5rem; text-decoration: none;
+  font-family: var(--f-mono); font-size: var(--step--1); font-weight: 500; letter-spacing: .03em;
+  color: var(--ink); white-space: nowrap; padding: .5rem .7rem; border-radius: 2px;
+  transition: color .2s, background .2s;
+}
+.top-phone:hover { color: var(--cinnabar); background: var(--paper-2); }
+.top-phone svg { width: 20px; height: 20px; fill: var(--cinnabar); flex: none; transform-origin: 50% 60%; }
+@media (prefers-reduced-motion: no-preference) {
+  .top-phone svg { animation: ring 6s ease-in-out infinite; }
+  @keyframes ring {
+    0%, 86%, 100% { transform: rotate(0); }
+    88% { transform: rotate(-14deg); } 90% { transform: rotate(12deg); }
+    92% { transform: rotate(-10deg); } 94% { transform: rotate(8deg); } 96% { transform: rotate(-4deg); }
+  }
+}
+@media (max-width: 560px) {
+  .top-phone { padding: .6rem; border: 1px solid var(--hairline); }
+  .top-phone .num { display: none; }        /* на узком экране — только трубка, номер по нажатию */
+  .top-phone svg { width: 22px; height: 22px; }
+}
 
 .burger { display: none; background: none; border: 1px solid var(--hairline); border-radius: 2px; color: inherit; font: inherit; font-size: var(--step--1); padding: .5rem .9rem; cursor: pointer; }
 @media (max-width: 1180px) {
@@ -1437,12 +1460,15 @@ footer a:hover { color: var(--neon); }
       <a href="#/prepodavateli" data-route="/prepodavateli"><span class="cn">老师</span>Преподаватели</a>
       <a href="#/kitay" data-route="/kitay"><span class="cn">中国</span>Китай</a>
       <a href="#/studenty" data-route="/studenty"><span class="cn">学生</span>Студенты</a>
-      <a href="#/test" data-route="/test"><span class="cn">测验</span>Тест уровня</a>
       <a href="#/igry" data-route="/igry"><span class="cn">游戏</span>Игры</a>
       <a href="#/kovorking" data-route="/kovorking"><span class="cn">共享</span>Коворкинг</a>
       <a href="#/zayavka" data-route="/zayavka"><span class="cn">报名</span>Заявка</a>
       <a href="#/kontakty" data-route="/kontakty"><span class="cn">联系</span>Контакты</a>
     </nav>
+    <a class="top-phone" href="tel:+79106775143" aria-label="Позвонить в школу: +7 910 677-51-43">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1L6.6 10.8z"/></svg>
+      <span class="num">+7 910 677‑51‑43</span>
+    </a>
     <button class="burger" id="burger" aria-expanded="false" aria-controls="nav">Меню</button>
     <a class="btn top-cta" href="#/zayavka">Пробный урок</a>
   </div>
