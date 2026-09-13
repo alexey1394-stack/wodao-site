@@ -1410,8 +1410,12 @@ footer a:hover { color: var(--neon); }
       <div class="field"><label for="pay-name">Имя ученика</label><input id="pay-name" type="text" autocomplete="name" placeholder="Как в CRM школы"><span class="err">Нужно имя — чтобы зачесть оплату правильному ученику</span></div>
       <div class="field"><label for="pay-email">Почта для чека</label><input id="pay-email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.ru"><span class="err">Чек приходит на почту — укажите её</span></div>
       <div class="field"><label for="pay-phone">Телефон</label><input id="pay-phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+7 (___) ___-__-__"><span class="err">Нужен телефон, чтобы связать оплату с учеником</span></div>
+      <div class="field consent" id="pay-consent-f">
+        <label class="check"><input id="pay-consent" type="checkbox"> <span>Согласен с <a href="https://wodao.ru/dogovor-oferta">офертой</a> и на обработку персональных данных по <a href="policy/" data-policy>политике конфиденциальности</a></span></label>
+        <span class="err">Без согласия оплату начать нельзя — так требует закон</span>
+      </div>
       <button class="btn" type="submit">Перейти к оплате</button>
-      <p class="fine">Платёж проходит на защищённой странице Т-Банка: карты «Мир», Visa, Mastercard, СБП, T-Pay. Чек придёт на почту. Нажимая кнопку, вы соглашаетесь с <a href="policy/" data-policy>политикой конфиденциальности</a> и <a href="https://wodao.ru/dogovor-oferta">офертой</a>.</p>
+      <p class="fine">Платёж проходит на защищённой странице Т-Банка: карты «Мир», Visa, Mastercard, СБП, T-Pay. Чек придёт на почту. Оператор данных — ИП Блаер Е. А.</p>
     </form>
   </div>
 </div>
@@ -3942,6 +3946,9 @@ footer a:hover { color: var(--neon); }
       ok = bad("pay-name", !v("pay-name")) && ok;
       ok = bad("pay-email", !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v("pay-email"))) && ok;
       ok = bad("pay-phone", v("pay-phone").replace(/\D/g, "").length < 10) && ok;
+      var согласен = document.getElementById("pay-consent").checked;
+      document.getElementById("pay-consent-f").classList.toggle("bad", !согласен);
+      if (!согласен) ok = false;
       if (!ok) return;
 
       /* форма ровно в том виде, какого ждёт скрипт банка */
