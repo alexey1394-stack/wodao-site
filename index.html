@@ -1207,6 +1207,7 @@ html.pay-ready .tariff .pay-btn { width: 100%; justify-content: center; }
 .total .cap { font-family: var(--f-mono); font-size: var(--step--2); color: var(--ink-3); }
 .booking .btn { justify-content: center; }
 .booking .btn[disabled] { opacity: .45; pointer-events: none; }
+html.pay-ready .booking .pay-btn { display: inline-flex; }
 .booking .hintline { font-family: var(--f-mono); font-size: var(--step--2); color: var(--ink-3); line-height: 1.5; }
 
 /* ── франшиза ── */
@@ -2431,6 +2432,7 @@ footer a:hover { color: var(--neon); }
             <span class="cap" id="total-cap">Итого</span>
             <span class="sum" id="total-sum">—</span>
           </div>
+          <button type="button" class="btn pay-btn" id="book-pay" data-pay="0" data-title="Коворкинг" disabled>Оплатить бронь онлайн</button>
           <a class="btn" id="book-btn" href="https://t.me/wodao_online" disabled>Забронировать в Telegram</a>
           <a class="btn ghost" href="tel:+79106775143">Позвонить: +7 (910) 677-51-43</a>
           <p class="hintline">Бронь подтверждает администратор — он проверит, свободно ли выбранное место на нужную дату, и ответит в течение рабочего дня.</p>
@@ -4276,6 +4278,21 @@ footer a:hover { color: var(--neon); }
 
       var any = list.length || rl.length;
       if (any) btn.removeAttribute("disabled"); else btn.setAttribute("disabled", "");
+
+      /* онлайн можно оплатить рабочие места — у них твёрдая цена; залы считает администратор */
+      var payBtn = document.getElementById("book-pay");
+      if (payBtn) {
+        if (list.length) {
+          payBtn.removeAttribute("disabled");
+          payBtn.dataset.pay = String(seatSum);
+          payBtn.dataset.title = "Коворкинг · " + (list.length === 1 ? "место " : "места ") + list.join(", ") +
+            " · тариф " + (tariff === "day" ? "день" : "месяц");
+          payBtn.textContent = "Оплатить " + money(seatSum) + " онлайн";
+        } else {
+          payBtn.setAttribute("disabled", "");
+          payBtn.textContent = rl.length ? "Залы оплачиваются после расчёта" : "Оплатить бронь онлайн";
+        }
+      }
 
       var msg = "Здравствуйте! Хочу забронировать в коворкинге ВОДАО";
       if (list.length) msg += ": " + (list.length === 1 ? "место " : "места ") + list.join(", ") +
