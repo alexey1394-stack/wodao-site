@@ -2673,7 +2673,7 @@ footer a:hover { color: var(--neon); }
             <div class="line"><dt><span class="cn">邮件</span>Почта</dt><dd><a href="mailto:wodao@yandex.ru">wodao@yandex.ru</a></dd></div>
             <div class="line"><dt><span class="cn">时间</span>Часы</dt><dd>Пн–Пт, 9:30–18:30</dd></div>
             <div class="line"><dt><span class="cn">课表</span>Расписание</dt><dd><a href="/kursy/">Расписание групп</a></dd></div>
-            <div class="line"><dt><span class="cn">信息</span>Реквизиты</dt><dd><a href="/policy/">Информация об организации</a></dd></div>
+            <div class="line"><dt><span class="cn">信息</span>Реквизиты</dt><dd><a href="/litsenziya/">Информация об организации</a></dd></div>
           </dl>
         </div>
         <div class="rv-r">
@@ -2745,6 +2745,7 @@ footer a:hover { color: var(--neon); }
       <a href="/kontakty/">Контакты</a>
     </span>
     <span class="foot-nav">
+      <a href="/litsenziya/">Лицензия и реквизиты</a>
       <a href="/oferta/">Оферта</a>
       <a href="/policy/">Конфиденциальность</a>
     </span>
@@ -3627,10 +3628,7 @@ footer a:hover { color: var(--neon); }
       hctx.save();
       hctx.translate(par.x, par.y);
 
-      /* бледный след знака — видно, где ляжет кисть */
-      hctx.globalAlpha = 0.09;
-      hctx.drawImage(textC, 0, 0, W, H);
-      hctx.globalAlpha = 1;
+      /* бумага чистая: знак рождается из-под кисти, а не проступает по трафарету */
 
       if (alpha > 0) {
         var rc = revC.getContext("2d");
