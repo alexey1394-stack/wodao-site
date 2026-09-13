@@ -358,8 +358,9 @@ header.top {
 .brushmark .seal-img {
   position: absolute; right: clamp(.5rem, 3%, 1.6rem); bottom: clamp(1rem, 6%, 2.4rem);
   width: clamp(4.6rem, 12vw, 7.2rem); height: auto;
-  transform: rotate(-6deg);
+  transform: rotate(-6deg) translate(calc(var(--px, 0px) * -1.6), calc(var(--py, 0px) * -1.6));
   filter: drop-shadow(0 0 22px var(--neon-glow));
+  will-change: transform;
 }
 .brushmark .romanized {
   position: absolute; left: 0; bottom: -.2rem;
@@ -372,9 +373,25 @@ header.top {
   color: var(--neon-text); opacity: .9;
 }
 @media (prefers-reduced-motion: no-preference) {
-  .brushmark .seal-img { animation: stamp .5s cubic-bezier(.2,1.4,.4,1) 3.1s both; }
+  .brushmark .seal-img { animation: stamp .5s cubic-bezier(.2,1.4,.4,1) 3.1s backwards; }
   @keyframes stamp { from { opacity: 0; transform: rotate(-20deg) scale(1.7); } to { opacity: 1; transform: rotate(-6deg) scale(1); } }
 }
+
+
+/* ── короткие видео (Rutube, вертикальные) ── */
+.vids { display:grid; grid-template-columns:repeat(6, 1fr); gap:1rem; margin-top:2.4rem; }
+.vid { position:relative; aspect-ratio:9/16; border:1px solid var(--hairline-2); border-radius:4px; overflow:hidden; background:var(--paper-3); padding:0; cursor:pointer; color:var(--paper); text-align:left; font:inherit; }
+.vid .poster { position:absolute; inset:0; background-size:cover; background-position:center; filter:saturate(.85) contrast(1.02); transition:transform .9s cubic-bezier(.2,.7,.3,1), filter .5s ease; }
+.vid:hover .poster { transform:scale(1.05); filter:saturate(1) contrast(1.05); }
+.vid::after { content:""; position:absolute; inset:0; background:linear-gradient(to top, rgba(8,12,10,.85) 0, rgba(8,12,10,.1) 55%, transparent); pointer-events:none; }
+.vid .play { position:absolute; left:50%; top:50%; width:3rem; height:3rem; margin:-1.5rem 0 0 -1.5rem; border-radius:50%; display:grid; place-items:center; background:rgba(8,12,10,.55); border:1px solid rgba(255,255,255,.5); font-size:.9rem; padding-left:.2rem; box-shadow:0 0 22px var(--neon-glow); transition:transform .3s ease, background .3s ease; z-index:1; }
+.vid:hover .play { transform:scale(1.12); background:var(--cinnabar); border-color:transparent; }
+.vid .dur { position:absolute; top:.6rem; right:.6rem; font-family:var(--f-mono); font-size:.68rem; letter-spacing:.08em; background:rgba(8,12,10,.6); padding:.15rem .4rem; border-radius:2px; z-index:1; }
+.vid .vt { position:absolute; left:.8rem; right:.8rem; bottom:.8rem; font-size:.8rem; line-height:1.3; z-index:1; text-shadow:0 1px 6px rgba(0,0,0,.6); }
+.vid iframe { position:absolute; inset:0; width:100%; height:100%; border:0; z-index:2; background:#000; }
+.vid.playing .play, .vid.playing .dur, .vid.playing .vt, .vid.playing::after { display:none; }
+@media (max-width: 1100px) { .vids { grid-template-columns:repeat(3, 1fr); } }
+@media (max-width: 600px) { .vids { grid-template-columns:repeat(2, 1fr); gap:.6rem; } .vid .vt { font-size:.72rem; } }
 
 /* ── фотографии школы ── */
 
@@ -889,6 +906,12 @@ html.pay-ready .tariff .pay-btn { width: 100%; justify-content: center; }
 .paycard h3 { font-size: var(--step-1); }
 .paycard .what { font-family: var(--f-mono); font-size: var(--step--2); color: var(--ink-3); letter-spacing: .06em; }
 .paycard .sum { font-family: var(--f-display); font-size: var(--step-2); font-weight: 700; font-variant-numeric: tabular-nums; }
+  .paycard .qtyrow { display:flex; align-items:center; gap:.6rem; margin:-.4rem 0 1rem; }
+  .paycard .qtyrow .q { font-family:var(--mono); font-size:.9rem; letter-spacing:.04em; min-width:5.5rem; text-align:center; }
+  .paycard .qtyrow .q b { font-size:1.15rem; }
+  .paycard .qb { width:2.1rem; height:2.1rem; border-radius:50%; border:1px solid color-mix(in oklab, var(--ink) 30%, transparent); background:transparent; color:inherit; font-size:1.2rem; line-height:1; cursor:pointer; }
+  .paycard .qb:hover { border-color:var(--neon-text); color:var(--neon-text); }
+
 .paycard .field { margin-bottom: .2rem; }
 .paycard .close { position: absolute; top: .6rem; right: .7rem; background: none; border: 0; font-size: 1.3rem; color: var(--ink-3); cursor: pointer; line-height: 1; padding: .3rem; }
 .paycard .close:hover { color: var(--cinnabar); }
@@ -1431,8 +1454,9 @@ footer a:hover { color: var(--neon); }
     <span class="what">Оплата онлайн · Т-Банк</span>
     <h3 id="pay-title">Взрослая группа</h3>
     <div class="sum" id="pay-sum">0 ₽</div>
+    <div class="qtyrow" id="pay-qty" hidden><button type="button" class="qb" data-q="-1" aria-label="Меньше">−</button><span class="q"><b id="pay-q">1</b> <span id="pay-unit">час</span></span><button type="button" class="qb" data-q="1" aria-label="Больше">+</button></div>
     <form id="payform" novalidate>
-      <div class="field"><label for="pay-name">Имя ученика</label><input id="pay-name" type="text" autocomplete="name" placeholder="Как в CRM школы"><span class="err">Нужно имя — чтобы зачесть оплату правильному ученику</span></div>
+      <div class="field"><label for="pay-name">Имя</label><input id="pay-name" type="text" autocomplete="name" placeholder="Как к вам обращаться"><span class="err">Нужно имя — чтобы понять, чья оплата</span></div>
       <div class="field"><label for="pay-email">Почта для чека</label><input id="pay-email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.ru"><span class="err">Чек приходит на почту — укажите её</span></div>
       <div class="field"><label for="pay-phone">Телефон</label><input id="pay-phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+7 (___) ___-__-__"><span class="err">Нужен телефон, чтобы связать оплату с учеником</span></div>
       <div class="field consent" id="pay-consent-f">
@@ -1655,6 +1679,26 @@ footer a:hover { color: var(--neon); }
   </section>
 
   <hr class="rule">
+
+  <section id="video">
+    <div class="eyebrow-cn">视频</div>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label">Короткие уроки</span>
+        <h2>Полминуты — и один иероглиф ваш</h2>
+        <p>Преподаватели школы снимают короткие видео: черта за чертой, с произношением. Нажмите — видео откроется прямо здесь.</p>
+      </div>
+      <div class="vids">
+        <button type="button" class="vid rv" data-video="8f49009f89aa4a0716688bc32289732e" aria-label="Смотреть: Пишем первый иероглиф: Му (Дерево)"><span class="poster" data-img="v_mu"></span><span class="play">▶</span><span class="dur">0:30</span><span class="vt">Пишем первый иероглиф: Му (Дерево)</span></button>
+        <button type="button" class="vid rv" data-video="0257610b20518ba8f8592665253870a9" aria-label="Смотреть: Я по-китайски: пишем иероглиф «Во»"><span class="poster" data-img="v_wo"></span><span class="play">▶</span><span class="dur">0:26</span><span class="vt">Я по-китайски: пишем иероглиф «Во»</span></button>
+        <button type="button" class="vid rv" data-video="caee44a1abd3c2646a7ec77035156819" aria-label="Смотреть: Как пишется «Ты» по-китайски?"><span class="poster" data-img="v_ni"></span><span class="play">▶</span><span class="dur">0:26</span><span class="vt">Как пишется «Ты» по-китайски?</span></button>
+        <button type="button" class="vid rv" data-video="58fcedb259a63860efa54eed2d4476e1" aria-label="Смотреть: Иероглиф «Мужчина» = Поле + Сила"><span class="poster" data-img="v_nan"></span><span class="play">▶</span><span class="dur">0:31</span><span class="vt">Иероглиф «Мужчина» = Поле + Сила</span></button>
+        <button type="button" class="vid rv" data-video="67dd3ad2c174881d7acdc9d8b8792f3c" aria-label="Смотреть: Иероглиф 马 «лошадь»: три черты и произношение"><span class="poster" data-img="v_ma"></span><span class="play">▶</span><span class="dur">0:28</span><span class="vt">Иероглиф 马 «лошадь»: три черты и произношение</span></button>
+        <button type="button" class="vid rv" data-video="13cce030a9e5a95a3a42b858380c101d" aria-label="Смотреть: Сложные гласные и тоны: Ли, Лю, Ха"><span class="poster" data-img="v_tones"></span><span class="play">▶</span><span class="dur">0:27</span><span class="vt">Сложные гласные и тоны: Ли, Лю, Ха</span></button>
+      </div>
+      <p class="note" style="margin-top:1.4rem">Все ролики — на канале школы: <a href="https://rutube.ru/channel/44747818/" target="_blank" rel="noopener">Rutube · ВОДАО</a> и в <a href="https://t.me/wodao_wodao" target="_blank" rel="noopener">Telegram @wodao_wodao</a>.</p>
+    </div>
+  </section>
 
   <section id="practice">
     <div class="eyebrow-cn">游戏</div>
@@ -2404,9 +2448,9 @@ footer a:hover { color: var(--neon); }
         <h2>Прозрачные тарифы, без скрытых доплат</h2>
       </div>
       <div class="tariffs">
-        <div class="tariff"><span class="qty">Open-space · день</span><span class="sum">656 ₽</span><span class="per">за 1 рабочее место</span><span class="old" style="text-decoration:none">разовое посещение</span></div>
-        <div class="tariff"><span class="qty">Open-space · месяц</span><span class="sum">6 560 ₽</span><span class="per">за 1 рабочее место</span><span class="old" style="text-decoration:none">выгодно для постоянной работы</span></div>
-        <div class="tariff"><span class="qty">Аренда аудитории</span><span class="sum">1 500 ₽</span><span class="per">за 1 час</span><span class="old" style="text-decoration:none">зал с партами под мероприятие</span></div>
+        <div class="tariff"><span class="qty">Open-space · день</span><span class="sum">656 ₽</span><span class="per">за 1 рабочее место</span><span class="old" style="text-decoration:none">разовое посещение</span><button type="button" class="btn pay-btn" data-pay="656" data-title="Коворкинг · рабочее место на день" data-unit="день" data-max="30">Оплатить онлайн</button></div>
+        <div class="tariff"><span class="qty">Open-space · месяц</span><span class="sum">6 560 ₽</span><span class="per">за 1 рабочее место</span><span class="old" style="text-decoration:none">выгодно для постоянной работы</span><button type="button" class="btn pay-btn" data-pay="6560" data-title="Коворкинг · рабочее место на месяц" data-unit="месяц" data-max="12">Оплатить онлайн</button></div>
+        <div class="tariff"><span class="qty">Аренда аудитории</span><span class="sum">1 500 ₽</span><span class="per">за 1 час</span><span class="old" style="text-decoration:none">зал с партами под мероприятие</span><button type="button" class="btn pay-btn" data-pay="1500" data-title="Аренда аудитории" data-unit="час" data-max="12">Оплатить онлайн</button></div>
       </div>
       <p class="note">Цены — по данным страницы коворкинга на wodao.ru. Индивидуальные условия при долгой аренде обсуждаем на месте.</p>
     </div>
@@ -2709,7 +2753,7 @@ footer a:hover { color: var(--neon); }
 
 <script>
 /* Фотографии школы и логотип — встроены в страницу, внешних запросов нет */
-/*IMG-START*/var IMG = {"logo_full":"/img/logo_full.png","logo_seal":"/img/logo_seal.png","t_alexey":"/img/t_alexey.jpg","t_artem":"/img/t_artem.jpg","t_belodedova":"/img/t_belodedova.jpg","t_diana":"/img/t_diana.jpg","t_egorova":"/img/t_egorova.jpg","t_ilya":"/img/t_ilya.jpg","t_kuznetsova":"/img/t_kuznetsova.jpg","t_lobanova":"/img/t_lobanova.jpg","t_maralova":"/img/t_maralova.jpg","t_onatskaya":"/img/t_onatskaya.jpg","t_rozhkova":"/img/t_rozhkova.jpg","t_volodya":"/img/t_volodya.jpg","t_yana":"/img/t_yana.jpg","t_yunicheva":"/img/t_yunicheva.jpg","p_adults":"/img/p_adults.jpg","p_award":"/img/p_award.jpg","p_calligraphy":"/img/p_calligraphy.jpg","p_class":"/img/p_class.jpg","p_culture":"/img/p_culture.jpg","p_hanfu":"/img/p_hanfu.jpg","p_hangzhou":"/img/p_hangzhou.jpg","p_home":"/img/p_home.jpg","p_kids":"/img/p_kids.jpg","p_return":"/img/p_return.jpg","p_shanghai":"/img/p_shanghai.jpg","p_students_cn":"/img/p_students_cn.jpg","p_suzhou":"/img/p_suzhou.jpg","p_year":"/img/p_year.jpg","g1":"/img/g1.jpg","g2":"/img/g2.jpg","g3":"/img/g3.jpg","g4":"/img/g4.jpg","g5":"/img/g5.jpg","g6":"/img/g6.jpg","g7":"/img/g7.jpg","g8":"/img/g8.jpg","g9":"/img/g9.jpg","k_class":"/img/k_class.jpg","k_coffee":"/img/k_coffee.jpg","k_meet":"/img/k_meet.jpg","k_open":"/img/k_open.jpg"};/*IMG-END*/
+/*IMG-START*/var IMG = {"logo_full":"/img/logo_full.png","logo_seal":"/img/logo_seal.png","t_alexey":"/img/t_alexey.jpg","t_artem":"/img/t_artem.jpg","t_belodedova":"/img/t_belodedova.jpg","t_diana":"/img/t_diana.jpg","t_egorova":"/img/t_egorova.jpg","t_ilya":"/img/t_ilya.jpg","t_kuznetsova":"/img/t_kuznetsova.jpg","t_lobanova":"/img/t_lobanova.jpg","t_maralova":"/img/t_maralova.jpg","t_onatskaya":"/img/t_onatskaya.jpg","t_rozhkova":"/img/t_rozhkova.jpg","t_volodya":"/img/t_volodya.jpg","t_yana":"/img/t_yana.jpg","t_yunicheva":"/img/t_yunicheva.jpg","p_adults":"/img/p_adults.jpg","p_award":"/img/p_award.jpg","p_calligraphy":"/img/p_calligraphy.jpg","p_class":"/img/p_class.jpg","p_culture":"/img/p_culture.jpg","p_hanfu":"/img/p_hanfu.jpg","p_hangzhou":"/img/p_hangzhou.jpg","p_home":"/img/p_home.jpg","p_kids":"/img/p_kids.jpg","p_return":"/img/p_return.jpg","p_shanghai":"/img/p_shanghai.jpg","p_students_cn":"/img/p_students_cn.jpg","p_suzhou":"/img/p_suzhou.jpg","p_year":"/img/p_year.jpg","g1":"/img/g1.jpg","g2":"/img/g2.jpg","g3":"/img/g3.jpg","g4":"/img/g4.jpg","g5":"/img/g5.jpg","g6":"/img/g6.jpg","g7":"/img/g7.jpg","g8":"/img/g8.jpg","g9":"/img/g9.jpg","k_class":"/img/k_class.jpg","k_coffee":"/img/k_coffee.jpg","k_meet":"/img/k_meet.jpg","k_open":"/img/k_open.jpg","v_mu":"/img/v_mu.jpg","v_wo":"/img/v_wo.jpg","v_ni":"/img/v_ni.jpg","v_nan":"/img/v_nan.jpg","v_ma":"/img/v_ma.jpg","v_tones":"/img/v_tones.jpg"};/*IMG-END*/
 </script>
 
 <script>
@@ -2717,6 +2761,21 @@ footer a:hover { color: var(--neon); }
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   /* картинки подставляются по data-img */
+
+  /* короткие видео: постер, а плеер Rutube грузим только по клику — страница лёгкая */
+  document.addEventListener("click", function (e) {
+    var v = e.target.closest(".vid[data-video]");
+    if (!v || v.classList.contains("playing")) return;
+    document.querySelectorAll(".vid.playing").forEach(function (o) { o.classList.remove("playing"); var f = o.querySelector("iframe"); if (f) f.remove(); });
+    var f = document.createElement("iframe");
+    f.src = "https://rutube.ru/play/embed/" + v.dataset.video + "/?autoStart=1";
+    f.allow = "autoplay; fullscreen; clipboard-write";
+    f.setAttribute("allowfullscreen", "");
+    f.title = v.getAttribute("aria-label");
+    v.appendChild(f);
+    v.classList.add("playing");
+  });
+
   function paintImages(root) {
     (root || document).querySelectorAll("[data-img]").forEach(function (el) {
       var src = IMG[el.dataset.img];
@@ -3292,6 +3351,24 @@ footer a:hover { color: var(--neon); }
     var W = 0, H = 0, dpr = 1, size = 0;
     var plan = [], totalTime = 0;
     var phase = "idle", startT = 0, wetT = 0, moveT = 0, prog = 0, alpha = 0, headPt = null, lastPtr = null;
+    /* живость: брызги туши от кончика, пылинки в воздухе, след от руки, параллакс за курсором */
+    var spatter = [], motes = [], trail = [], idleT = 0, prevHead = null;
+    var par = { x: 0, y: 0, tx: 0, ty: 0 };
+    var neon = css("--neon") || "#0E9C89", cinnabar = css("--cinnabar") || "#B93A22";
+    function seedMotes() {
+      motes = [];
+      for (var i = 0; i < 34; i++) motes.push({ x: Math.random() * W, y: Math.random() * H, vx: (Math.random() - .5) * .14, vy: -.06 - Math.random() * .14, r: 1.1 + Math.random() * 2.2, ph: Math.random() * 6.28 });
+    }
+    function spawnSpatter(pt, prev) {
+      var dx = prev ? pt[0] - prev[0] : 0, dy = prev ? pt[1] - prev[1] : 0, sp = Math.hypot(dx, dy);
+      var n = sp > 1.5 ? 2 : 1;
+      for (var i = 0; i < n; i++) {
+        var a = Math.atan2(dy, dx) + (Math.random() - .5) * 2.4;
+        var v = .6 + Math.random() * 1.6 + sp * .12;
+        spatter.push({ x: pt[0], y: pt[1], vx: Math.cos(a) * v, vy: Math.sin(a) * v, r: size * (.006 + Math.random() * .012), life: 1, ink: Math.random() < .25 });
+      }
+      if (spatter.length > 160) spatter.splice(0, spatter.length - 160);
+    }
 
     function buildPlan() {
       plan = []; totalTime = 0;
@@ -3335,6 +3412,7 @@ footer a:hover { color: var(--neon); }
       maskC.getContext("2d").setTransform(dpr, 0, 0, dpr, 0, 0);
       drawText();
       buildPlan();
+      seedMotes();
     }
 
     /* к моменту t кисть прошла часть пути и открыла ровно эту часть знака */
@@ -3391,10 +3469,36 @@ footer a:hover { color: var(--neon); }
         if (ts - Math.max(wetT, moveT) > 2400) { phase = "dry"; wetT = ts; }
       } else if (phase === "dry") {
         alpha = 1 - clamp((ts - wetT) / 2600, 0, 1);
-        if (alpha <= 0.001) { phase = "idle"; alpha = 0; prog = 0; headPt = null; }
+        if (alpha <= 0.001) { phase = "idle"; alpha = 0; prog = 0; headPt = null; idleT = ts; }
+      } else if (phase === "idle" && !reduce) {
+        /* знак высох и полежал — кисть берётся снова, пока блок на экране */
+        var r0 = heroInk.getBoundingClientRect();
+        if (ts - idleT > 3800 && r0.bottom > 0 && r0.top < window.innerHeight) autoWrite();
       }
 
       hctx.clearRect(0, 0, W, H);
+
+      /* параллакс: знак чуть подаётся к руке, печать — в другую сторону */
+      par.x += (par.tx - par.x) * .06; par.y += (par.ty - par.y) * .06;
+      if (!reduce) heroInk.parentElement.style.setProperty("--px", par.x.toFixed(1) + "px"), heroInk.parentElement.style.setProperty("--py", par.y.toFixed(1) + "px");
+
+      /* пылинки в воздухе — вечное лёгкое движение, даже когда никто не трогает */
+      if (!reduce) {
+        hctx.save();
+        for (var mi = 0; mi < motes.length; mi++) {
+          var mo = motes[mi];
+          mo.x += mo.vx + Math.sin(ts / 1400 + mo.ph) * .08; mo.y += mo.vy;
+          if (mo.y < -4) { mo.y = H + 4; mo.x = Math.random() * W; }
+          if (mo.x < -4) mo.x = W + 4; else if (mo.x > W + 4) mo.x = -4;
+          hctx.globalAlpha = .25 + .25 * Math.sin(ts / 700 + mo.ph);
+          hctx.fillStyle = neon;
+          hctx.beginPath(); hctx.arc(mo.x, mo.y, mo.r, 0, 6.2832); hctx.fill();
+        }
+        hctx.restore();
+      }
+
+      hctx.save();
+      hctx.translate(par.x, par.y);
 
       /* бледный след знака — видно, где ляжет кисть */
       hctx.globalAlpha = 0.09;
@@ -3416,11 +3520,40 @@ footer a:hover { color: var(--neon); }
 
         hctx.save();
         hctx.globalAlpha = alpha;
-        hctx.shadowColor = css("--neon") || "#0E9C89";
-        hctx.shadowBlur = 24;
+        hctx.shadowColor = neon;
+        /* свечение дышит: тушь на бумаге не стоит мёртво */
+        hctx.shadowBlur = reduce ? 24 : 22 + 12 * (0.5 + 0.5 * Math.sin(ts / 900));
         hctx.drawImage(src, 0, 0, W, H);
         hctx.shadowBlur = 0;
         hctx.drawImage(src, 0, 0, W, H);
+
+        /* блик: раз в несколько секунд по знаку пробегает полоса света */
+        var sw = (ts % 5200) / 5200;
+        if (!reduce && sw < .3 && alpha > .4) {
+          var k = sw / .3, bx = -W * .4 + k * W * 1.8;
+          var g = hctx.createLinearGradient(bx - W * .18, 0, bx + W * .18, H * .5);
+          g.addColorStop(0, "rgba(255,255,255,0)"); g.addColorStop(.5, "rgba(255,255,255,.45)"); g.addColorStop(1, "rgba(255,255,255,0)");
+          hctx.globalCompositeOperation = "source-atop";
+          hctx.globalAlpha = alpha * (1 - Math.abs(k - .5) * 1.2);
+          hctx.fillStyle = g;
+          hctx.fillRect(0, 0, W, H);
+        }
+        hctx.restore();
+      }
+
+      /* брызги туши: летят от кончика, пока кисть идёт, и гаснут */
+      if (headPt && (phase === "auto" || phase === "hand") && !reduce) spawnSpatter(headPt, prevHead);
+      prevHead = headPt ? headPt.slice() : null;
+      if (spatter.length) {
+        hctx.save();
+        for (var si = spatter.length - 1; si >= 0; si--) {
+          var sp = spatter[si];
+          sp.x += sp.vx; sp.y += sp.vy; sp.vy += .035; sp.vx *= .985; sp.life -= .022;
+          if (sp.life <= 0) { spatter.splice(si, 1); continue; }
+          hctx.globalAlpha = sp.life * .9;
+          hctx.fillStyle = sp.ink ? cinnabar : neon;
+          hctx.beginPath(); hctx.arc(sp.x, sp.y, sp.r * (.6 + sp.life * .4), 0, 6.2832); hctx.fill();
+        }
         hctx.restore();
       }
 
@@ -3428,12 +3561,26 @@ footer a:hover { color: var(--neon); }
       if (headPt && (phase === "auto" || phase === "hand")) {
         hctx.save();
         hctx.globalAlpha = 0.95;
-        hctx.fillStyle = css("--cinnabar") || "#B93A22";
-        hctx.shadowColor = css("--neon") || "#0E9C89";
+        hctx.fillStyle = cinnabar;
+        hctx.shadowColor = neon;
         hctx.shadowBlur = 18;
         hctx.beginPath();
         hctx.arc(headPt[0], headPt[1], size * 0.045, 0, Math.PI * 2);
         hctx.fill();
+        hctx.restore();
+      }
+      hctx.restore();
+
+      /* след от руки: капли туши там, где прошёл курсор, тают за секунду */
+      if (trail.length) {
+        hctx.save();
+        for (var ti = trail.length - 1; ti >= 0; ti--) {
+          var tp = trail[ti], age = (ts - tp.t) / 900;
+          if (age >= 1) { trail.splice(ti, 1); continue; }
+          hctx.globalAlpha = (1 - age) * .55;
+          hctx.fillStyle = neon;
+          hctx.beginPath(); hctx.arc(tp.x, tp.y, size * .012 * (1 + age * 1.5), 0, 6.2832); hctx.fill();
+        }
         hctx.restore();
       }
     }
@@ -3456,10 +3603,16 @@ footer a:hover { color: var(--neon); }
       var near = 120;
       var inside = e.clientX > rect.left - near && e.clientX < rect.right + near &&
                    e.clientY > rect.top - near && e.clientY < rect.bottom + near;
-      if (!inside) { lastPtr = null; return; }
-      if (phase === "auto") return;                       /* не мешаем первому показу */
+      if (!inside) { lastPtr = null; par.tx = 0; par.ty = 0; return; }
 
       var x = e.clientX - rect.left, y = e.clientY - rect.top;
+      par.tx = clamp((x - rect.width / 2) / rect.width, -.5, .5) * 22;
+      par.ty = clamp((y - rect.height / 2) / rect.height, -.5, .5) * 16;
+      if (x >= 0 && y >= 0 && x <= rect.width && y <= rect.height && e.pointerType !== "touch") {
+        var последний = trail[trail.length - 1];
+        if (!последний || Math.hypot(x - последний.x, y - последний.y) > 6) { trail.push({ x: x, y: y, t: performance.now() }); if (trail.length > 60) trail.shift(); }
+      }
+      if (phase === "auto") return;                       /* не мешаем первому показу */
       if (lastPtr) {
         var d = Math.hypot(x - lastPtr[0], y - lastPtr[1]);
         if (d > 0) {
@@ -3951,13 +4104,38 @@ footer a:hover { color: var(--neon); }
     window.addEventListener("load", включить);
     setTimeout(включить, 1500);
 
-    function открыть(btn) {
-      текущий = { сумма: parseInt(btn.dataset.pay, 10), название: btn.dataset.title };
-      document.getElementById("pay-title").textContent = текущий.название;
-      document.getElementById("pay-sum").textContent = текущий.сумма.toLocaleString("ru-RU") + " ₽";
-      win.classList.add("on");
-      setTimeout(function () { document.getElementById("pay-name").focus(); }, 60);
+    /* количество: у тарифов «за час / за день / за месяц» в окне есть счётчик */
+    var qtyRow = document.getElementById("pay-qty");
+    function склонить(n, ед) {
+      var ф = { "час": ["час", "часа", "часов"], "день": ["день", "дня", "дней"], "месяц": ["месяц", "месяца", "месяцев"] }[ед] || [ед, ед, ед];
+      var r = n % 100, k = n % 10;
+      return (r > 10 && r < 20) ? ф[2] : k === 1 ? ф[0] : (k > 1 && k < 5) ? ф[1] : ф[2];
     }
+    function пересчитать() {
+      текущий.сумма = текущий.цена * текущий.кол;
+      document.getElementById("pay-sum").textContent = текущий.сумма.toLocaleString("ru-RU") + " ₽";
+      document.getElementById("pay-q").textContent = текущий.кол;
+      document.getElementById("pay-unit").textContent = склонить(текущий.кол, текущий.ед);
+      document.getElementById("pay-title").textContent = текущий.название + (текущий.ед ? " · " + текущий.кол + " " + склонить(текущий.кол, текущий.ед) : "");
+    }
+    function открыть(btn) {
+      текущий = { цена: parseInt(btn.dataset.pay, 10), сумма: parseInt(btn.dataset.pay, 10), название: btn.dataset.title,
+                  ед: btn.dataset.unit || "", кол: 1, макс: parseInt(btn.dataset.max || "1", 10) };
+      qtyRow.hidden = !текущий.ед;
+      пересчитать();
+      /* данные прошлого раза — чтобы постоянный клиент платил в два клика */
+      try {
+        var п = JSON.parse(localStorage.getItem("wodao-pay") || "{}");
+        ["name", "email", "phone"].forEach(function (k) { var el = document.getElementById("pay-" + k); if (!el.value && п[k]) el.value = п[k]; });
+      } catch (e) {}
+      win.classList.add("on");
+      setTimeout(function () { var первое = ["pay-name", "pay-email", "pay-phone"].filter(function (id) { return !v(id); })[0]; document.getElementById(первое || "pay-consent").focus(); }, 60);
+    }
+    qtyRow.addEventListener("click", function (e) {
+      var b = e.target.closest(".qb"); if (!b || !текущий) return;
+      текущий.кол = Math.min(текущий.макс, Math.max(1, текущий.кол + parseInt(b.dataset.q, 10)));
+      пересчитать();
+    });
     function закрыть() { win.classList.remove("on"); }
 
     document.addEventListener("click", function (e) {
@@ -3988,6 +4166,7 @@ footer a:hover { color: var(--neon); }
       var ошибка = form.querySelector(".pay-err");
       if (!ошибка) { ошибка = document.createElement("p"); ошибка.className = "fine pay-err"; ошибка.style.color = "var(--cinnabar)"; кнопка.after(ошибка); }
       ошибка.textContent = "";
+      try { localStorage.setItem("wodao-pay", JSON.stringify({ name: v("pay-name"), email: v("pay-email"), phone: v("pay-phone") })); } catch (e2) {}
       fetch(ОПЛАТА.функция, {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ amount: текущий.сумма, title: текущий.название, name: v("pay-name"), email: v("pay-email"), phone: v("pay-phone"), order: "site-" + Date.now() })
