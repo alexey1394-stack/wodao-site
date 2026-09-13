@@ -2673,7 +2673,6 @@ footer a:hover { color: var(--neon); }
 
 </main>
 <script src="https://app.moyklass.com/api/site/widget/?id=IeqFQuvmalMfvifyTukK6DGVRXQNiNmrI7" type="text/javascript" charset="UTF-8"></script>
-<script src="https://securepay.tinkoff.ru/html/payForm/js/tinkoff_v2.js"></script>
 
 
 <div class="wrap">
@@ -3932,7 +3931,11 @@ footer a:hover { color: var(--neon); }
   var ОПЛАТА = {
     терминал: "1783595074651",
     почта_школы: "wodao@yandex.ru",
-    чек: { Taxation: "patent", Tax: "none" }     /* ИП Блаер на патенте, НДС нет — со слов Алексея 13.09.2026 */
+    чек: { Taxation: "patent", Tax: "none" },    /* ИП Блаер на патенте, НДС нет — со слов Алексея 13.09.2026 */
+    /* адрес облачной функции, которая подписывает запрос паролем терминала
+       (терминал требует подпись — прямая кнопка банка его не устраивает).
+       Пустая строка = функции нет, кнопки оплаты не показываем.           */
+    функция: ""
   };
 
   (function () {
@@ -3941,7 +3944,7 @@ footer a:hover { color: var(--neon); }
     var form = document.getElementById("payform");
     var текущий = null;
 
-    function готов() { return typeof window.pay === "function"; }
+    function готов() { return !!ОПЛАТА.функция; }
     function включить() { if (готов()) document.documentElement.classList.add("pay-ready"); }
     включить();
     window.addEventListener("load", включить);
@@ -3969,6 +3972,7 @@ footer a:hover { color: var(--neon); }
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       if (!текущий || !готов()) return;
+      var кнопка = form.querySelector('button[type="submit"]');
       var ok = true;
       ok = bad("pay-name", !v("pay-name")) && ok;
       ok = bad("pay-email", !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v("pay-email"))) && ok;
@@ -3977,6 +3981,26 @@ footer a:hover { color: var(--neon); }
       document.getElementById("pay-consent-f").classList.toggle("bad", !согласен);
       if (!согласен) ok = false;
       if (!ok) return;
+
+      /* через облачную функцию: она подписывает запрос и отдаёт ссылку на страницу банка */
+      кнопка.disabled = true; кнопка.textContent = "Готовим оплату…";
+      var ошибка = form.querySelector(".pay-err");
+      if (!ошибка) { ошибка = document.createElement("p"); ошибка.className = "fine pay-err"; ошибка.style.color = "var(--cinnabar)"; кнопка.after(ошибка); }
+      ошибка.textContent = "";
+      fetch(ОПЛАТА.функция, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: текущий.сумма, title: текущий.название, name: v("pay-name"), email: v("pay-email"), phone: v("pay-phone"), order: "site-" + Date.now() })
+      }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+        .then(function (x) {
+          if (x.ok && x.j.url) { location.href = x.j.url; return; }
+          ошибка.textContent = "Не получилось начать оплату: " + (x.j.ошибка || "банк не ответил") + ". Позвоните нам — примем оплату вручную.";
+          кнопка.disabled = false; кнопка.textContent = "Перейти к оплате";
+        })
+        .catch(function () {
+          ошибка.textContent = "Нет связи с платёжным сервисом. Попробуйте ещё раз или позвоните нам.";
+          кнопка.disabled = false; кнопка.textContent = "Перейти к оплате";
+        });
+      return;
 
       /* форма ровно в том виде, какого ждёт скрипт банка */
       var f = document.createElement("form");
@@ -4551,6 +4575,23 @@ footer a:hover { color: var(--neon); }
 
   paintImages();
   show(currentRoute(), false);
+
+  /* человек вернулся со страницы банка — скажем, чем кончилось */
+  (function () {
+    var итог = new URLSearchParams(location.search).get("oplata");
+    if (!итог) return;
+    var окно = document.getElementById("paywin");
+    var карточка = окно.querySelector(".paycard");
+    var удачно = итог === "ok";
+    карточка.innerHTML = '<button type="button" class="close" data-close aria-label="Закрыть">×</button>' +
+      '<div class="verdict"><div class="stamp' + (удачно ? "" : " fail") + '">' + (удачно ? "收到" : "再来") + '</div>' +
+      '<div class="score">' + (удачно ? "Оплата прошла" : "Оплата не прошла") + '</div>' +
+      '<p>' + (удачно ? "Чек придёт на почту в течение нескольких минут. Администратор увидит оплату и свяжется с вами — спасибо!"
+                      : "Деньги не списаны. Можно попробовать ещё раз или позвонить нам: +7 (910) 677-51-43.") + '</p>' +
+      '<div class="row"><a class="btn" href="' + (document.documentElement.dataset.paths === "1" ? "/" : "#/") + '" data-close>На главную</a></div></div>';
+    окно.classList.add("on");
+    try { history.replaceState(null, "", location.pathname); } catch (e) {}
+  })();
   window.addEventListener("resize", function () { if (document.querySelector('.page[data-page="/kalligrafiya"]').classList.contains("active")) padSize(); });
 })();
 </script>
