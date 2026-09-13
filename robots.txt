@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://wodao.ru/sitemap.xml
