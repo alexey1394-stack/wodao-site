@@ -2343,6 +2343,7 @@ footer a:hover { color: var(--neon); }
                 <option>Корпоративное обучение</option>
                 <option>Стажировка в Китае</option>
                 <option>Аренда коворкинга или зала</option>
+                <option>Экскурсия по коворкингу</option>
               </select>
             </div>
             <div class="field">
@@ -2417,7 +2418,7 @@ footer a:hover { color: var(--neon); }
         <p>В том же здании, что и школа. Готовые залы для занятий и семинаров, 22 рабочих места в open-space и кухня с кофемашиной. Всё включено: интернет, техника, зона отдыха.</p>
       </div>
       <div class="hero-cta" style="opacity:1;animation:none">
-        <a class="btn" href="tel:+79106775143">Записаться на экскурсию</a>
+        <a class="btn" href="/zayavka/" data-what="Экскурсия по коворкингу">Записаться на экскурсию</a>
         <a class="btn ghost" href="/kovorking/">Страница коворкинга</a>
       </div>
       <div class="gallery">
@@ -2774,6 +2775,15 @@ footer a:hover { color: var(--neon); }
     f.title = v.getAttribute("aria-label");
     v.appendChild(f);
     v.classList.add("playing");
+  });
+
+
+  /* кнопка с data-what ведёт на форму заявки с уже выбранной темой */
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest("a[data-what]");
+    if (!a) return;
+    var sel = document.getElementById("z-what");
+    if (sel) sel.value = a.dataset.what;
   });
 
   function paintImages(root) {
