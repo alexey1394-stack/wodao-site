@@ -841,6 +841,35 @@ header.top {
 .faq .ans-text { padding: 0 .3rem 1.3rem 2.1rem; color: var(--ink-2); font-size: var(--step--1); max-width: 68ch; }
 .faq .ans-text b { color: var(--ink); font-weight: 600; }
 
+/* ── оплата: кнопки и окно ── */
+
+.tariff .pay-btn { margin-top: .7rem; }
+.pay-btn { display: none; }                      /* показываем, только когда платёжный скрипт банка на месте */
+html.pay-ready .pay-btn { display: inline-flex; }
+html.pay-ready .tariff .pay-btn { width: 100%; justify-content: center; }
+
+.paywin { position: fixed; inset: 0; z-index: 80; display: none; align-items: center; justify-content: center; padding: 1rem; }
+.paywin.on { display: flex; }
+.paywin .veil { position: absolute; inset: 0; background: rgba(12, 15, 13, .55); backdrop-filter: blur(4px); }
+.paycard {
+  position: relative; width: min(100%, 440px); max-height: calc(100vh - 2rem); overflow: auto;
+  background: var(--paper-2); border: 1px solid var(--hairline); border-radius: 4px;
+  padding: 1.6rem 1.5rem 1.5rem; display: flex; flex-direction: column; gap: .8rem;
+  box-shadow: 0 40px 90px -40px rgba(0,0,0,.7);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .paywin.on .paycard { animation: payIn .35s cubic-bezier(.2,.8,.3,1); }
+  @keyframes payIn { from { opacity: 0; transform: translateY(16px) scale(.98); } to { opacity: 1; transform: none; } }
+}
+.paycard h3 { font-size: var(--step-1); }
+.paycard .what { font-family: var(--f-mono); font-size: var(--step--2); color: var(--ink-3); letter-spacing: .06em; }
+.paycard .sum { font-family: var(--f-display); font-size: var(--step-2); font-weight: 700; font-variant-numeric: tabular-nums; }
+.paycard .field { margin-bottom: .2rem; }
+.paycard .close { position: absolute; top: .6rem; right: .7rem; background: none; border: 0; font-size: 1.3rem; color: var(--ink-3); cursor: pointer; line-height: 1; padding: .3rem; }
+.paycard .close:hover { color: var(--cinnabar); }
+.paycard .btn { justify-content: center; }
+.paycard .fine { font-family: var(--f-mono); font-size: var(--step--2); color: var(--ink-3); line-height: 1.5; }
+
 /* ── форма заявки ── */
 
 .form-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .8fr); gap: clamp(1.5rem, 4vw, 3rem); margin-top: 2.6rem; align-items: start; }
@@ -1369,6 +1398,23 @@ footer a:hover { color: var(--neon); }
 
 <div id="wipe" aria-hidden="true"></div>
 
+<div class="paywin" id="paywin" role="dialog" aria-modal="true" aria-labelledby="pay-title">
+  <div class="veil" data-close></div>
+  <div class="paycard">
+    <button type="button" class="close" data-close aria-label="Закрыть">×</button>
+    <span class="what">Оплата онлайн · Т-Банк</span>
+    <h3 id="pay-title">Взрослая группа</h3>
+    <div class="sum" id="pay-sum">0 ₽</div>
+    <form id="payform" novalidate>
+      <div class="field"><label for="pay-name">Имя ученика</label><input id="pay-name" type="text" autocomplete="name" placeholder="Как в CRM школы"><span class="err">Нужно имя — чтобы зачесть оплату правильному ученику</span></div>
+      <div class="field"><label for="pay-email">Почта для чека</label><input id="pay-email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.ru"><span class="err">Чек приходит на почту — укажите её</span></div>
+      <div class="field"><label for="pay-phone">Телефон</label><input id="pay-phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+7 (___) ___-__-__"><span class="err">Нужен телефон, чтобы связать оплату с учеником</span></div>
+      <button class="btn" type="submit">Перейти к оплате</button>
+      <p class="fine">Платёж проходит на защищённой странице Т-Банка: карты «Мир», Visa, Mastercard, СБП, T-Pay. Чек придёт на почту. Нажимая кнопку, вы соглашаетесь с <a href="policy/" data-policy>политикой конфиденциальности</a> и <a href="https://wodao.ru/dogovor-oferta">офертой</a>.</p>
+    </form>
+  </div>
+</div>
+
 
 
 <header class="top">
@@ -1754,9 +1800,9 @@ footer a:hover { color: var(--neon); }
       </div>
       <div>
         <div class="tariffs">
-          <div class="tariff"><span class="qty">5 занятий</span><span class="sum">8 000 ₽</span><span class="per">1 600 ₽ / занятие</span><span class="old">вместо 12 000 ₽</span></div>
-          <div class="tariff"><span class="qty">20 занятий</span><span class="sum">29 000 ₽</span><span class="per">1 450 ₽ / занятие</span><span class="old">вместо 44 000 ₽</span></div>
-          <div class="tariff"><span class="qty">60 занятий · курс</span><span class="sum">78 000 ₽</span><span class="per">1 300 ₽ / занятие</span><span class="old">вместо 140 000 ₽</span></div>
+          <div class="tariff"><span class="qty">5 занятий</span><span class="sum">8 000 ₽</span><span class="per">1 600 ₽ / занятие</span><span class="old">вместо 12 000 ₽</span><button type="button" class="btn pay-btn" data-pay="8000" data-title="Взрослая группа · 5 занятий">Оплатить онлайн</button></div>
+          <div class="tariff"><span class="qty">20 занятий</span><span class="sum">29 000 ₽</span><span class="per">1 450 ₽ / занятие</span><span class="old">вместо 44 000 ₽</span><button type="button" class="btn pay-btn" data-pay="29000" data-title="Взрослая группа · 20 занятий">Оплатить онлайн</button></div>
+          <div class="tariff"><span class="qty">60 занятий · курс</span><span class="sum">78 000 ₽</span><span class="per">1 300 ₽ / занятие</span><span class="old">вместо 140 000 ₽</span><button type="button" class="btn pay-btn" data-pay="78000" data-title="Взрослая группа · 60 занятий">Оплатить онлайн</button></div>
         </div>
         <div class="hero-cta" style="opacity:1;animation:none">
           <a class="btn" href="https://t.me/wodao_online">Записаться в группу</a>
@@ -1783,9 +1829,9 @@ footer a:hover { color: var(--neon); }
       </div>
       <div>
         <div class="tariffs">
-          <div class="tariff"><span class="qty">1 занятие</span><span class="sum">1 250 ₽</span><span class="per">разовое посещение</span></div>
-          <div class="tariff"><span class="qty">20 занятий</span><span class="sum">22 000 ₽</span><span class="per">1 100 ₽ / занятие</span></div>
-          <div class="tariff"><span class="qty">60 занятий · курс</span><span class="sum">57 000 ₽</span><span class="per">950 ₽ / занятие</span></div>
+          <div class="tariff"><span class="qty">1 занятие</span><span class="sum">1 250 ₽</span><span class="per">разовое посещение</span><button type="button" class="btn pay-btn" data-pay="1250" data-title="Детская группа · 1 занятие">Оплатить онлайн</button></div>
+          <div class="tariff"><span class="qty">20 занятий</span><span class="sum">22 000 ₽</span><span class="per">1 100 ₽ / занятие</span><button type="button" class="btn pay-btn" data-pay="22000" data-title="Детская группа · 20 занятий">Оплатить онлайн</button></div>
+          <div class="tariff"><span class="qty">60 занятий · курс</span><span class="sum">57 000 ₽</span><span class="per">950 ₽ / занятие</span><button type="button" class="btn pay-btn" data-pay="57000" data-title="Детская группа · 60 занятий">Оплатить онлайн</button></div>
         </div>
         <div class="hero-cta" style="opacity:1;animation:none">
           <a class="btn" href="https://t.me/wodao_online">Записать ребёнка</a>
@@ -1812,8 +1858,8 @@ footer a:hover { color: var(--neon); }
       </div>
       <div>
         <div class="tariffs">
-          <div class="tariff"><span class="qty">Полный курс</span><span class="sum">64 000 ₽</span><span class="per">с нуля до HSK 3</span></div>
-          <div class="tariff"><span class="qty">Пробный модуль</span><span class="sum">32 000 ₽</span><span class="per">начать и посмотреть</span></div>
+          <div class="tariff"><span class="qty">Полный курс</span><span class="sum">64 000 ₽</span><span class="per">с нуля до HSK 3</span><button type="button" class="btn pay-btn" data-pay="64000" data-title="Онлайн-курс с нуля до HSK 3 · полный">Оплатить онлайн</button></div>
+          <div class="tariff"><span class="qty">Пробный модуль</span><span class="sum">32 000 ₽</span><span class="per">начать и посмотреть</span><button type="button" class="btn pay-btn" data-pay="32000" data-title="Онлайн-курс с нуля до HSK 3 · пробный модуль">Оплатить онлайн</button></div>
         </div>
         <div class="hero-cta" style="opacity:1;animation:none">
           <a class="btn" href="https://wodao.ru/kitajskij-s-nulya-do-hsk-3">Открыть курс</a>
@@ -2594,6 +2640,7 @@ footer a:hover { color: var(--neon); }
 
 </main>
 <script src="https://app.moyklass.com/api/site/widget/?id=IeqFQuvmalMfvifyTukK6DGVRXQNiNmrI7" type="text/javascript" charset="UTF-8"></script>
+<script src="https://securepay.tinkoff.ru/html/payForm/js/tinkoff_v2.js"></script>
 
 
 <div class="wrap">
@@ -3838,6 +3885,100 @@ footer a:hover { color: var(--neon); }
     sayBtn.addEventListener("click", function () { if (!cur) newRound(); else speak(); });
     /* первое слово готовим сразу, звук — только по нажатию: браузеры не дают говорить без клика */
     cur = TONES[Math.floor(Math.random() * TONES.length)]; round = 1; hzEl.textContent = cur.hz;
+  })();
+
+  /* ══════════ оплата онлайн — платёжная форма Т-Банка ══════════
+
+     Кнопки «Оплатить онлайн» появляются только там, где загружен скрипт банка
+     (боевая сборка на домене — см. выложить.py). Здесь публичный Terminal ID
+     магазина School WoDao; пароль терминала в коде сайта не нужен и не лежит.
+
+     ЧЕК: пока null — чек банк не формирует. Как только Алексей подтвердит систему
+     налогообложения ИП, сюда вписывается {Taxation:"usn_income", Tax:"none"} и
+     каждому платежу уходит фискальный чек по 54-ФЗ.                              */
+
+  var ОПЛАТА = {
+    терминал: "1783595074651",
+    почта_школы: "wodao@yandex.ru",
+    чек: null
+  };
+
+  (function () {
+    var win = document.getElementById("paywin");
+    if (!win) return;
+    var form = document.getElementById("payform");
+    var текущий = null;
+
+    function готов() { return typeof window.pay === "function"; }
+    function включить() { if (готов()) document.documentElement.classList.add("pay-ready"); }
+    включить();
+    window.addEventListener("load", включить);
+    setTimeout(включить, 1500);
+
+    function открыть(btn) {
+      текущий = { сумма: parseInt(btn.dataset.pay, 10), название: btn.dataset.title };
+      document.getElementById("pay-title").textContent = текущий.название;
+      document.getElementById("pay-sum").textContent = текущий.сумма.toLocaleString("ru-RU") + " ₽";
+      win.classList.add("on");
+      setTimeout(function () { document.getElementById("pay-name").focus(); }, 60);
+    }
+    function закрыть() { win.classList.remove("on"); }
+
+    document.addEventListener("click", function (e) {
+      var b = e.target.closest(".pay-btn");
+      if (b) { открыть(b); return; }
+      if (e.target.closest("[data-close]")) закрыть();
+    });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") закрыть(); });
+
+    function v(id) { return (document.getElementById(id).value || "").trim(); }
+    function bad(id, плохо) { document.getElementById(id).parentElement.classList.toggle("bad", плохо); return !плохо; }
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      if (!текущий || !готов()) return;
+      var ok = true;
+      ok = bad("pay-name", !v("pay-name")) && ok;
+      ok = bad("pay-email", !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v("pay-email"))) && ok;
+      ok = bad("pay-phone", v("pay-phone").replace(/\D/g, "").length < 10) && ok;
+      if (!ok) return;
+
+      /* форма ровно в том виде, какого ждёт скрипт банка */
+      var f = document.createElement("form");
+      f.style.display = "none";
+      function поле(имя, значение) {
+        var i = document.createElement("input"); i.type = "hidden"; i.name = имя; i.value = значение; f.appendChild(i);
+      }
+      var описание = текущий.название + " — школа китайского ВОДАО, " + v("pay-name");
+      поле("terminalkey", ОПЛАТА.терминал);
+      поле("frame", "false");
+      поле("language", "ru");
+      поле("amount", String(текущий.сумма));
+      поле("order", "site-" + Date.now());
+      поле("description", описание.slice(0, 250));
+      поле("name", v("pay-name"));
+      поле("email", v("pay-email"));
+      поле("phone", v("pay-phone").replace(/[^\d+]/g, ""));
+      if (ОПЛАТА.чек) {
+        поле("receipt", JSON.stringify({
+          EmailCompany: ОПЛАТА.почта_школы,
+          Taxation: ОПЛАТА.чек.Taxation,
+          FfdVersion: "1.2",
+          Items: [{
+            Name: текущий.название.slice(0, 128),
+            Price: текущий.сумма * 100,
+            Quantity: 1.00,
+            Amount: текущий.сумма * 100,
+            PaymentMethod: "full_prepayment",
+            PaymentObject: "service",
+            Tax: ОПЛАТА.чек.Tax,
+            MeasurementUnit: "pc"
+          }]
+        }));
+      }
+      document.body.appendChild(f);
+      try { window.pay(f); } finally { setTimeout(function () { f.remove(); }, 2000); }
+    });
   })();
 
   /* ══════════ заявка ══════════
