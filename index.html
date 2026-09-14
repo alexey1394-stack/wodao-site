@@ -1247,6 +1247,7 @@ html.pay-ready .tariff .pay-btn { width: 100%; justify-content: center; }
   transition: border-color .2s, background .2s, color .2s;
 }
 .tariff-switch button:hover { border-color: var(--neon); }
+.tariff-switch s, .rs s { color: var(--ink-3); opacity: .7; margin-right: .2em; }
 .tariff-switch button.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 .picked { font-size: var(--step--1); color: var(--ink-2); min-height: 3.2em; }
 .picked b { color: var(--ink); font-weight: 600; }
@@ -2504,12 +2505,12 @@ footer a:hover { color: var(--neon); }
     <div class="wrap">
       <div class="sec-head">
         <span class="label">Цены</span>
-        <h2>Прозрачные тарифы, без скрытых доплат</h2>
+        <h2>Скидка 50 % на все тарифы</h2>
       </div>
       <div class="tariffs">
-        <div class="tariff"><span class="qty">Open-space · день</span><span class="sum">656 ₽</span><span class="per">за 1 рабочее место</span><span class="old" style="text-decoration:none">разовое посещение</span><button type="button" class="btn pay-btn" data-pay="656" data-title="Коворкинг · рабочее место на день" data-unit="день" data-max="30">Оплатить онлайн</button></div>
-        <div class="tariff"><span class="qty">Open-space · месяц</span><span class="sum">6 560 ₽</span><span class="per">за 1 рабочее место</span><span class="old" style="text-decoration:none">выгодно для постоянной работы</span><button type="button" class="btn pay-btn" data-pay="6560" data-title="Коворкинг · рабочее место на месяц" data-unit="месяц" data-max="12">Оплатить онлайн</button></div>
-        <div class="tariff"><span class="qty">Аренда аудитории</span><span class="sum">1 500 ₽</span><span class="per">за 1 час</span><span class="old" style="text-decoration:none">зал с партами под мероприятие</span><button type="button" class="btn pay-btn" data-pay="1500" data-title="Аренда аудитории" data-unit="час" data-max="12">Оплатить онлайн</button></div>
+        <div class="tariff"><span class="qty">Open-space · день</span><span class="sum">656 ₽</span><span class="per">за 1 рабочее место · разовое посещение</span><span class="old">вместо 1 312 ₽ · −50 %</span><button type="button" class="btn pay-btn" data-pay="656" data-title="Коворкинг · рабочее место на день" data-unit="день" data-max="30">Оплатить онлайн</button></div>
+        <div class="tariff"><span class="qty">Open-space · месяц</span><span class="sum">6 560 ₽</span><span class="per">за 1 рабочее место · месяц</span><span class="old">вместо 13 120 ₽ · −50 %</span><button type="button" class="btn pay-btn" data-pay="6560" data-title="Коворкинг · рабочее место на месяц" data-unit="месяц" data-max="12">Оплатить онлайн</button></div>
+        <div class="tariff"><span class="qty">Аренда аудитории</span><span class="sum">1 500 ₽</span><span class="per">за 1 час · зал с партами</span><span class="old">вместо 3 000 ₽ · −50 %</span><button type="button" class="btn pay-btn" data-pay="1500" data-title="Аренда аудитории" data-unit="час" data-max="12">Оплатить онлайн</button></div>
       </div>
       <p class="note">Цены — по данным страницы коворкинга на wodao.ru. Индивидуальные условия при долгой аренде обсуждаем на месте.</p>
     </div>
@@ -2538,14 +2539,14 @@ footer a:hover { color: var(--neon); }
               <span class="rt">Зал мастер-классов</span>
               <span class="rs">до 32 человек · проектор, экран, телевизор</span>
               <span class="dots" data-dots="32" aria-hidden="true"></span>
-              <span class="rs">аренда от 1 500 ₽ / час</span>
+              <span class="rs">аренда <s>3 000</s> 1 500 ₽ / час</span>
             </button>
             <button type="button" class="room" aria-pressed="false" data-room="Зал на 15 человек" data-cap="15">
               <span class="door" aria-hidden="true"></span>
               <span class="rt">Малый зал</span>
               <span class="rs">до 15 человек · компьютер и ТВ</span>
               <span class="dots" data-dots="15" aria-hidden="true"></span>
-              <span class="rs">аренда от 1 500 ₽ / час</span>
+              <span class="rs">аренда <s>3 000</s> 1 500 ₽ / час</span>
             </button>
           </div>
 
@@ -2559,8 +2560,8 @@ footer a:hover { color: var(--neon); }
         <aside class="booking">
           <h3>Ваша бронь</h3>
           <div class="tariff-switch" id="tariff">
-            <button type="button" class="on" data-t="day">День · 656 ₽</button>
-            <button type="button" data-t="month">Месяц · 6 560 ₽</button>
+            <button type="button" class="on" data-t="day">День · <s>1 312</s> 656 ₽</button>
+            <button type="button" data-t="month">Месяц · <s>13 120</s> 6 560 ₽</button>
           </div>
           <div class="picked" id="picked">Место пока не выбрано. Нажмите на квадрат в плане — можно выбрать несколько.</div>
           <div class="total">
