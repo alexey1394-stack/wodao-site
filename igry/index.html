@@ -848,7 +848,7 @@ header.top {
 
 .sched-list { margin-top: 2.4rem; border-top: 1px solid var(--hairline); }
 .sched-row {
-  display: grid; grid-template-columns: 1.5fr .6fr 1.6fr 1.2fr .9fr;
+  display: grid; grid-template-columns: 1.5fr .6fr 1.6fr 1.2fr .9fr auto;
   gap: 1rem; align-items: baseline;
   padding: 1.1rem .4rem; border-bottom: 1px solid var(--hairline-2);
   transition: background .25s, padding-left .3s;
@@ -861,11 +861,17 @@ header.top {
 .sched-row .s-who { font-size: var(--step--1); color: var(--ink-2); }
 .sched-row .s-free { color: var(--neon-text); text-align: right; white-space: nowrap; }
 .sched-row.full .s-free { color: var(--ink-3); }
+.sched-row .s-btn { padding: .45rem .9rem; font-size: var(--step--2); white-space: nowrap; justify-self: end; }
+.sched-row.mc-row { grid-template-columns: 1.3fr 2fr 1.4fr auto; }
+.sched-row.mc-row .s-when { color: var(--cinnabar); }
+#raspisanie { padding-block: clamp(2.5rem, 6vw, 5rem); }
 @media (max-width: 780px) {
   .sched-row { grid-template-columns: 1fr auto; gap: .3rem 1rem; padding-block: 1rem; }
   .sched-row .s-lvl { text-align: right; }
   .sched-row .s-when, .sched-row .s-who { grid-column: 1 / -1; }
   .sched-row .s-free { grid-column: 1 / -1; text-align: left; }
+  .sched-row .s-btn { grid-column: 1 / -1; justify-self: start; }
+  .sched-row.mc-row { grid-template-columns: 1fr; }
 }
 
 /* ── частые вопросы ── */
@@ -1471,6 +1477,29 @@ footer a:hover { color: var(--neon); }
   </div>
 </div>
 
+<div class="paywin" id="signwin" role="dialog" aria-modal="true" aria-labelledby="sign-title">
+  <div class="veil" data-close></div>
+  <div class="paycard">
+    <button type="button" class="close" data-close aria-label="Закрыть">×</button>
+    <span class="what">Запись · ответим в течение дня</span>
+    <h3 id="sign-title">Записаться</h3>
+    <div class="sum" id="sign-what" style="font-size:var(--step-0);font-family:var(--f-mono);color:var(--neon-text)"></div>
+    <form id="signform" novalidate>
+      <div class="field"><label for="sign-name">Имя</label><input id="sign-name" type="text" autocomplete="name" placeholder="Как к вам обращаться"><span class="err">Напишите имя</span></div>
+      <div class="field"><label for="sign-phone">Телефон</label><input id="sign-phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+7 (___) ___-__-__"><span class="err">Нужен телефон, чтобы перезвонить</span></div>
+      <div class="field"><label for="sign-note">Комментарий</label><input id="sign-note" type="text" placeholder="Уровень, возраст ребёнка, удобное время — необязательно"></div>
+      <input id="sign-website" type="text" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
+      <div class="field consent" id="sign-consent-f">
+        <label class="check"><input id="sign-consent" type="checkbox"> <span>Согласен на обработку персональных данных по <a href="/policy/" data-policy>политике конфиденциальности</a></span></label>
+        <span class="err">Без согласия заявку отправить нельзя — так требует закон</span>
+      </div>
+      <button class="btn" type="submit">Отправить заявку</button>
+      <p class="fine">Заявка уходит администратору школы в Telegram. Если удобнее — <a href="tel:+79106775143">+7 (910) 677-51-43</a> или <a href="https://t.me/wodao_online" target="_blank" rel="noopener">написать в Telegram</a>.</p>
+    </form>
+    <div class="form-done" id="sign-done"><div class="stamp">收到</div><h3 style="font-size:var(--step-1)">Заявка отправлена</h3><p style="color:var(--ink-2);font-size:var(--step--1)">Администратор увидел её в чате школы и перезвонит в течение дня.</p><button class="btn ghost" type="button" data-close>Закрыть</button></div>
+  </div>
+</div>
+
 
 
 <header class="top">
@@ -1539,6 +1568,40 @@ footer a:hover { color: var(--neon); }
     <div class="ticker-track" id="tick1"></div>
     <div class="ticker-track back" id="tick2"></div>
   </div>
+
+  <section id="raspisanie">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label">Расписание · запись</span>
+        <h2>Расписание групп и мастер-классов</h2>
+        <p>Группы 5–12 человек, живые данные из CRM школы. Выберите группу или мастер-класс и нажмите «Записаться» — администратор перезвонит в течение дня.</p>
+      </div>
+      <!--РАСПИСАНИЕ-START-->
+        <div class="sched-list">
+        <div class="sched-row"><span class="s-name">Взрослая группа А1 · с нуля</span><span class="s-lvl">HSK 1</span><span class="s-when">пн 18:30–20:00, чт 18:30–20:00</span><span class="s-who">Кузнецова Марина</span><span class="s-free">5 мест</span><button type="button" class="btn ghost s-btn" data-signup="Группа: Взрослая группа А1 · с нуля (пн 18:30–20:00, чт 18:30–20:00)">Записаться</button></div>
+        <div class="sched-row"><span class="s-name">Взрослая группа А2 · с нуля</span><span class="s-lvl">HSK 1</span><span class="s-when">вт 16:30–18:00, пт 16:30–18:00</span><span class="s-who">Рожкова Варвара</span><span class="s-free">6 мест</span><button type="button" class="btn ghost s-btn" data-signup="Группа: Взрослая группа А2 · с нуля (вт 16:30–18:00, пт 16:30–18:00)">Записаться</button></div>
+        <div class="sched-row"><span class="s-name">Взрослая группа А3 · с нуля</span><span class="s-lvl">HSK 1</span><span class="s-when">ср 17:00–18:30, сб 17:00–18:30</span><span class="s-who">Мирошникова Вилена</span><span class="s-free">6 мест</span><button type="button" class="btn ghost s-btn" data-signup="Группа: Взрослая группа А3 · с нуля (ср 17:00–18:30, сб 17:00–18:30)">Записаться</button></div>
+        <div class="sched-row"><span class="s-name">Детская группа М1 · 6+ · с нуля</span><span class="s-lvl">HSK 1</span><span class="s-when">вт 19:00–20:00, пт 19:00–20:00</span><span class="s-who">Мирошникова Вилена</span><span class="s-free">8 мест</span><button type="button" class="btn ghost s-btn" data-signup="Группа: Детская группа М1 · 6+ · с нуля (вт 19:00–20:00, пт 19:00–20:00)">Записаться</button></div>
+        <div class="sched-row"><span class="s-name">Детская группа М2 · 6+</span><span class="s-lvl">HSK 2</span><span class="s-when">чт 18:00–19:00, сб 14:00–15:00</span><span class="s-who">Цзя Мэньтянь</span><span class="s-free">9 мест</span><button type="button" class="btn ghost s-btn" data-signup="Группа: Детская группа М2 · 6+ (чт 18:00–19:00, сб 14:00–15:00)">Записаться</button></div>
+        <div class="sched-row"><span class="s-name">Взрослая группа В1</span><span class="s-lvl">HSK 3</span><span class="s-when">вт 18:00–19:30, пт 18:00–19:30</span><span class="s-who">Егорова Ульяна</span><span class="s-free">2 места</span><button type="button" class="btn ghost s-btn" data-signup="Группа: Взрослая группа В1 (вт 18:00–19:30, пт 18:00–19:30)">Записаться</button></div>
+        <div class="sched-row full"><span class="s-name">Взрослая группа С1</span><span class="s-lvl">HSK 4</span><span class="s-when">вт 19:30–21:00, пт 19:30–21:00</span><span class="s-who">Цзя Мэньтянь</span><span class="s-free">мест нет</span><button type="button" class="btn ghost s-btn" data-signup="Группа: Взрослая группа С1 (вт 19:30–21:00, пт 19:30–21:00)">В лист ожидания</button></div>
+        <div class="sched-row"><span class="s-name">Онлайн-курс · вечерний вебинар</span><span class="s-lvl">—</span><span class="s-when">ежедневно 18:00–19:00</span><span class="s-who">—</span><span class="s-free">12 мест</span><button type="button" class="btn ghost s-btn" data-signup="Группа: Онлайн-курс · вечерний вебинар (ежедневно 18:00–19:00)">Записаться</button></div>
+        <div class="sched-row"><span class="s-name">Онлайн-курс · дневной вебинар</span><span class="s-lvl">—</span><span class="s-when">ежедневно 11:00–12:00</span><span class="s-who">—</span><span class="s-free">12 мест</span><button type="button" class="btn ghost s-btn" data-signup="Группа: Онлайн-курс · дневной вебинар (ежедневно 11:00–12:00)">Записаться</button></div>
+        </div>
+        <div class="sec-head" style="margin-top:3rem"><span class="label">Мастер-классы</span><h3 style="font-size:var(--step-1)">Ближайшие события — открыты для всех</h3></div>
+        <div class="sched-list mc-list">
+        <div class="sched-row mc-row"><span class="s-when">19 сентября, сб · 15:00–16:30</span><span class="s-name">Урок каллиграфии</span><span class="s-who">Егорова Ульяна</span><button type="button" class="btn ghost s-btn" data-signup="Мастер-класс: Урок каллиграфии — 19 сентября, сб · 15:00–16:30">Записаться</button></div>
+        <div class="sched-row mc-row"><span class="s-when">26 сентября, сб · 12:00–13:00</span><span class="s-name">Праздник Середины осени + вручение сертификатов HSK</span><span class="s-who">Евглевский Алексей, Егорова Ульяна</span><button type="button" class="btn ghost s-btn" data-signup="Мастер-класс: Праздник Середины осени + вручение сертификатов HSK — 26 сентября, сб · 12:00–13:00">Записаться</button></div>
+        <div class="sched-row mc-row"><span class="s-when">3 октября, сб · 15:00–16:30</span><span class="s-name">Роспись китайских вееров</span><span class="s-who">Стоимость участия 200 руб · Кузнецова Марина</span><button type="button" class="btn ghost s-btn" data-signup="Мастер-класс: Роспись китайских вееров — 3 октября, сб · 15:00–16:30">Записаться</button></div>
+        </div>
+        <p class="note">Данные из CRM школы на 18.09.2026, обновляются каждый понедельник. Группа считается набранной при 12 учениках — свободные места пересчитываются автоматически.</p>
+        <!--РАСПИСАНИЕ-END-->
+      <div class="hero-cta" style="opacity:1;animation:none">
+        <a class="btn" href="/zayavka/">Оставить заявку</a>
+        <a class="btn ghost" href="/test/">Не знаете уровень — пройдите тест</a>
+      </div>
+    </div>
+  </section>
 
   <div class="wrap">
     <div class="facts">
@@ -1833,28 +1896,8 @@ footer a:hover { color: var(--neon); }
     </div>
   </section>
 
-  <section id="raspisanie">
-    <div class="wrap">
-      <div class="sec-head">
-        <span class="label">Расписание</span>
-        <h2>Когда занятия и есть ли место в группе</h2>
-        <p>Группы набираем от 5 до 12 человек: меньше пяти — нет живой практики, больше двенадцати — не хватает времени на каждого. Ниже — действующие группы прямо из нашей CRM.</p>
-      </div>
-      <!--РАСПИСАНИЕ-START-->
-        <div class="sched-list">
-        <div class="sched-row"><span class="s-name">Детская группа М2 · 6+</span><span class="s-lvl">HSK 2</span><span class="s-when">чт 18:00–19:00, сб 14:00–15:00</span><span class="s-who">Цзя Мэньтянь</span><span class="s-free">6 мест</span></div>
-        <div class="sched-row"><span class="s-name">Взрослая группа В1</span><span class="s-lvl">HSK 3</span><span class="s-when">вт 18:00–19:30, пт 18:00–19:30</span><span class="s-who">Егорова Ульяна</span><span class="s-free">1 место</span></div>
-        <div class="sched-row full"><span class="s-name">Взрослая группа С1</span><span class="s-lvl">HSK 4</span><span class="s-when">вт 19:30–21:00, пт 19:30–21:00</span><span class="s-who">Цзя Мэньтянь</span><span class="s-free">мест нет</span></div>
-        <div class="sched-row"><span class="s-name">Онлайн-курс · вечерний вебинар</span><span class="s-lvl">—</span><span class="s-when">ежедневно 18:00–19:00</span><span class="s-who">—</span><span class="s-free">12 мест</span></div>
-        <div class="sched-row"><span class="s-name">Онлайн-курс · дневной вебинар</span><span class="s-lvl">—</span><span class="s-when">ежедневно 11:00–12:00</span><span class="s-who">—</span><span class="s-free">12 мест</span></div>
-        </div>
-        <p class="note">Данные из CRM школы на 02.09.2026. Группа считается набранной при 12 учениках — свободные места пересчитываются автоматически.</p>
-        <!--РАСПИСАНИЕ-END-->
-      <div class="hero-cta" style="opacity:1;animation:none">
-        <a class="btn" href="/zayavka/">Записаться в группу</a>
-        <a class="btn ghost" href="/test/">Не знаете уровень — пройдите тест</a>
-      </div>
-    </div>
+  <section id="raspisanie-link" style="padding-block:0 3rem">
+    <div class="wrap"><p class="note">Расписание групп и мастер-классов с записью — <a href="/" data-scroll="raspisanie" style="color:var(--neon-text)">на главной странице</a>.</p></div>
   </section>
 
   <hr class="rule">
@@ -2380,6 +2423,7 @@ footer a:hover { color: var(--neon); }
       <div class="form-wrap">
         <div class="form-card" id="form-card">
           <form id="zayavka" novalidate>
+            <input id="z-website" type="text" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
             <div class="field" id="f-name">
               <label for="z-name">Как вас зовут</label>
               <input id="z-name" name="name" type="text" autocomplete="name" placeholder="Имя">
@@ -2789,7 +2833,7 @@ footer a:hover { color: var(--neon); }
     </span>
     <span class="foot-nav">
       <a href="/kursy/">Курсы</a>
-      <a href="/kursy/" data-scroll="raspisanie">Расписание</a>
+      <a href="/" data-scroll="raspisanie">Расписание</a>
       <a href="/kursy/" data-scroll="faq">Вопросы</a>
       <a href="/zayavka/">Заявка</a>
       <a href="/prepodavateli/">Преподаватели</a>
@@ -4427,6 +4471,58 @@ footer a:hover { color: var(--neon); }
     });
   })();
 
+  /* ══════════ запись в группу / на мастер-класс прямо из расписания ══════════
+     Заявка уходит той же облачной функцией, что и оплата, — в чат школы в Telegram.
+     Функции нет (локальная сборка) — показываем ссылки на Telegram и WhatsApp.     */
+  (function () {
+    var win = document.getElementById("signwin");
+    if (!win) return;
+    var form = document.getElementById("signform"), done = document.getElementById("sign-done");
+    var что = "";
+    function v(id) { return (document.getElementById(id).value || "").trim(); }
+    function открыть(текст) {
+      что = текст;
+      document.getElementById("sign-what").textContent = текст;
+      document.getElementById("sign-title").textContent = /^Мастер-класс/.test(текст) ? "Записаться на мастер-класс" : "Записаться в группу";
+      form.style.display = ""; done.classList.remove("on");
+      try { var п = JSON.parse(localStorage.getItem("wodao-pay") || "{}"); if (!v("sign-name") && п.name) document.getElementById("sign-name").value = п.name; if (!v("sign-phone") && п.phone) document.getElementById("sign-phone").value = п.phone; } catch (e) {}
+      win.classList.add("on");
+      setTimeout(function () { document.getElementById(v("sign-name") ? "sign-phone" : "sign-name").focus(); }, 60);
+    }
+    document.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-signup]");
+      if (b) { e.preventDefault(); открыть(b.dataset.signup); return; }
+      if (e.target.closest("#signwin [data-close]")) win.classList.remove("on");
+    });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") win.classList.remove("on"); });
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var ok = true;
+      function bad(id, плохо) { document.getElementById(id).parentElement.classList.toggle("bad", плохо); if (плохо) ok = false; }
+      bad("sign-name", !v("sign-name"));
+      bad("sign-phone", v("sign-phone").replace(/\D/g, "").length < 10);
+      var согласен = document.getElementById("sign-consent").checked;
+      document.getElementById("sign-consent-f").classList.toggle("bad", !согласен); if (!согласен) ok = false;
+      if (!ok) return;
+      var кнопка = form.querySelector('button[type="submit"]');
+      var текст = что + "\nИмя: " + v("sign-name") + "\nТелефон: " + v("sign-phone") + (v("sign-note") ? "\nКомментарий: " + v("sign-note") : "");
+      function запасной(почему) {
+        кнопка.disabled = false; кнопка.textContent = "Отправить заявку";
+        var p = form.querySelector(".sign-err");
+        if (!p) { p = document.createElement("p"); p.className = "fine sign-err"; p.style.color = "var(--cinnabar)"; кнопка.after(p); }
+        p.innerHTML = (почему || "Не получилось отправить автоматически") + ". Отправьте текст сами: <a href=\"https://t.me/wodao_online?text=" + encodeURIComponent(текст) + "\" target=\"_blank\" rel=\"noopener\">в Telegram</a> или <a href=\"https://wa.me/79106775143?text=" + encodeURIComponent(текст) + "\" target=\"_blank\" rel=\"noopener\">в WhatsApp</a>.";
+      }
+      if (!ОПЛАТА.функция) { запасной("Отправка с этой копии сайта недоступна"); return; }
+      кнопка.disabled = true; кнопка.textContent = "Отправляем…";
+      try { localStorage.setItem("wodao-pay", JSON.stringify({ name: v("sign-name"), phone: v("sign-phone"), email: (JSON.parse(localStorage.getItem("wodao-pay") || "{}").email || "") })); } catch (e2) {}
+      fetch(ОПЛАТА.функция, { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lead: { name: v("sign-name"), phone: v("sign-phone"), what: что, note: v("sign-note"), website: v("sign-website") } }) })
+        .then(function (r) { return r.json().then(function (j) { return { ok: r.ok && j.ok, j: j }; }); })
+        .then(function (x) { if (x.ok) { form.style.display = "none"; done.classList.add("on"); } else запасной("Ошибка: " + (x.j.error || "нет ответа")); кнопка.disabled = false; кнопка.textContent = "Отправить заявку"; })
+        .catch(function () { запасной("Нет связи с сервером"); });
+    });
+  })();
+
   /* ══════════ заявка ══════════
 
      Страница статическая, поэтому форма ничего не отправляет сама:
@@ -4487,9 +4583,23 @@ footer a:hover { color: var(--neon); }
       var msg = текст();
       document.getElementById("z-tg").href = "https://t.me/wodao_online?text=" + encodeURIComponent(msg);
       document.getElementById("z-wa").href = "https://wa.me/79106775143?text=" + encodeURIComponent(msg);
-      card.classList.add("sent");
-      done.classList.add("on");
       prev.textContent = msg;
+      var заголовок = done.querySelector("h3"), пояснение = done.querySelector("p");
+      function показать(отправлено) {
+        заголовок.textContent = отправлено ? "Заявка отправлена" : "Заявка собрана";
+        пояснение.textContent = отправлено ? "Администратор уже видит её в чате школы и перезвонит в течение дня. Хотите — продублируйте в мессенджер."
+                                           : "Автоматически отправить не получилось — выберите, как вам удобнее передать её нам.";
+        card.classList.add("sent"); done.classList.add("on");
+      }
+      if (!ОПЛАТА.функция) { показать(false); return; }
+      var кнопка = form.querySelector('button[type="submit"]');
+      кнопка.disabled = true; кнопка.textContent = "Отправляем…";
+      fetch(ОПЛАТА.функция, { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lead: { name: val("z-name"), phone: val("z-phone"), what: val("z-what"), when: val("z-when"), note: val("z-note"), website: (document.getElementById("z-website") || {}).value || "" } }) })
+        .then(function (r) { return r.json().then(function (j) { return r.ok && j.ok; }); })
+        .then(function (ok) { показать(!!ok); })
+        .catch(function () { показать(false); })
+        .then(function () { кнопка.disabled = false; кнопка.textContent = "Отправить заявку"; });
     });
 
     document.getElementById("z-back").addEventListener("click", function () {
