@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Коворкинг ВОДАО — бронь</title>
+<!-- Мини-приложение Telegram: открывается из бота @wodaobbot кнопкой «Занять место».
+     Выбор места/зала здесь, оплата и подтверждение — в чате с ботом.
+     Данные о занятости вставляет выложить.py между метками ДАННЫЕ. -->
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root {
+  --bg: var(--tg-theme-bg-color, #0C0F0D);
+  --bg2: var(--tg-theme-secondary-bg-color, #161C18);
+  --ink: var(--tg-theme-text-color, #E6E9E1);
+  --hint: var(--tg-theme-hint-color, #8a918c);
+  --line: color-mix(in oklab, var(--ink) 14%, transparent);
+  --line2: color-mix(in oklab, var(--ink) 8%, transparent);
+  --red: #E85C3C; --neon: #35F0D2; --neon-text: #35F0D2; --seal-text: #FFF6EE;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --sans: -apple-system, "Golos Text", "Inter", system-ui, sans-serif;
+  --han: "PingFang SC", "Noto Serif SC", "Songti SC", serif;
+}
+html[data-theme="light"] { --red: #B93A22; --neon: #0E9C89; --neon-text: #0A7264; }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.45; -webkit-tap-highlight-color: transparent; }
+body { padding: 0 14px calc(120px + env(safe-area-inset-bottom)); }
+button { font: inherit; color: inherit; cursor: pointer; }
+
+header { display: flex; align-items: center; gap: .8rem; padding: 14px 0 10px; }
+header .han { font-family: var(--han); color: var(--red); font-size: 1.35rem; letter-spacing: .12em; line-height: 1; }
+header .t { font-weight: 700; font-size: 1.05rem; letter-spacing: .04em; }
+header .s { font-family: var(--mono); font-size: .68rem; color: var(--hint); letter-spacing: .08em; text-transform: uppercase; }
+
+.tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; background: var(--bg2); padding: 4px; border-radius: 12px; margin: 6px 0 16px; }
+.tabs button { border: 0; background: transparent; padding: .6rem; border-radius: 9px; color: var(--hint); font-weight: 600; transition: background .2s, color .2s; }
+.tabs button.on { background: var(--bg); color: var(--ink); box-shadow: 0 1px 6px rgba(0,0,0,.18); }
+
+.block { margin-bottom: 16px; }
+.lbl { font-family: var(--mono); font-size: .68rem; letter-spacing: .16em; text-transform: uppercase; color: var(--hint); margin-bottom: .55rem; display: flex; justify-content: space-between; align-items: baseline; }
+.lbl b { color: var(--ink); font-weight: 600; letter-spacing: .02em; text-transform: none; font-family: var(--sans); font-size: .85rem; }
+.chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; margin: 0 -14px; padding-inline: 14px; }
+.chips::-webkit-scrollbar { display: none; }
+.chips.wrap { flex-wrap: wrap; overflow: visible; margin: 0; padding-inline: 0; }
+.chip { flex: none; border: 1px solid var(--line); background: var(--bg2); border-radius: 10px; padding: .5rem .8rem; font-family: var(--mono); font-size: .8rem; letter-spacing: .02em; color: var(--ink); transition: border-color .2s, background .2s, transform .15s; }
+.chip small { display: block; font-size: .62rem; color: var(--hint); letter-spacing: .08em; text-transform: uppercase; }
+.chip.on { background: var(--red); border-color: var(--red); color: var(--seal-text); }
+.chip.on small { color: color-mix(in oklab, var(--seal-text) 75%, transparent); }
+.chip:active { transform: scale(.97); }
+.chip.dis { opacity: .35; pointer-events: none; }
+
+/* план: окно слева, три двойных стола */
+.plan { border: 1px solid var(--line); border-radius: 14px; background:
+  linear-gradient(var(--line2) 1px, transparent 1px) 0 0 / 100% 22px,
+  linear-gradient(90deg, var(--line2) 1px, transparent 1px) 0 0 / 22px 100%, var(--bg2);
+  padding: 14px 12px 12px; display: grid; grid-template-columns: 14px 1fr; gap: 12px; }
+.window { border-radius: 3px; background: repeating-linear-gradient(180deg, color-mix(in oklab, var(--neon) 45%, transparent) 0 24%, transparent 24% 27%); border: 1px solid color-mix(in oklab, var(--neon) 50%, transparent); box-shadow: 6px 0 22px -12px var(--neon); position: relative; }
+.window span { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) rotate(180deg); writing-mode: vertical-rl; font-family: var(--mono); font-size: .58rem; letter-spacing: .18em; text-transform: uppercase; color: var(--neon-text); white-space: nowrap; }
+.table { margin-bottom: 14px; }
+.table:last-child { margin-bottom: 0; }
+.tname { font-family: var(--mono); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--hint); margin-bottom: 6px; }
+.row { display: grid; gap: 6px; }
+.desk { height: 22px; margin: 6px 0; border: 1px solid var(--line); border-radius: 5px; background: linear-gradient(180deg, color-mix(in oklab, var(--ink) 10%, var(--bg2)), var(--bg2)); display: grid; place-items: center; font-family: var(--mono); font-size: .58rem; letter-spacing: .14em; color: var(--hint); }
+.seat { position: relative; aspect-ratio: 1 / .92; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); font-family: var(--mono); font-size: .82rem; font-weight: 600; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; transition: transform .15s, border-color .2s, background .2s; }
+.seat::before { content: ""; position: absolute; left: 22%; right: 22%; top: -3px; height: 3px; border-radius: 3px; background: var(--line); }
+.seat small { font-size: .52rem; font-weight: 400; letter-spacing: .04em; color: var(--hint); }
+.seat.free { border-color: color-mix(in oklab, var(--neon) 45%, var(--line)); background: color-mix(in oklab, var(--neon) 12%, var(--bg)); color: var(--neon-text); }
+.seat.free::before { background: color-mix(in oklab, var(--neon) 55%, var(--line)); }
+.seat.taken { color: var(--hint); background: color-mix(in oklab, var(--ink) 5%, var(--bg)); border-style: dashed; }
+.seat.on { background: var(--red); border-color: var(--red); color: var(--seal-text); transform: translateY(-2px); }
+.seat.on small { color: color-mix(in oklab, var(--seal-text) 75%, transparent); }
+.seat.on::before { background: color-mix(in oklab, var(--seal-text) 60%, transparent); }
+.seat:active { transform: scale(.95); }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-family: var(--mono); font-size: .66rem; color: var(--hint); margin-top: 10px; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; border: 1px solid var(--line); vertical-align: -1px; margin-right: 5px; }
+.legend .f i { background: color-mix(in oklab, var(--neon) 12%, var(--bg)); border-color: color-mix(in oklab, var(--neon) 45%, var(--line)); }
+.legend .t i { border-style: dashed; }
+.legend .p i { background: var(--red); border-color: var(--red); }
+
+/* залы */
+.halls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.hall { text-align: left; border: 1px solid var(--line); border-radius: 12px; background: var(--bg2); padding: .8rem .9rem; display: flex; flex-direction: column; gap: 3px; position: relative; overflow: hidden; }
+.hall .h { font-weight: 700; }
+.hall .d { font-family: var(--mono); font-size: .66rem; color: var(--hint); letter-spacing: .04em; }
+.hall .p { font-family: var(--mono); font-size: .74rem; color: var(--neon-text); margin-top: 4px; }
+.hall .cn { position: absolute; right: -.1em; top: -.2em; font-family: var(--han); font-size: 3.2rem; color: color-mix(in oklab, var(--ink) 6%, transparent); line-height: 1; pointer-events: none; }
+.hall.on { border-color: var(--red); box-shadow: inset 0 0 0 1px var(--red); }
+.day { border-top: 1px solid var(--line2); padding: 10px 0; }
+.day .dn { font-family: var(--mono); font-size: .74rem; color: var(--hint); margin-bottom: 6px; }
+.day .dn b { color: var(--ink); font-weight: 600; }
+.day .dn.today b { color: var(--neon-text); }
+.none { font-family: var(--mono); font-size: .72rem; color: var(--hint); }
+.pick { border: 1px solid var(--line); border-radius: 12px; background: var(--bg2); padding: 12px; margin-top: 12px; }
+
+/* низ: что выбрано и почта для чека */
+.sheet { position: fixed; left: 0; right: 0; bottom: 0; background: color-mix(in oklab, var(--bg) 92%, transparent); backdrop-filter: blur(14px); border-top: 1px solid var(--line); padding: 10px 14px calc(10px + env(safe-area-inset-bottom)); transform: translateY(110%); transition: transform .25s ease; z-index: 5; }
+.sheet.on { transform: none; }
+.sum { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: .92rem; }
+.sum b { font-weight: 700; }
+.sum .price { font-family: var(--mono); font-weight: 600; white-space: nowrap; }
+.mail { display: flex; gap: 8px; margin-top: 8px; }
+.mail input { flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--bg2); color: var(--ink); padding: .55rem .75rem; font: inherit; font-size: .9rem; }
+.mail input:focus { outline: none; border-color: var(--neon); }
+.fine { font-family: var(--mono); font-size: .62rem; color: var(--hint); margin-top: 6px; line-height: 1.4; }
+.fine a { color: var(--neon-text); }
+.fallback { display: none; margin-top: 10px; }
+.fallback .btn { display: block; text-align: center; background: var(--red); color: var(--seal-text); text-decoration: none; padding: .75rem; border-radius: 10px; font-weight: 600; }
+html.no-tg .fallback { display: block; }
+.note { font-family: var(--mono); font-size: .68rem; color: var(--hint); line-height: 1.5; }
+.err { color: var(--red); font-size: .8rem; margin-top: 6px; }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="han">共享</span>
+  <div><div class="t">Коворкинг ВОДАО</div><div class="s">Дворянская, 27А · 2 этаж</div></div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button data-tab="seat" class="on">Рабочее место</button>
+  <button data-tab="hall">Зал</button>
+</nav>
+
+<section id="tab-seat">
+  <div class="block">
+    <div class="lbl">Дата <b id="date-label"></b></div>
+    <div class="chips" id="dates"></div>
+  </div>
+  <div class="block">
+    <div class="lbl">Тариф</div>
+    <div class="chips" id="tariff">
+      <button type="button" class="chip on" data-t="day"><small>день</small>656 ₽</button>
+      <button type="button" class="chip" data-t="month"><small>месяц · 31 день</small>6 560 ₽</button>
+    </div>
+  </div>
+  <div class="block">
+    <div class="lbl">План зала <b id="seat-count"></b></div>
+    <div class="plan">
+      <div class="window"><span>окно</span></div>
+      <div id="desks"></div>
+    </div>
+    <div class="legend"><span class="f"><i></i>свободно</span><span class="t"><i></i>занято</span><span class="p"><i></i>ваш выбор</span></div>
+  </div>
+  <p class="note">Место за двойным столом: тумба, стул, розетки, принтер, кофе и чай. Стол A — у окна, C — у кофе-корнера.</p>
+</section>
+
+<section id="tab-hall" hidden>
+  <div class="block">
+    <div class="lbl">Какой зал</div>
+    <div class="halls" id="halls">
+      <button type="button" class="hall on" data-hall="big"><span class="cn">大</span><span class="h">Большой зал</span><span class="d">до 32 человек · проектор, экран, ТВ</span><span class="p">1 500 ₽ / час</span></button>
+      <button type="button" class="hall" data-hall="small"><span class="cn">小</span><span class="h">Малый зал</span><span class="d">до 10 человек · компьютер и ТВ</span><span class="p">1 500 ₽ / час</span></button>
+    </div>
+  </div>
+  <div class="block">
+    <div class="lbl">Свободное время на 7 дней</div>
+    <div id="hall-days"></div>
+  </div>
+  <div class="pick" id="hall-pick" hidden>
+    <div class="lbl">Начало <b id="pick-title"></b></div>
+    <div class="chips" id="starts"></div>
+    <div class="lbl" style="margin-top:10px">Сколько часов</div>
+    <div class="chips wrap" id="hours"></div>
+  </div>
+  <p class="note" style="margin-top:12px">Зал подтверждает администратор — ответ придёт в этот чат, после подтверждения появится кнопка оплаты.</p>
+</section>
+
+<div class="sheet" id="sheet">
+  <div class="sum"><span id="sum-what">—</span><span class="price" id="sum-price"></span></div>
+  <div class="mail"><input type="email" id="email" placeholder="Почта для чека" autocomplete="email" inputmode="email"></div>
+  <div class="err" id="err" hidden></div>
+  <div class="fine">Нажимая «Занять», вы соглашаетесь с <a href="https://wodao.ru/oferta/" target="_blank">офертой</a> и <a href="https://wodao.ru/policy/" target="_blank">политикой обработки персональных данных</a>. Имя и номер телефона берутся из Telegram.</div>
+  <div class="fallback"><a class="btn" href="https://t.me/wodaobbot?start=kovorking">Открыть в Telegram</a><div class="fine">Бронь работает внутри Telegram — откройте бота и нажмите «Занять место».</div></div>
+</div>
+
+<script>
+/*ДАННЫЕ-START*/var ЗАНЯТО = {"B8": "занято до 18.09", "B3": "занято до 06.10", "C1": "занято до 02.10", "A1": "занято до 13.10", "C7": "занято до 07.10", "C5": "занято до 07.10", "B6": "занято до 22.09", "B5": "занято до 26.09", "A3": "занято до 03.10"}, ЗАЛЫ = {"big": {"пт": ["16:30–18:00", "18:00–19:30", "19:30–21:00"], "вт": ["10:30–11:00", "16:30–18:00", "18:00–19:30", "19:30–21:00"], "сб": ["12:00–13:00", "15:00–16:30", "17:00–18:00", "17:00–18:30"], "ср": ["10:00–11:00", "17:00–18:30"], "пн": ["17:00–18:00", "18:30–20:00"], "чт": ["16:00–17:00", "17:00–18:00", "18:30–20:00"]}, "small": {"сб": ["12:00–13:30", "13:00–14:00", "14:00–15:00", "15:00–16:00"], "пт": ["15:00–16:00", "17:00–18:00", "19:00–20:00"], "чт": ["09:00–10:00", "18:00–19:00", "19:00–20:00"], "вт": ["15:00–16:00", "17:00–18:00", "19:00–20:00"], "ср": ["12:00–13:00"], "пн": ["18:00–19:00"]}}, БРОНИ = [], БРОНИ_ЗАЛЫ = [];/*ДАННЫЕ-END*/
+(function () {
+  var TG = window.Telegram && Telegram.WebApp;
+  var inTG = !!(TG && TG.initData);
+  if (!inTG) document.documentElement.classList.add("no-tg");
+  if (TG) {
+    TG.ready(); TG.expand();
+    document.documentElement.dataset.theme = TG.colorScheme || "dark";
+    TG.onEvent("themeChanged", function () { document.documentElement.dataset.theme = TG.colorScheme; });
+    try { TG.setHeaderColor("secondary_bg_color"); } catch (e) {}
+  } else {
+    document.documentElement.dataset.theme = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+  }
+
+  var PRICE = { day: 656, month: 6560, hall: 1500 };
+  var TABLES = [{ id: "A", name: "Стол A · у окна", per: 3 }, { id: "B", name: "Стол B · середина", per: 4 }, { id: "C", name: "Стол C · у кофе-корнера", per: 4 }];
+  var ДНИ = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"];
+  var МЕС = ["янв", "фев", "мар", "апр", "мая", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"];
+  var today = new Date(); today.setHours(0, 0, 0, 0);
+  function iso(d) { return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); }
+  function plus(d, n) { var x = new Date(d); x.setDate(x.getDate() + n); return x; }
+  function human(d, short) { return (iso(d) === iso(today) ? "сегодня" : ДНИ[d.getDay()]) + " " + d.getDate() + " " + МЕС[d.getMonth()]; }
+  function money(n) { return n.toLocaleString("ru-RU") + " ₽"; }
+
+  /* резиденты: «занято до 06.10» → дата; «срок уточняется» → занято на месяц вперёд */
+  function residentEnd(text) {
+    var m = /(\d{2})\.(\d{2})/.exec(text || "");
+    if (!m) return plus(today, 31);
+    var d = new Date(today.getFullYear(), +m[2] - 1, +m[1]);
+    if (d < plus(today, -200)) d.setFullYear(d.getFullYear() + 1);
+    return d;
+  }
+  function seatTaken(seat, from, to) {           /* занято ли место хоть один день в [from, to] */
+    if (ЗАНЯТО[seat] && residentEnd(ЗАНЯТО[seat]) >= from) return true;
+    for (var i = 0; i < БРОНИ.length; i++) {
+      var b = БРОНИ[i];
+      if (b.seat !== seat) continue;
+      if (!(b.to < iso(from) || b.from > iso(to))) return true;
+    }
+    return false;
+  }
+
+  /* ── состояние ── */
+  var state = { tab: "seat", date: today, tariff: "day", seats: [], hall: "big", win: null, start: null, hours: 1 };
+
+  /* ── даты ── */
+  var datesEl = document.getElementById("dates");
+  for (var i = 0; i < 14; i++) {
+    var d = plus(today, i), b = document.createElement("button");
+    b.type = "button"; b.className = "chip" + (i === 0 ? " on" : ""); b.dataset.d = iso(d);
+    b.innerHTML = "<small>" + (i === 0 ? "сегодня" : ДНИ[d.getDay()]) + "</small>" + d.getDate() + " " + МЕС[d.getMonth()];
+    datesEl.appendChild(b);
+  }
+  datesEl.addEventListener("click", function (e) {
+    var b = e.target.closest(".chip"); if (!b) return;
+    datesEl.querySelectorAll(".chip").forEach(function (x) { x.classList.toggle("on", x === b); });
+    state.date = new Date(b.dataset.d + "T00:00:00"); state.seats = []; renderSeats(); update();
+  });
+  document.getElementById("tariff").addEventListener("click", function (e) {
+    var b = e.target.closest(".chip"); if (!b) return;
+    this.querySelectorAll(".chip").forEach(function (x) { x.classList.toggle("on", x === b); });
+    state.tariff = b.dataset.t; state.seats = []; renderSeats(); update();
+  });
+
+  /* ── план ── */
+  var desks = document.getElementById("desks");
+  function range() { return [state.date, plus(state.date, state.tariff === "month" ? 30 : 0)]; }
+  function renderSeats() {
+    var r = range(), free = 0; desks.innerHTML = "";
+    TABLES.forEach(function (t) {
+      var wrap = document.createElement("div"); wrap.className = "table";
+      wrap.innerHTML = '<div class="tname">' + t.name + "</div>";
+      var top = document.createElement("div"), bot = document.createElement("div");
+      top.className = bot.className = "row"; top.style.gridTemplateColumns = bot.style.gridTemplateColumns = "repeat(" + t.per + ", 1fr)";
+      for (var i = 1; i <= t.per * 2; i++) {
+        var id = t.id + i, s = document.createElement("button"); s.type = "button"; s.dataset.seat = id;
+        var taken = seatTaken(id, r[0], r[1]);
+        s.className = "seat " + (taken ? "taken" : "free") + (state.seats.indexOf(id) >= 0 ? " on" : "");
+        s.innerHTML = id + "<small>" + (taken ? "занято" : "свободно") + "</small>";
+        if (taken) s.disabled = true; else free++;
+        (i <= t.per ? top : bot).appendChild(s);
+      }
+      var desk = document.createElement("div"); desk.className = "desk"; desk.textContent = "двойной стол";
+      wrap.appendChild(top); wrap.appendChild(desk); wrap.appendChild(bot); desks.appendChild(wrap);
+    });
+    document.getElementById("seat-count").textContent = free + " свободно";
+    document.getElementById("date-label").textContent = human(state.date) + (state.tariff === "month" ? " → " + human(plus(state.date, 30)) : "");
+  }
+  desks.addEventListener("click", function (e) {
+    var s = e.target.closest(".seat"); if (!s || s.disabled) return;
+    var id = s.dataset.seat, i = state.seats.indexOf(id);
+    if (i >= 0) state.seats.splice(i, 1); else { if (state.seats.length >= 4) return; state.seats.push(id); }
+    s.classList.toggle("on", i < 0);
+    if (TG) try { TG.HapticFeedback.selectionChanged(); } catch (x) {}
+    update();
+  });
+
+  /* ── залы ── */
+  var ОТКР = 9 * 60, ЗАКР = 21 * 60;
+  function мин(t) { var m = /(\d{1,2}):(\d{2})/.exec(t); return m ? +m[1] * 60 + +m[2] : null; }
+  function чч(m) { return ("0" + (m / 60 | 0)).slice(-2) + ":" + ("0" + m % 60).slice(-2); }
+  function windows(hall, d) {
+    var busy = (ЗАЛЫ[hall] || {})[ДНИ[d.getDay()]] || [];
+    var з = busy.map(function (x) { var p = x.split(/[–-]/); return [мин(p[0]), мин(p[1])]; });
+    БРОНИ_ЗАЛЫ.forEach(function (b) { if (b.hall === hall && b.date === iso(d)) з.push([мин(b.from), мин(b.to)]); });
+    з = з.filter(function (x) { return x[0] !== null && x[1] !== null; }).sort(function (a, b) { return a[0] - b[0]; });
+    var от = ОТКР;
+    if (iso(d) === iso(today)) { var n = new Date(); от = Math.max(ОТКР, Math.ceil((n.getHours() * 60 + n.getMinutes()) / 30) * 30); }
+    var окна = [], т = от;
+    з.forEach(function (x) { if (x[0] > т) окна.push([т, Math.min(x[0], ЗАКР)]); т = Math.max(т, x[1]); });
+    if (т < ЗАКР) окна.push([т, ЗАКР]);
+    return окна.filter(function (o) { return o[1] - o[0] >= 60; });
+  }
+  var hallsEl = document.getElementById("halls"), daysEl = document.getElementById("hall-days"), pickEl = document.getElementById("hall-pick");
+  hallsEl.addEventListener("click", function (e) {
+    var b = e.target.closest(".hall"); if (!b) return;
+    hallsEl.querySelectorAll(".hall").forEach(function (x) { x.classList.toggle("on", x === b); });
+    state.hall = b.dataset.hall; state.win = null; state.start = null; renderDays(); update();
+  });
+  function renderDays() {
+    daysEl.innerHTML = ""; pickEl.hidden = !state.win;
+    for (var i = 0; i < 7; i++) {
+      var d = plus(today, i), w = windows(state.hall, d), div = document.createElement("div"); div.className = "day";
+      div.innerHTML = '<div class="dn' + (i === 0 ? " today" : "") + '"><b>' + (i === 0 ? "сегодня" : ДНИ[d.getDay()]) + "</b> " + d.getDate() + " " + МЕС[d.getMonth()] + "</div>";
+      var chips = document.createElement("div"); chips.className = "chips";
+      if (!w.length) chips.innerHTML = '<span class="none">' + (i === 0 ? "сегодня уже занят" : "занят весь день") + "</span>";
+      w.forEach(function (o) {
+        var c = document.createElement("button"); c.type = "button"; c.className = "chip"; c.dataset.d = iso(d); c.dataset.a = o[0]; c.dataset.b = o[1];
+        var on = state.win && state.win.d === iso(d) && state.win.a === o[0];
+        if (on) c.classList.add("on");
+        c.textContent = чч(o[0]) + "–" + чч(o[1]); chips.appendChild(c);
+      });
+      div.appendChild(chips); daysEl.appendChild(div);
+    }
+  }
+  daysEl.addEventListener("click", function (e) {
+    var c = e.target.closest(".chip"); if (!c) return;
+    state.win = { d: c.dataset.d, a: +c.dataset.a, b: +c.dataset.b }; state.start = state.win.a; state.hours = 1;
+    renderDays(); renderPick(); update();
+    pickEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  });
+  function renderPick() {
+    var w = state.win; if (!w) { pickEl.hidden = true; return; }
+    pickEl.hidden = false;
+    var d = new Date(w.d + "T00:00:00");
+    document.getElementById("pick-title").textContent = human(d) + " · " + чч(w.a) + "–" + чч(w.b);
+    var st = document.getElementById("starts"); st.innerHTML = "";
+    for (var m = w.a; m + 60 <= w.b; m += 30) {
+      var c = document.createElement("button"); c.type = "button"; c.className = "chip" + (m === state.start ? " on" : ""); c.dataset.m = m; c.textContent = чч(m); st.appendChild(c);
+    }
+    var hs = document.getElementById("hours"); hs.innerHTML = "";
+    var max = Math.min(8, Math.floor((w.b - state.start) / 60));
+    if (state.hours > max) state.hours = max;
+    for (var h = 1; h <= max; h++) {
+      var c2 = document.createElement("button"); c2.type = "button"; c2.className = "chip" + (h === state.hours ? " on" : ""); c2.dataset.h = h;
+      c2.innerHTML = h + " ч<small>" + money(h * PRICE.hall) + "</small>"; hs.appendChild(c2);
+    }
+  }
+  document.getElementById("starts").addEventListener("click", function (e) {
+    var c = e.target.closest(".chip"); if (!c) return; state.start = +c.dataset.m; renderPick(); update();
+  });
+  document.getElementById("hours").addEventListener("click", function (e) {
+    var c = e.target.closest(".chip"); if (!c) return; state.hours = +c.dataset.h; renderPick(); update();
+  });
+
+  /* ── вкладки ── */
+  document.getElementById("tabs").addEventListener("click", function (e) {
+    var b = e.target.closest("button"); if (!b) return;
+    this.querySelectorAll("button").forEach(function (x) { x.classList.toggle("on", x === b); });
+    state.tab = b.dataset.tab;
+    document.getElementById("tab-seat").hidden = state.tab !== "seat";
+    document.getElementById("tab-hall").hidden = state.tab !== "hall";
+    update();
+  });
+
+  /* ── почта для чека: помним ── */
+  var email = document.getElementById("email");
+  try { email.value = localStorage.getItem("wodao-email") || ""; } catch (e) {}
+  if (TG && TG.CloudStorage) TG.CloudStorage.getItem("email", function (err, v) { if (!err && v && !email.value) email.value = v; });
+  email.addEventListener("input", function () { document.getElementById("err").hidden = true; });
+
+  /* ── итог и главная кнопка ── */
+  var sheet = document.getElementById("sheet");
+  function summary() {
+    if (state.tab === "seat") {
+      if (!state.seats.length) return null;
+      var n = state.seats.length, s = state.seats.slice().sort();
+      var what = (n === 1 ? "Место " : "Места ") + s.join(", ") + " · " + human(state.date) + (state.tariff === "month" ? ", месяц" : "");
+      return { what: what, price: n * PRICE[state.tariff], btn: "Занять " + s.join(", ") + " · " + money(n * PRICE[state.tariff]),
+               data: { v: 1, kind: "seat", seats: s, tariff: state.tariff, date: iso(state.date) } };
+    }
+    if (!state.win || state.start === null) return null;
+    var to = state.start + state.hours * 60, hall = state.hall === "big" ? "Большой зал" : "Малый зал";
+    var d = new Date(state.win.d + "T00:00:00");
+    return { what: hall + " · " + human(d) + " · " + чч(state.start) + "–" + чч(to), price: state.hours * PRICE.hall,
+             btn: "Запросить " + hall.toLowerCase() + " · " + money(state.hours * PRICE.hall),
+             data: { v: 1, kind: "hall", hall: state.hall, date: state.win.d, from: чч(state.start), to: чч(to), hours: state.hours } };
+  }
+  function update() {
+    var s = summary();
+    sheet.classList.toggle("on", !!s);
+    if (!s) { if (TG) TG.MainButton.hide(); return; }
+    document.getElementById("sum-what").innerHTML = "<b>" + s.what + "</b>";
+    document.getElementById("sum-price").textContent = money(s.price) + (state.tab === "hall" ? "" : "");
+    if (TG) { TG.MainButton.setParams({ text: s.btn, color: "#B93A22", text_color: "#FFF6EE", is_visible: true, is_active: true }); }
+  }
+  function send() {
+    var s = summary(); if (!s) return;
+    var m = email.value.trim(), err = document.getElementById("err");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m)) { err.textContent = "Укажите почту — на неё придёт чек."; err.hidden = false; email.focus(); return; }
+    try { localStorage.setItem("wodao-email", m); } catch (e) {}
+    if (TG && TG.CloudStorage) TG.CloudStorage.setItem("email", m, function () {});
+    s.data.email = m;
+    if (!inTG) { err.textContent = "Откройте через бота @wodaobbot — там появится оплата."; err.hidden = false; return; }
+    try { TG.HapticFeedback.notificationOccurred("success"); } catch (e) {}
+    TG.sendData(JSON.stringify(s.data));
+  }
+  if (TG) TG.MainButton.onClick(send);
+
+  renderSeats(); renderDays(); update();
+})();
+</script>
+</body>
+</html>
