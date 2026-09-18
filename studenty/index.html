@@ -1199,6 +1199,11 @@ html.pay-ready .tariff .pay-btn { width: 100%; justify-content: center; }
   transform: translateY(-3px);
 }
 .seat[aria-pressed="true"]::before { background: color-mix(in oklab, var(--seal-text) 70%, transparent); }
+.seat.taken, .seat.taken:hover {
+  cursor: not-allowed; transform: none; box-shadow: none; color: var(--ink-3); border-color: var(--hairline-2);
+  background: repeating-linear-gradient(135deg, var(--paper) 0 4px, var(--paper-3) 4px 7px);
+}
+.seat.taken::after { content: "занято"; position: absolute; bottom: 2px; left: 0; right: 0; font-size: .5rem; letter-spacing: .04em; text-align: center; opacity: .8; }
 
 .rooms { display: grid; grid-template-columns: 1.4fr 1fr; gap: .8rem; margin-top: 1.6rem; }
 @media (max-width: 520px) { .rooms { grid-template-columns: 1fr; } }
@@ -4863,15 +4868,25 @@ footer a:hover { color: var(--neon); }
       { id: "C", name: "Стол C · у кофе-корнера", per: 4 }
     ];
 
+    /* места постоянных резидентов — их выбрать нельзя. Список ведёт
+       коворкинг_места.py по данным CRM и ответу администратора в чате школы. */
+    /*ЗАНЯТО-START*/var ЗАНЯТО = {};/*ЗАНЯТО-END*/
     function makeSeat(id) {
       var b = document.createElement("button");
       b.type = "button";
       b.className = "seat";
+      b.dataset.seat = id;
+      b.textContent = id;
+      if (ЗАНЯТО[id]) {
+        b.classList.add("taken");
+        b.disabled = true;
+        b.setAttribute("aria-label", "Место " + id + " занято — " + ЗАНЯТО[id]);
+        b.title = "Занято · " + ЗАНЯТО[id];
+        return b;
+      }
       b.setAttribute("aria-pressed", "false");
       b.setAttribute("aria-label", "Рабочее место " + id + " — забронировать");
       b.title = "Забронировать место " + id;
-      b.dataset.seat = id;
-      b.textContent = id;
       return b;
     }
 
@@ -4928,7 +4943,7 @@ footer a:hover { color: var(--neon); }
 
     plan.addEventListener("click", function (e) {
       var s = e.target.closest(".seat");
-      if (s) {
+      if (s && !s.disabled) {
         var id = s.dataset.seat, on = seats.has(id);
         if (on) seats.delete(id); else seats.add(id);
         s.setAttribute("aria-pressed", String(!on));
