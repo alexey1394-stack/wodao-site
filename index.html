@@ -526,6 +526,14 @@ header.top {
 .fontpick .fp-close:hover { color: var(--cinnabar); }
 @media (max-width: 720px) { .fontpick { display: none; } }
 .logo-full { max-width: 420px; width: 100%; height: auto; display: block; }
+/* марка в подвале и в контактах — та же, что в шапке (просьба Алексея 18.09: «нижний логотип старый, сделай как верхний») */
+.brand-foot { margin-right: 0; align-items: center; }
+.brand-foot .seal { height: 64px; }
+.brand-foot .name { color: var(--ink); }
+.brand-big .seal { height: 92px; }
+.brand-big .cn-line { font-size: 1rem; letter-spacing: .34em; }
+.brand-big .name { font-size: 1.6rem; letter-spacing: .24em; }
+@media (max-width: 520px) { .brand-big .seal { height: 72px; } .brand-big .name { font-size: 1.25rem; } }
 .logo-block { display: flex; flex-direction: column; gap: 1rem; align-items: flex-start; }
 
 /* ── бегущая строка ── */
@@ -3416,7 +3424,14 @@ footer a:hover { color: var(--neon); }
           </dl>
         </div>
         <div class="rv-r">
-          <img class="logo-full" data-img="logo_full" alt="Школа китайского языка ВОДАО — 我道課堂" style="margin-bottom:2rem">
+          <a class="brand brand-foot brand-big" href="/">
+            <img class="seal" data-img="logo_seal" alt="Печать школы ВОДАО">
+            <span class="lockup">
+              <span class="cn-line">我道課堂</span>
+              <span class="name">Школа ВОДАО</span>
+            </span>
+          </a>
+          <span class="label" style="display:block;margin:1.2rem 0 2rem;color:var(--ink-3)">Школа китайского языка · Владимир</span>
           <span class="label">Где мы ещё</span>
           <div class="socials">
             <a href="https://t.me/wodao_online">Telegram · личка</a>
@@ -3463,7 +3478,13 @@ footer a:hover { color: var(--neon); }
 <div class="wrap">
   <footer>
     <span style="display:flex;flex-direction:column;gap:.7rem">
-      <img class="logo-full" data-img="logo_full" alt="Школа китайского языка ВОДАО" style="max-width:300px">
+      <a class="brand brand-foot" href="/">
+        <img class="seal" data-img="logo_seal" alt="Печать школы ВОДАО">
+        <span class="lockup">
+          <span class="cn-line">我道課堂</span>
+          <span class="name">Школа ВОДАО</span>
+        </span>
+      </a>
       Школа китайского языка, Владимир
     </span>
     <span class="foot-nav">
