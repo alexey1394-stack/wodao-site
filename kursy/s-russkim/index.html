@@ -5744,6 +5744,11 @@ footer a:hover { color: var(--neon); }
     var open = nav.classList.toggle("open");
     burger.setAttribute("aria-expanded", String(open));
   });
+  /* выпадающее меню курсов: после выбора пункта снять фокус, иначе :focus-within держит его открытым */
+  nav.addEventListener("click", function (e) {
+    var a = e.target.closest(".nav-item a");
+    if (a) setTimeout(function () { a.blur(); }, 0);
+  });
 
   /* ══════════ подбор гарнитуры заголовков ══════════ */
 
