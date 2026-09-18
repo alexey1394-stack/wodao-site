@@ -231,6 +231,22 @@ header.top {
 .nav a.on { color: var(--ink); }
 .nav a:hover .cn, .nav a.on .cn { opacity: 1; transform: translate(-50%, 0); }
 
+/* выпадающее меню курсов: раскрывается при наведении и с клавиатуры */
+.nav-item { position: relative; display: flex; align-items: center; }
+.nav .sub { position: absolute; left: -.9rem; top: 100%; padding-top: .55rem; display: none; z-index: 60; }
+.nav-item:hover .sub, .nav-item:focus-within .sub { display: block; }
+.nav .sub-in {
+  min-width: 17rem; padding: .5rem 0; border-radius: 3px;
+  background: var(--paper-2); border: 1px solid var(--hairline);
+  box-shadow: 0 18px 40px -24px rgba(0,0,0,.5), 0 0 0 1px var(--neon-soft);
+}
+.nav .sub a { display: flex; align-items: baseline; gap: .7rem; padding: .55rem 1.1rem; white-space: nowrap; color: var(--ink-2); }
+.nav .sub a::after { display: none; }
+.nav .sub a:hover, .nav .sub a.on { color: var(--ink); background: color-mix(in oklab, var(--neon-soft) 45%, transparent); }
+.nav .sub .s-cn { font-family: var(--f-han); font-size: .8rem; color: var(--cinnabar); letter-spacing: .1em; min-width: 2.6rem; }
+.nav .sub .sub-all { margin-top: .3rem; border-top: 1px solid var(--hairline-2); padding-top: .75rem; font-family: var(--f-mono); font-size: var(--step--2); letter-spacing: .08em; color: var(--ink-3); }
+.nav .sub .sub-all:hover { color: var(--neon-text); }
+
 /* телефон — всегда в шапке, шапка прилипает к экрану */
 .top-phone {
   display: inline-flex; align-items: center; gap: .5rem; text-decoration: none;
@@ -265,6 +281,11 @@ header.top {
   .nav.open { display: flex; }
   .nav a { padding-block: .7rem; border-bottom: 1px solid var(--hairline-2); }
   .nav a .cn { position: static; transform: none; opacity: 1; margin-right: .7rem; color: var(--cinnabar); }
+  .nav-item { display: block; }
+  .nav .sub { position: static; display: block; padding-top: 0; }
+  .nav .sub-in { min-width: 0; padding: 0 0 .3rem; border: 0; background: none; box-shadow: none; }
+  .nav .sub a { padding: .55rem 0 .55rem 1.4rem; border-bottom: 0; font-size: var(--step--1); white-space: normal; }
+  .nav .sub .sub-all { display: none; }
   .nav a::after { display: none; }
   .burger { display: block; }
 }
@@ -1586,7 +1607,21 @@ footer a:hover { color: var(--neon); }
       </span>
     </a>
     <nav class="nav" id="nav">
-      <a href="/kursy/" data-route="/kursy"><span class="cn">课程</span>Курсы</a>
+      <div class="nav-item">
+        <a href="/kursy/" data-route="/kursy"><span class="cn">课程</span>Курсы</a>
+        <div class="sub" aria-label="Курсы">
+          <div class="sub-in">
+          <a href="/kursy/vzroslye/" data-route="/kursy/vzroslye"><span class="s-cn">成人</span>Взрослая группа</a>
+          <a href="/kursy/deti/" data-route="/kursy/deti"><span class="s-cn">儿童</span>Детская группа</a>
+          <a href="/kursy/onlain-hsk-3/" data-route="/kursy/onlain-hsk-3"><span class="s-cn">在线</span>Онлайн с нуля до HSK 3</a>
+          <a href="/kursy/s-nositelem/" data-route="/kursy/s-nositelem"><span class="s-cn">外教</span>Индивидуально с носителем</a>
+          <a href="/kursy/s-russkim/" data-route="/kursy/s-russkim"><span class="s-cn">一对一</span>Индивидуально с русским</a>
+          <a href="/kursy/ege/" data-route="/kursy/ege"><span class="s-cn">考试</span>Подготовка к ЕГЭ</a>
+          <a href="/kursy/korporativnyi/" data-route="/kursy/korporativnyi"><span class="s-cn">公司</span>Корпоративный китайский</a>
+          <a class="sub-all" href="/kursy/" data-route="/kursy">Все курсы и цены →</a>
+          </div>
+        </div>
+      </div>
       <a href="/" data-scroll="raspisanie"><span class="cn">时间</span>Расписание</a>
       <a href="/prepodavateli/" data-route="/prepodavateli"><span class="cn">老师</span>Преподаватели</a>
       <a href="/kitay/" data-route="/kitay"><span class="cn">中国</span>Китай</a>
@@ -1706,7 +1741,7 @@ footer a:hover { color: var(--neon); }
             <a class="pill" href="/kovorking/"><span class="cn">共享</span>Коворкинг</a>
             <a class="pill" href="/foto/"><span class="cn">照片</span>Фото</a>
             <a class="pill" href="/biblioteka/"><span class="cn">图书</span>Библиотека</a>
-            <a class="pill" href="/kursy/"><span class="cn">时间</span>Расписание</a>
+            <a class="pill" href="/"><span class="cn">时间</span>Расписание</a>
           </div>
           <figure class="shot shot-16 rv" style="margin-top:2rem">
             <img data-img="p_class" alt="Мастер-класс по китайской живописи в школе ВОДАО" loading="lazy">
@@ -1787,10 +1822,10 @@ footer a:hover { color: var(--neon); }
         <p>Взрослые и дети, очно и онлайн, индивидуально с носителем, ЕГЭ и корпоративные группы. Цены и форматы — на странице курсов.</p>
       </div>
       <div class="cards rv">
-        <a class="card" href="/kursy/"><span class="cn">成人</span><h3>Взрослая группа 11+</h3><p>2 раза в неделю по 90 минут, курс 8 месяцев. Грамматика, разговор, иероглифы.</p><span class="price">от 1 400 ₽ за занятие</span><span class="go">Смотреть цены →</span><span class="wm">成</span></a>
-        <a class="card" href="/kursy/"><span class="cn">儿童</span><h3>Детская группа 6+</h3><p>2 раза в неделю по 60 минут. Иероглиф как рисунок, игры, культура и обратная связь родителям.</p><span class="price">от 1 050 ₽ за занятие</span><span class="go">Смотреть цены →</span><span class="wm">童</span></a>
-        <a class="card" href="/kursy/"><span class="cn">在线</span><h3>Онлайн с нуля до HSK 3</h3><p>300+ видеоуроков по 5–10 минут, домашки с ручной проверкой, чат учеников, 8 месяцев.</p><span class="price">32 000 ₽ за курс по промокоду</span><span class="go">Смотреть цены →</span><span class="wm">线</span></a>
-        <a class="card" href="/kursy/"><span class="cn">外教</span><h3>Индивидуально с носителем</h3><p>Произношение, тоны и живая речь один на один с китайским преподавателем.</p><span class="price">от 1 900 ₽ за занятие</span><span class="go">Смотреть курс →</span><span class="wm">外</span></a>
+        <a class="card" href="/kursy/vzroslye/"><span class="cn">成人</span><h3>Взрослая группа 11+</h3><p>2 раза в неделю по 90 минут, курс 8 месяцев. Грамматика, разговор, иероглифы.</p><span class="price">от 1 400 ₽ за занятие</span><span class="go">Смотреть цены →</span><span class="wm">成</span></a>
+        <a class="card" href="/kursy/deti/"><span class="cn">儿童</span><h3>Детская группа 6+</h3><p>2 раза в неделю по 60 минут. Иероглиф как рисунок, игры, культура и обратная связь родителям.</p><span class="price">от 1 050 ₽ за занятие</span><span class="go">Смотреть цены →</span><span class="wm">童</span></a>
+        <a class="card" href="/kursy/onlain-hsk-3/"><span class="cn">在线</span><h3>Онлайн с нуля до HSK 3</h3><p>300+ видеоуроков по 5–10 минут, домашки с ручной проверкой, чат учеников, 8 месяцев.</p><span class="price">32 000 ₽ за курс по промокоду</span><span class="go">Смотреть цены →</span><span class="wm">线</span></a>
+        <a class="card" href="/kursy/s-nositelem/"><span class="cn">外教</span><h3>Индивидуально с носителем</h3><p>Произношение, тоны и живая речь один на один с китайским преподавателем.</p><span class="price">от 1 900 ₽ за занятие</span><span class="go">Смотреть курс →</span><span class="wm">外</span></a>
       </div>
       <div style="margin-top:2.4rem"><a class="btn ghost" href="/kursy/">Все курсы и цены →</a></div>
     </div>
@@ -1963,108 +1998,42 @@ footer a:hover { color: var(--neon); }
       <a class="back" href="/">← на главную</a>
       <div class="sec-head">
         <span class="label">Курсы и цены</span>
-        <h2>Одиннадцать программ: от первого тона до китайского вуза</h2>
-        <p>Ниже — форматы, длительность и стоимость. Группы набираются по уровню, начать можно с бесплатного пробного занятия.</p>
+        <h2>Семь форматов: от первого тона до китайского вуза</h2>
+        <p>Выберите формат — на странице курса подробное описание, тарифы и оплата онлайн. Группы набираются по уровню, начать можно с бесплатного пробного занятия.</p>
       </div>
-      <p class="note">Цены — по данным wodao.ru. Актуальные акции и наличие мест уточняйте в Telegram.</p>
+      <p class="note">Актуальные акции и наличие мест уточняйте в Telegram. Расписание групп и мастер-классов с записью — <a href="/" data-scroll="raspisanie" style="color:var(--neon-text)">на главной странице</a>.</p>
     </div>
   </section>
 
-  <section id="raspisanie-link" style="padding-block:0 3rem">
-    <div class="wrap"><p class="note">Расписание групп и мастер-классов с записью — <a href="/" data-scroll="raspisanie" style="color:var(--neon-text)">на главной странице</a>.</p></div>
-  </section>
-
-  <hr class="rule">
-
-  <div class="wrap">
-    <div class="course-block rv">
-      <div>
-        <div class="hz-big">成人</div>
-        <h3>Взрослая группа 11+</h3>
-        <div class="facts-line">ОЧНО И ОНЛАЙН · 2 РАЗА В НЕДЕЛЮ · 90 МИНУТ · 8 МЕСЯЦЕВ</div>
-        <p>Программа с нуля: фонетика и постановка произношения, грамматика, чтение и аудирование, письмо иероглифов. В группе от 5 до 12 человек, все одного уровня.</p>
-        <ul class="ul">
-          <li>В группе 5–12 человек — каждый успевает говорить на занятии</li>
-          <li>Грамматика — с русскоязычным преподавателем</li>
-          <li>Аудирование и разговор — с носителем языка</li>
-          <li>Подготовка к HSK и сдача экзамена в школе</li>
-        </ul>
-        <figure class="shot shot-16" style="margin-top:1.6rem">
-          <img data-img="p_adults" alt="Взрослая группа школы ВОДАО на занятии" loading="lazy">
-          <figcaption>Взрослая группа на занятии · Владимир</figcaption>
-        </figure>
-      </div>
-      <div>
-        <div class="tariffs">
-          <div class="tariff"><span class="qty">5 занятий</span><span class="sum">8 500 ₽</span><span class="per">1 700 ₽ / занятие</span><span class="old">вместо 12 000 ₽</span><button type="button" class="btn pay-btn" data-pay="8500" data-title="Взрослая группа · 5 занятий">Оплатить онлайн</button></div>
-          <div class="tariff"><span class="qty">20 занятий</span><span class="sum">31 000 ₽</span><span class="per">1 550 ₽ / занятие</span><span class="old">вместо 44 000 ₽</span><button type="button" class="btn pay-btn" data-pay="31000" data-title="Взрослая группа · 20 занятий">Оплатить онлайн</button></div>
-          <div class="tariff"><span class="qty">60 занятий · курс</span><span class="sum">84 000 ₽</span><span class="per">1 400 ₽ / занятие</span><span class="old">вместо 140 000 ₽</span><button type="button" class="btn pay-btn" data-pay="84000" data-title="Взрослая группа · 60 занятий">Оплатить онлайн</button></div>
-        </div>
-        <div class="hero-cta" style="opacity:1;animation:none">
-          <a class="btn" href="https://t.me/wodao_online">Записаться в группу</a>
-          <a class="btn ghost" href="/kursy/">Страница курса</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="course-block rv">
-      <div>
-        <div class="hz-big">儿童</div>
-        <h3>Детская группа 6+</h3>
-        <div class="facts-line">ОЧНО И ОНЛАЙН · 2 РАЗА В НЕДЕЛЮ · 60 МИНУТ · 8 МЕСЯЦЕВ</div>
-        <p>Дети учат язык через рисунок, песни и игру. Иероглиф сначала картинка, потом слово. Родителям — обратная связь по домашним заданиям.</p>
-        <ul class="ul">
-          <li>Культурные занятия: праздники, традиции, кухня</li>
-          <li>Материалы для занятий — бесплатно</li>
-          <li>Мягкий вход: первая неделя — знакомство</li>
-        </ul>
-        <figure class="shot shot-45" style="margin-top:1.6rem; max-width:340px">
-          <img data-img="p_kids" alt="Ученик детской группы пишет иероглифы кистью" loading="lazy">
-          <figcaption>Первые иероглифы кистью — детская группа</figcaption>
-        </figure>
-      </div>
-      <div>
-        <div class="tariffs">
-          <div class="tariff"><span class="qty">5 занятий</span><span class="sum">6 750 ₽</span><span class="per">1 350 ₽ / занятие</span><span class="old">вместо 12 000 ₽</span><button type="button" class="btn pay-btn" data-pay="6750" data-title="Детская группа · 5 занятий">Оплатить онлайн</button></div>
-          <div class="tariff"><span class="qty">20 занятий</span><span class="sum">24 000 ₽</span><span class="per">1 200 ₽ / занятие</span><span class="old">вместо 44 000 ₽</span><button type="button" class="btn pay-btn" data-pay="24000" data-title="Детская группа · 20 занятий">Оплатить онлайн</button></div>
-          <div class="tariff"><span class="qty">60 занятий · курс</span><span class="sum">63 000 ₽</span><span class="per">1 050 ₽ / занятие</span><span class="old">вместо 120 000 ₽</span><button type="button" class="btn pay-btn" data-pay="63000" data-title="Детская группа · 60 занятий">Оплатить онлайн</button></div>
-        </div>
-        <div class="hero-cta" style="opacity:1;animation:none">
-          <a class="btn" href="https://t.me/wodao_online">Записать ребёнка</a>
-          <a class="btn ghost" href="/kursy/">Страница курса</a>
-        </div>
-      </div>
-    </div>
-
-    <div class="course-block rv">
-      <div>
-        <div class="hz-big">在线</div>
-        <h3>Онлайн с нуля до HSK 3</h3>
-        <div class="facts-line">300+ ВИДЕОУРОКОВ · 5–10 МИНУТ · 8 МЕСЯЦЕВ · 30–40 МИНУТ В ДЕНЬ</div>
-        <p>Полный путь до третьего уровня экзамена в своём темпе. Короткие видео, домашние задания с ручной проверкой и разбором ошибок, чат учеников и мастер-классы по культуре.</p>
-        <ul class="ul">
-          <li>Пять преподавателей: аудирование, грамматика, иероглифика, разговор, HSK</li>
-          <li>Доступ к материалам без ограничения по времени</li>
-          <li>Рассрочка на 3, 6 или 12 месяцев</li>
-        </ul>
-        <figure class="shot shot-45" style="margin-top:1.6rem; max-width:340px">
-          <img data-img="p_home" alt="Ученица школы за работой на мастер-классе" loading="lazy">
-          <figcaption>Работы проверяет живой преподаватель, а не робот</figcaption>
-        </figure>
-      </div>
-      <div>
-        <div class="tariffs">
-          <div class="tariff"><span class="qty">Полный курс</span><span class="sum">32 000 ₽</span><span class="per">с нуля до HSK 3 · промокод −50 % применён</span><span class="old">вместо 64 000 ₽</span><button type="button" class="btn pay-btn" data-pay="32000" data-title="Онлайн-курс с нуля до HSK 3 · полный">Оплатить онлайн</button></div>
-          <div class="tariff"><span class="qty">Пробный модуль</span><span class="sum">16 000 ₽</span><span class="per">начать и посмотреть · промокод −50 % применён</span><span class="old">вместо 32 000 ₽</span><button type="button" class="btn pay-btn" data-pay="16000" data-title="Онлайн-курс с нуля до HSK 3 · пробный модуль">Оплатить онлайн</button></div>
-        </div>
-        <div class="hero-cta" style="opacity:1;animation:none">
-          <a class="btn" href="/kursy/">Открыть курс</a>
-          <a class="btn ghost" href="https://t.me/wodao_online">Спросить про рассрочку</a>
-        </div>
-      </div>
+  <div class="wrap" style="padding-bottom:clamp(3rem,7vw,6rem)">
+    <div class="cards rv" style="margin-top:0">
+        <a class="card" href="/kursy/vzroslye/"><span class="cn">成人</span><h3>Взрослая группа 11+</h3><p>2 раза в неделю по 90 минут, курс 8 месяцев. Грамматика, разговор, иероглифы.</p><span class="price">от 1 400 ₽ за занятие</span><span class="go">Подробнее и цены →</span><span class="wm">成</span></a>
+        <a class="card" href="/kursy/deti/"><span class="cn">儿童</span><h3>Детская группа 6+</h3><p>2 раза в неделю по 60 минут. Иероглиф как рисунок, игры, культура и обратная связь родителям.</p><span class="price">от 1 050 ₽ за занятие</span><span class="go">Подробнее и цены →</span><span class="wm">儿</span></a>
+        <a class="card" href="/kursy/onlain-hsk-3/"><span class="cn">在线</span><h3>Онлайн с нуля до HSK 3</h3><p>300+ видеоуроков по 5–10 минут, домашки с ручной проверкой, чат учеников, 8 месяцев.</p><span class="price">32 000 ₽ за курс по промокоду</span><span class="go">Подробнее и цены →</span><span class="wm">在</span></a>
+        <a class="card" href="/kursy/s-nositelem/"><span class="cn">外教</span><h3>Индивидуально с носителем</h3><p>Произношение, тоны и живая речь один на один с китайским преподавателем.</p><span class="price">от 1 900 ₽ за занятие</span><span class="go">Подробнее и цены →</span><span class="wm">外</span></a>
+        <a class="card" href="/kursy/s-russkim/"><span class="cn">一对一</span><h3>Индивидуально с русским преподавателем</h3><p>Грамматика по-русски, программа под вашу цель, с нуля или чтобы догнать группу.</p><span class="price">от 1 600 ₽ за занятие</span><span class="go">Подробнее и цены →</span><span class="wm">一</span></a>
+        <a class="card" href="/kursy/ege/"><span class="cn">考试</span><h3>Подготовка к ЕГЭ по китайскому</h3><p>Структура заданий, письмо, аудирование, пробники — в группе школьников.</p><span class="price">от 800 ₽ за занятие</span><span class="go">Подробнее и цены →</span><span class="wm">考</span></a>
+        <a class="card" href="/kursy/korporativnyi/"><span class="cn">公司</span><h3>Корпоративный китайский</h3><p>Переговоры, переписка, поездки на фабрики. Группа или вебинар для команды.</p><span class="price">от 800 ₽ за занятие с человека</span><span class="go">Подробнее и цены →</span><span class="wm">公</span></a>
     </div>
   </div>
 
+  <hr class="rule">
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label">Остальные форматы</span>
+        <h2>HSK, культура, переводы</h2>
+        <p>Не знаете свой уровень — <a href="/test/" style="color:var(--neon-text)">пройдите тест за минуту</a>.</p>
+      </div>
+      <div class="mini-list rv">
+        <a class="mini" href="/" data-scroll="hsk"><span class="m-cn">汉语</span><span class="m-name">Подготовка к HSK</span><span class="m-desc">Любой уровень с 1 по 6, экзамен сдаём в школе</span><span class="m-price">смотреть ступени</span></a>
+        <a class="mini" href="/kursy/"><span class="m-cn">文化</span><span class="m-name">Китайская культура</span><span class="m-desc">Каллиграфия, чай, гохуа, праздники</span><span class="m-price">бесплатно для учеников</span></a>
+        <a class="mini" href="/kursy/"><span class="m-cn">翻译</span><span class="m-name">Перевод текстов</span><span class="m-desc">Документы, описания, переписка с поставщиками</span><span class="m-price">цена по запросу</span></a>
+        <a class="mini" href="/kursy/"><span class="m-cn">支付</span><span class="m-name">Оплата</span><span class="m-desc">Карты «Мир», Visa, MasterCard, QR, счёт для организаций</span><span class="m-price">условия</span></a>
+      </div>
+    </div>
+  </section>
 
   <hr class="rule">
 
@@ -2111,31 +2080,236 @@ footer a:hover { color: var(--neon); }
       </div>
     </div>
   </section>
+</div>
+
+<!-- ══════════════ КУРС: ВЗРОСЛАЯ ГРУППА 11+ ══════════════ -->
+<div class="page" data-page="/kursy/vzroslye">
+  <section class="page-head">
+    <div class="eyebrow-cn">成人</div>
+    <div class="wrap">
+      <a class="back" href="/kursy/">← все курсы</a>
+      <div class="sec-head">
+        <span class="label">Курсы и цены</span>
+        <h2>Взрослая группа 11+</h2>
+        <p>Программа с нуля до уверенного разговора: очно во Владимире или онлайн, в группе одного уровня.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="course-block rv" id="t-kursy_kitaiskogo_dlya_vzroslyh" style="margin-top:0">
+      <div>
+        <div class="hz-big">成人</div>
+        <h3>Взрослая группа 11+</h3>
+        <div class="facts-line">ОЧНО И ОНЛАЙН · 2 РАЗА В НЕДЕЛЮ · 90 МИНУТ · 8 МЕСЯЦЕВ</div>
+        <p>Программа с нуля: фонетика и постановка произношения, грамматика, чтение и аудирование, письмо иероглифов. В группе от 5 до 12 человек, все одного уровня.</p>
+        <ul class="ul">
+          <li>В группе 5–12 человек — каждый успевает говорить на занятии</li>
+          <li>Грамматика — с русскоязычным преподавателем</li>
+          <li>Аудирование и разговор — с носителем языка</li>
+          <li>Подготовка к HSK и сдача экзамена в школе</li>
+        </ul>
+        <figure class="shot shot-16" style="margin-top:1.6rem">
+          <img data-img="p_adults" alt="Взрослая группа школы ВОДАО на занятии" loading="lazy">
+          <figcaption>Взрослая группа на занятии · Владимир</figcaption>
+        </figure>
+      </div>
+      <div>
+        <div class="tariffs">
+          <div class="tariff"><span class="qty">5 занятий</span><span class="sum">8 500 ₽</span><span class="per">1 700 ₽ / занятие</span><span class="old">вместо 12 000 ₽</span><button type="button" class="btn pay-btn" data-pay="8500" data-title="Взрослая группа · 5 занятий">Оплатить онлайн</button></div>
+          <div class="tariff"><span class="qty">20 занятий</span><span class="sum">31 000 ₽</span><span class="per">1 550 ₽ / занятие</span><span class="old">вместо 44 000 ₽</span><button type="button" class="btn pay-btn" data-pay="31000" data-title="Взрослая группа · 20 занятий">Оплатить онлайн</button></div>
+          <div class="tariff"><span class="qty">60 занятий · курс</span><span class="sum">84 000 ₽</span><span class="per">1 400 ₽ / занятие</span><span class="old">вместо 140 000 ₽</span><button type="button" class="btn pay-btn" data-pay="84000" data-title="Взрослая группа · 60 занятий">Оплатить онлайн</button></div>
+        </div>
+        <div class="hero-cta" style="opacity:1;animation:none">
+          <a class="btn" href="https://t.me/wodao_online">Записаться в группу</a>
+          <a class="btn ghost" href="/zayavka/">Пробный урок бесплатно</a>
+        </div>
+        <p class="note" style="margin-top:1.2rem">Оплата картой на сайте, чек приходит на почту. Остаток пакета можно перевести в другой формат — сгоревших занятий не будет.</p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="rule" style="margin-top:4rem">
 
   <section>
     <div class="wrap">
       <div class="sec-head">
-        <span class="label">Остальные форматы</span>
-        <h2>Индивидуально, для бизнеса, для экзаменов</h2>
-        <p>Цены — как на странице каждого курса; занятие индивидуально и на ЕГЭ — 60 минут, корпоративное — 90. Не знаете свой уровень — <a href="/test/" style="color:var(--neon-text)">пройдите тест за минуту</a>.</p>
+        <span class="label">Другие курсы</span>
+        <h2 style="font-size:var(--step-2)">Посмотреть остальные форматы</h2>
       </div>
       <div class="mini-list rv">
-        <a class="mini" href="/kursy/" data-scroll="t-individualnye_zanyatiya"><span class="m-cn">外教</span><span class="m-name">Индивидуально с носителем</span><span class="m-desc">Произношение, тоны и живая речь один на один · 60 минут</span><span class="m-price">от 1 900 ₽ / занятие</span></a>
-        <a class="mini" href="/kursy/" data-scroll="t-individualnye-zanyatiya-s-russkim"><span class="m-cn">一对一</span><span class="m-name">Индивидуально с русским</span><span class="m-desc">Грамматика по-русски, программа под вашу цель · 60 минут</span><span class="m-price">от 1 600 ₽ / занятие</span></a>
-        <a class="mini" href="/kursy/" data-scroll="t-ege_po_kitaiskomu"><span class="m-cn">考试</span><span class="m-name">Подготовка к ЕГЭ</span><span class="m-desc">Структура заданий, письмо, аудирование, пробники · группа, 60 минут</span><span class="m-price">от 800 ₽ / занятие</span></a>
-        <a class="mini" href="/" data-scroll="hsk"><span class="m-cn">汉语</span><span class="m-name">Подготовка к HSK</span><span class="m-desc">Любой уровень с 1 по 6, экзамен сдаём в школе</span><span class="m-price">смотреть ступени</span></a>
-        <a class="mini" href="/kursy/" data-scroll="t-korporativnyj-kitajskij"><span class="m-cn">公司</span><span class="m-name">Корпоративное обучение</span><span class="m-desc">Переговоры, переписка, поездки на фабрики · группа или вебинар, 90 минут</span><span class="m-price">от 800 ₽ / занятие</span></a>
-        <a class="mini" href="/kursy/"><span class="m-cn">文化</span><span class="m-name">Китайская культура</span><span class="m-desc">Каллиграфия, чай, гохуа, праздники</span><span class="m-price">бесплатно для учеников</span></a>
-        <a class="mini" href="/kursy/"><span class="m-cn">翻译</span><span class="m-name">Перевод текстов</span><span class="m-desc">Документы, описания, переписка с поставщиками</span><span class="m-price">цена по запросу</span></a>
-        <a class="mini" href="/kursy/"><span class="m-cn">支付</span><span class="m-name">Оплата</span><span class="m-desc">Карты «Мир», Visa, MasterCard, QR, счёт для организаций</span><span class="m-price">условия</span></a>
+        <a class="mini" href="/kursy/deti/"><span class="m-cn">儿童</span><span class="m-name">Детская группа</span><span class="m-desc">Очно и онлайн, 2 раза в неделю по 60 минут</span><span class="m-price">от 1 050 ₽ / занятие</span></a>
+        <a class="mini" href="/kursy/onlain-hsk-3/"><span class="m-cn">在线</span><span class="m-name">Онлайн с нуля до HSK 3</span><span class="m-desc">300+ видеоуроков, домашние задания с проверкой, свой темп</span><span class="m-price">32 000 ₽ за курс</span></a>
+        <a class="mini" href="/kursy/s-nositelem/"><span class="m-cn">外教</span><span class="m-name">Индивидуально с носителем</span><span class="m-desc">Произношение, тоны и живая речь один на один · 60 минут</span><span class="m-price">от 1 900 ₽ / занятие</span></a>
+        <a class="mini" href="/kursy/s-russkim/"><span class="m-cn">一对一</span><span class="m-name">Индивидуально с русским</span><span class="m-desc">Грамматика по-русски, программа под вашу цель · 60 минут</span><span class="m-price">от 1 600 ₽ / занятие</span></a>
+        <a class="mini" href="/kursy/ege/"><span class="m-cn">考试</span><span class="m-name">Подготовка к ЕГЭ</span><span class="m-desc">Структура заданий, письмо, аудирование, пробники · группа, 60 минут</span><span class="m-price">от 800 ₽ / занятие</span></a>
+        <a class="mini" href="/kursy/korporativnyi/"><span class="m-cn">公司</span><span class="m-name">Корпоративный китайский</span><span class="m-desc">Переговоры, переписка, поездки на фабрики · группа или вебинар, 90 минут</span><span class="m-price">от 800 ₽ / занятие</span></a>
       </div>
+      <p class="note" style="margin-top:1.6rem">Вопросы перед первым занятием — <a href="/kursy/" data-scroll="faq" style="color:var(--neon-text)">на странице курсов</a>. Не знаете свой уровень — <a href="/test/" style="color:var(--neon-text)">тест за минуту</a>.</p>
+    </div>
+  </section>
+</div>
 
-    <div class="sec-head" style="margin-top:3.5rem"><span class="label">Цены</span><h2 style="font-size:var(--step-2)">Индивидуально, ЕГЭ, корпоративно</h2></div>
-    <div class="course-block rv" id="t-individualnye_zanyatiya">
+<!-- ══════════════ КУРС: ДЕТСКАЯ ГРУППА 6+ ══════════════ -->
+<div class="page" data-page="/kursy/deti">
+  <section class="page-head">
+    <div class="eyebrow-cn">儿童</div>
+    <div class="wrap">
+      <a class="back" href="/kursy/">← все курсы</a>
+      <div class="sec-head">
+        <span class="label">Курсы и цены</span>
+        <h2>Детская группа 6+</h2>
+        <p>Китайский для детей от шести лет: через рисунок, песни и игру, с обратной связью родителям.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="course-block rv" id="t-kursy_kitaiskogo_dlya_detei" style="margin-top:0">
+      <div>
+        <div class="hz-big">儿童</div>
+        <h3>Детская группа 6+</h3>
+        <div class="facts-line">ОЧНО И ОНЛАЙН · 2 РАЗА В НЕДЕЛЮ · 60 МИНУТ · 8 МЕСЯЦЕВ</div>
+        <p>Дети учат язык через рисунок, песни и игру. Иероглиф сначала картинка, потом слово. Родителям — обратная связь по домашним заданиям.</p>
+        <ul class="ul">
+          <li>Культурные занятия: праздники, традиции, кухня</li>
+          <li>Материалы для занятий — бесплатно</li>
+          <li>Мягкий вход: первая неделя — знакомство</li>
+        </ul>
+        <figure class="shot shot-45" style="margin-top:1.6rem; max-width:340px">
+          <img data-img="p_kids" alt="Ученик детской группы пишет иероглифы кистью" loading="lazy">
+          <figcaption>Первые иероглифы кистью — детская группа</figcaption>
+        </figure>
+      </div>
+      <div>
+        <div class="tariffs">
+          <div class="tariff"><span class="qty">5 занятий</span><span class="sum">6 750 ₽</span><span class="per">1 350 ₽ / занятие</span><span class="old">вместо 12 000 ₽</span><button type="button" class="btn pay-btn" data-pay="6750" data-title="Детская группа · 5 занятий">Оплатить онлайн</button></div>
+          <div class="tariff"><span class="qty">20 занятий</span><span class="sum">24 000 ₽</span><span class="per">1 200 ₽ / занятие</span><span class="old">вместо 44 000 ₽</span><button type="button" class="btn pay-btn" data-pay="24000" data-title="Детская группа · 20 занятий">Оплатить онлайн</button></div>
+          <div class="tariff"><span class="qty">60 занятий · курс</span><span class="sum">63 000 ₽</span><span class="per">1 050 ₽ / занятие</span><span class="old">вместо 120 000 ₽</span><button type="button" class="btn pay-btn" data-pay="63000" data-title="Детская группа · 60 занятий">Оплатить онлайн</button></div>
+        </div>
+        <div class="hero-cta" style="opacity:1;animation:none">
+          <a class="btn" href="https://t.me/wodao_online">Записать ребёнка</a>
+          <a class="btn ghost" href="/zayavka/">Пробный урок бесплатно</a>
+        </div>
+        <p class="note" style="margin-top:1.2rem">Оплата картой на сайте, чек приходит на почту. Остаток пакета можно перевести в другой формат — сгоревших занятий не будет.</p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="rule" style="margin-top:4rem">
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label">Другие курсы</span>
+        <h2 style="font-size:var(--step-2)">Посмотреть остальные форматы</h2>
+      </div>
+      <div class="mini-list rv">
+        <a class="mini" href="/kursy/vzroslye/"><span class="m-cn">成人</span><span class="m-name">Взрослая группа</span><span class="m-desc">Очно и онлайн, 2 раза в неделю по 90 минут</span><span class="m-price">от 1 400 ₽ / занятие</span></a>
+        <a class="mini" href="/kursy/onlain-hsk-3/"><span class="m-cn">在线</span><span class="m-name">Онлайн с нуля до HSK 3</span><span class="m-desc">300+ видеоуроков, домашние задания с проверкой, свой темп</span><span class="m-price">32 000 ₽ за курс</span></a>
+        <a class="mini" href="/kursy/s-nositelem/"><span class="m-cn">外教</span><span class="m-name">Индивидуально с носителем</span><span class="m-desc">Произношение, тоны и живая речь один на один · 60 минут</span><span class="m-price">от 1 900 ₽ / занятие</span></a>
+        <a class="mini" href="/kursy/s-russkim/"><span class="m-cn">一对一</span><span class="m-name">Индивидуально с русским</span><span class="m-desc">Грамматика по-русски, программа под вашу цель · 60 минут</span><span class="m-price">от 1 600 ₽ / занятие</span></a>
+        <a class="mini" href="/kursy/ege/"><span class="m-cn">考试</span><span class="m-name">Подготовка к ЕГЭ</span><span class="m-desc">Структура заданий, письмо, аудирование, пробники · группа, 60 минут</span><span class="m-price">от 800 ₽ / занятие</span></a>
+        <a class="mini" href="/kursy/korporativnyi/"><span class="m-cn">公司</span><span class="m-name">Корпоративный китайский</span><span class="m-desc">Переговоры, переписка, поездки на фабрики · группа или вебинар, 90 минут</span><span class="m-price">от 800 ₽ / занятие</span></a>
+      </div>
+      <p class="note" style="margin-top:1.6rem">Вопросы перед первым занятием — <a href="/kursy/" data-scroll="faq" style="color:var(--neon-text)">на странице курсов</a>. Не знаете свой уровень — <a href="/test/" style="color:var(--neon-text)">тест за минуту</a>.</p>
+    </div>
+  </section>
+</div>
+
+<!-- ══════════════ КУРС: ОНЛАЙН С НУЛЯ ДО HSK 3 ══════════════ -->
+<div class="page" data-page="/kursy/onlain-hsk-3">
+  <section class="page-head">
+    <div class="eyebrow-cn">在线</div>
+    <div class="wrap">
+      <a class="back" href="/kursy/">← все курсы</a>
+      <div class="sec-head">
+        <span class="label">Курсы и цены</span>
+        <h2>Онлайн с нуля до HSK 3</h2>
+        <p>Записанный курс в своём темпе: короткие видео, домашние задания с живой проверкой и чат учеников.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="course-block rv" id="t-kitajskij-s-nulya-do-hsk-3" style="margin-top:0">
+      <div>
+        <div class="hz-big">在线</div>
+        <h3>Онлайн с нуля до HSK 3</h3>
+        <div class="facts-line">300+ ВИДЕОУРОКОВ · 5–10 МИНУТ · 8 МЕСЯЦЕВ · 30–40 МИНУТ В ДЕНЬ</div>
+        <p>Полный путь до третьего уровня экзамена в своём темпе. Короткие видео, домашние задания с ручной проверкой и разбором ошибок, чат учеников и мастер-классы по культуре.</p>
+        <ul class="ul">
+          <li>Пять преподавателей: аудирование, грамматика, иероглифика, разговор, HSK</li>
+          <li>Доступ к материалам без ограничения по времени</li>
+          <li>Рассрочка на 3, 6 или 12 месяцев</li>
+        </ul>
+        <figure class="shot shot-45" style="margin-top:1.6rem; max-width:340px">
+          <img data-img="p_home" alt="Ученица школы за работой на мастер-классе" loading="lazy">
+          <figcaption>Работы проверяет живой преподаватель, а не робот</figcaption>
+        </figure>
+      </div>
+      <div>
+        <div class="tariffs">
+          <div class="tariff"><span class="qty">Полный курс</span><span class="sum">32 000 ₽</span><span class="per">с нуля до HSK 3 · промокод −50 % применён</span><span class="old">вместо 64 000 ₽</span><button type="button" class="btn pay-btn" data-pay="32000" data-title="Онлайн-курс с нуля до HSK 3 · полный">Оплатить онлайн</button></div>
+          <div class="tariff"><span class="qty">Пробный модуль</span><span class="sum">16 000 ₽</span><span class="per">начать и посмотреть · промокод −50 % применён</span><span class="old">вместо 32 000 ₽</span><button type="button" class="btn pay-btn" data-pay="16000" data-title="Онлайн-курс с нуля до HSK 3 · пробный модуль">Оплатить онлайн</button></div>
+        </div>
+        <div class="hero-cta" style="opacity:1;animation:none">
+          <a class="btn" href="https://t.me/wodao_online">Спросить про рассрочку</a>
+          <a class="btn ghost" href="/test/">Проверить свой уровень</a>
+        </div>
+        <p class="note" style="margin-top:1.2rem">Оплата картой на сайте, чек приходит на почту. Остаток пакета можно перевести в другой формат — сгоревших занятий не будет.</p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="rule" style="margin-top:4rem">
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label">Другие курсы</span>
+        <h2 style="font-size:var(--step-2)">Посмотреть остальные форматы</h2>
+      </div>
+      <div class="mini-list rv">
+        <a class="mini" href="/kursy/vzroslye/"><span class="m-cn">成人</span><span class="m-name">Взрослая группа</span><span class="m-desc">Очно и онлайн, 2 раза в неделю по 90 минут</span><span class="m-price">от 1 400 ₽ / занятие</span></a>
+        <a class="mini" href="/kursy/deti/"><span class="m-cn">儿童</span><span class="m-name">Детская группа</span><span class="m-desc">Очно и онлайн, 2 раза в неделю по 60 минут</span><span class="m-price">от 1 050 ₽ / занятие</span></a>
+        <a class="mini" href="/kursy/s-nositelem/"><span class="m-cn">外教</span><span class="m-name">Индивидуально с носителем</span><span class="m-desc">Произношение, тоны и живая речь один на один · 60 минут</span><span class="m-price">от 1 900 ₽ / занятие</span></a>
+        <a class="mini" href="/kursy/s-russkim/"><span class="m-cn">一对一</span><span class="m-name">Индивидуально с русским</span><span class="m-desc">Грамматика по-русски, программа под вашу цель · 60 минут</span><span class="m-price">от 1 600 ₽ / занятие</span></a>
+        <a class="mini" href="/kursy/ege/"><span class="m-cn">考试</span><span class="m-name">Подготовка к ЕГЭ</span><span class="m-desc">Структура заданий, письмо, аудирование, пробники · группа, 60 минут</span><span class="m-price">от 800 ₽ / занятие</span></a>
+        <a class="mini" href="/kursy/korporativnyi/"><span class="m-cn">公司</span><span class="m-name">Корпоративный китайский</span><span class="m-desc">Переговоры, переписка, поездки на фабрики · группа или вебинар, 90 минут</span><span class="m-price">от 800 ₽ / занятие</span></a>
+      </div>
+      <p class="note" style="margin-top:1.6rem">Вопросы перед первым занятием — <a href="/kursy/" data-scroll="faq" style="color:var(--neon-text)">на странице курсов</a>. Не знаете свой уровень — <a href="/test/" style="color:var(--neon-text)">тест за минуту</a>.</p>
+    </div>
+  </section>
+</div>
+
+<!-- ══════════════ КУРС: ИНДИВИДУАЛЬНО С НОСИТЕЛЕМ ══════════════ -->
+<div class="page" data-page="/kursy/s-nositelem">
+  <section class="page-head">
+    <div class="eyebrow-cn">外教</div>
+    <div class="wrap">
+      <a class="back" href="/kursy/">← все курсы</a>
+      <div class="sec-head">
+        <span class="label">Курсы и цены</span>
+        <h2>Индивидуально с носителем</h2>
+        <p>Один на один с преподавателем из Китая: произношение, тоны и живая речь без посредников.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="course-block rv" id="t-individualnye_zanyatiya" style="margin-top:0">
       <div>
         <div class="hz-big">外教</div>
         <h3>Индивидуально с носителем</h3>
         <div class="facts-line">ОЧНО ИЛИ ОНЛАЙН · 60 МИНУТ · 1 ЗАНЯТИЕ — 2 200 ₽</div>
+        <p>Занятия один на один с носителем языка. Главное здесь — речь: вы говорите большую часть урока, преподаватель поправляет тоны и произношение сразу, а темы подбираем под вашу цель — работа, поездка, экзамен.</p>
+        <ul class="ul">
+          <li>Время занятий подбираем под ваш график</li>
+          <li>Программа под задачу: переговоры, путешествие, HSK</li>
+          <li>Очно во Владимире или онлайн из любого города</li>
+          <li>Остаток пакета можно перевести в группу — и обратно</li>
+        </ul>
       </div>
       <div>
         <div class="tariffs">
@@ -2143,13 +2317,63 @@ footer a:hover { color: var(--neon); }
           <div class="tariff"><span class="qty">20 занятий</span><span class="sum">40 000 ₽</span><span class="per">2 000 ₽ / занятие</span><button type="button" class="btn pay-btn" data-pay="40000" data-title="Индивидуально с носителем · 20 занятий">Оплатить онлайн</button></div>
           <div class="tariff"><span class="qty">60 занятий</span><span class="sum">114 000 ₽</span><span class="per">1 900 ₽ / занятие</span><button type="button" class="btn pay-btn" data-pay="114000" data-title="Индивидуально с носителем · 60 занятий">Оплатить онлайн</button></div>
         </div>
+        <div class="hero-cta" style="opacity:1;animation:none">
+          <a class="btn" href="https://t.me/wodao_online">Подобрать преподавателя</a>
+          <a class="btn ghost" href="/zayavka/">Оставить заявку</a>
+        </div>
+        <p class="note" style="margin-top:1.2rem">Оплата картой на сайте, чек приходит на почту. Остаток пакета можно перевести в другой формат — сгоревших занятий не будет.</p>
       </div>
     </div>
-    <div class="course-block rv" id="t-individualnye-zanyatiya-s-russkim">
+  </div>
+
+  <hr class="rule" style="margin-top:4rem">
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label">Другие курсы</span>
+        <h2 style="font-size:var(--step-2)">Посмотреть остальные форматы</h2>
+      </div>
+      <div class="mini-list rv">
+        <a class="mini" href="/kursy/vzroslye/"><span class="m-cn">成人</span><span class="m-name">Взрослая группа</span><span class="m-desc">Очно и онлайн, 2 раза в неделю по 90 минут</span><span class="m-price">от 1 400 ₽ / занятие</span></a>
+        <a class="mini" href="/kursy/deti/"><span class="m-cn">儿童</span><span class="m-name">Детская группа</span><span class="m-desc">Очно и онлайн, 2 раза в неделю по 60 минут</span><span class="m-price">от 1 050 ₽ / занятие</span></a>
+        <a class="mini" href="/kursy/onlain-hsk-3/"><span class="m-cn">在线</span><span class="m-name">Онлайн с нуля до HSK 3</span><span class="m-desc">300+ видеоуроков, домашние задания с проверкой, свой темп</span><span class="m-price">32 000 ₽ за курс</span></a>
+        <a class="mini" href="/kursy/s-russkim/"><span class="m-cn">一对一</span><span class="m-name">Индивидуально с русским</span><span class="m-desc">Грамматика по-русски, программа под вашу цель · 60 минут</span><span class="m-price">от 1 600 ₽ / занятие</span></a>
+        <a class="mini" href="/kursy/ege/"><span class="m-cn">考试</span><span class="m-name">Подготовка к ЕГЭ</span><span class="m-desc">Структура заданий, письмо, аудирование, пробники · группа, 60 минут</span><span class="m-price">от 800 ₽ / занятие</span></a>
+        <a class="mini" href="/kursy/korporativnyi/"><span class="m-cn">公司</span><span class="m-name">Корпоративный китайский</span><span class="m-desc">Переговоры, переписка, поездки на фабрики · группа или вебинар, 90 минут</span><span class="m-price">от 800 ₽ / занятие</span></a>
+      </div>
+      <p class="note" style="margin-top:1.6rem">Вопросы перед первым занятием — <a href="/kursy/" data-scroll="faq" style="color:var(--neon-text)">на странице курсов</a>. Не знаете свой уровень — <a href="/test/" style="color:var(--neon-text)">тест за минуту</a>.</p>
+    </div>
+  </section>
+</div>
+
+<!-- ══════════════ КУРС: ИНДИВИДУАЛЬНО С РУССКИМ ПРЕПОДАВАТЕЛЕМ ══════════════ -->
+<div class="page" data-page="/kursy/s-russkim">
+  <section class="page-head">
+    <div class="eyebrow-cn">一对一</div>
+    <div class="wrap">
+      <a class="back" href="/kursy/">← все курсы</a>
+      <div class="sec-head">
+        <span class="label">Курсы и цены</span>
+        <h2>Индивидуально с русским преподавателем</h2>
+        <p>Грамматика и иероглифика по-русски, программа под вашу цель и ваш темп.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="course-block rv" id="t-individualnye-zanyatiya-s-russkim" style="margin-top:0">
       <div>
         <div class="hz-big">一对一</div>
         <h3>Индивидуально с русским преподавателем</h3>
         <div class="facts-line">ОЧНО ИЛИ ОНЛАЙН · 60 МИНУТ · 1 ЗАНЯТИЕ — 1 800 ₽</div>
+        <p>Русскоязычный преподаватель с подтверждённым HSK объясняет грамматику на родном языке — так быстрее понять логику языка. Подходит с полного нуля, для подготовки к экзамену или чтобы догнать группу.</p>
+        <ul class="ul">
+          <li>Грамматика и иероглифика объясняются по-русски</li>
+          <li>Программа под вашу цель: HSK, ЕГЭ, работа, учёба в Китае</li>
+          <li>Очно во Владимире или онлайн</li>
+          <li>Можно совмещать с занятиями у носителя</li>
+        </ul>
       </div>
       <div>
         <div class="tariffs">
@@ -2157,13 +2381,63 @@ footer a:hover { color: var(--neon); }
           <div class="tariff"><span class="qty">20 занятий</span><span class="sum">34 000 ₽</span><span class="per">1 700 ₽ / занятие</span><button type="button" class="btn pay-btn" data-pay="34000" data-title="Индивидуально с русским преподавателем · 20 занятий">Оплатить онлайн</button></div>
           <div class="tariff"><span class="qty">60 занятий</span><span class="sum">96 000 ₽</span><span class="per">1 600 ₽ / занятие</span><button type="button" class="btn pay-btn" data-pay="96000" data-title="Индивидуально с русским преподавателем · 60 занятий">Оплатить онлайн</button></div>
         </div>
+        <div class="hero-cta" style="opacity:1;animation:none">
+          <a class="btn" href="https://t.me/wodao_online">Подобрать преподавателя</a>
+          <a class="btn ghost" href="/zayavka/">Оставить заявку</a>
+        </div>
+        <p class="note" style="margin-top:1.2rem">Оплата картой на сайте, чек приходит на почту. Остаток пакета можно перевести в другой формат — сгоревших занятий не будет.</p>
       </div>
     </div>
-    <div class="course-block rv" id="t-ege_po_kitaiskomu">
+  </div>
+
+  <hr class="rule" style="margin-top:4rem">
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label">Другие курсы</span>
+        <h2 style="font-size:var(--step-2)">Посмотреть остальные форматы</h2>
+      </div>
+      <div class="mini-list rv">
+        <a class="mini" href="/kursy/vzroslye/"><span class="m-cn">成人</span><span class="m-name">Взрослая группа</span><span class="m-desc">Очно и онлайн, 2 раза в неделю по 90 минут</span><span class="m-price">от 1 400 ₽ / занятие</span></a>
+        <a class="mini" href="/kursy/deti/"><span class="m-cn">儿童</span><span class="m-name">Детская группа</span><span class="m-desc">Очно и онлайн, 2 раза в неделю по 60 минут</span><span class="m-price">от 1 050 ₽ / занятие</span></a>
+        <a class="mini" href="/kursy/onlain-hsk-3/"><span class="m-cn">在线</span><span class="m-name">Онлайн с нуля до HSK 3</span><span class="m-desc">300+ видеоуроков, домашние задания с проверкой, свой темп</span><span class="m-price">32 000 ₽ за курс</span></a>
+        <a class="mini" href="/kursy/s-nositelem/"><span class="m-cn">外教</span><span class="m-name">Индивидуально с носителем</span><span class="m-desc">Произношение, тоны и живая речь один на один · 60 минут</span><span class="m-price">от 1 900 ₽ / занятие</span></a>
+        <a class="mini" href="/kursy/ege/"><span class="m-cn">考试</span><span class="m-name">Подготовка к ЕГЭ</span><span class="m-desc">Структура заданий, письмо, аудирование, пробники · группа, 60 минут</span><span class="m-price">от 800 ₽ / занятие</span></a>
+        <a class="mini" href="/kursy/korporativnyi/"><span class="m-cn">公司</span><span class="m-name">Корпоративный китайский</span><span class="m-desc">Переговоры, переписка, поездки на фабрики · группа или вебинар, 90 минут</span><span class="m-price">от 800 ₽ / занятие</span></a>
+      </div>
+      <p class="note" style="margin-top:1.6rem">Вопросы перед первым занятием — <a href="/kursy/" data-scroll="faq" style="color:var(--neon-text)">на странице курсов</a>. Не знаете свой уровень — <a href="/test/" style="color:var(--neon-text)">тест за минуту</a>.</p>
+    </div>
+  </section>
+</div>
+
+<!-- ══════════════ КУРС: ПОДГОТОВКА К ЕГЭ ПО КИТАЙСКОМУ ══════════════ -->
+<div class="page" data-page="/kursy/ege">
+  <section class="page-head">
+    <div class="eyebrow-cn">考试</div>
+    <div class="wrap">
+      <a class="back" href="/kursy/">← все курсы</a>
+      <div class="sec-head">
+        <span class="label">Курсы и цены</span>
+        <h2>Подготовка к ЕГЭ по китайскому</h2>
+        <p>Структура экзамена, письмо, аудирование и пробники — в небольшой группе школьников.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="course-block rv" id="t-ege_po_kitaiskomu" style="margin-top:0">
       <div>
         <div class="hz-big">考试</div>
         <h3>Подготовка к ЕГЭ по китайскому</h3>
         <div class="facts-line">В ГРУППЕ, ОЧНО ИЛИ ОНЛАЙН · 60 МИНУТ · 1 ЗАНЯТИЕ — 1 000 ₽</div>
+        <p>Разбираем каждый раздел ЕГЭ по китайскому: аудирование, чтение, лексика и грамматика, письмо. Пишем пробные варианты в формате экзамена и учимся распределять время.</p>
+        <ul class="ul">
+          <li>Задания по структуре ЕГЭ, с разбором типичных ошибок</li>
+          <li>Пробные экзамены с оценкой по критериям</li>
+          <li>Небольшая группа — преподаватель видит каждого</li>
+          <li>Очно во Владимире или онлайн</li>
+        </ul>
       </div>
       <div>
         <div class="tariffs">
@@ -2171,13 +2445,63 @@ footer a:hover { color: var(--neon); }
           <div class="tariff"><span class="qty">20 занятий</span><span class="sum">18 000 ₽</span><span class="per">900 ₽ / занятие</span><button type="button" class="btn pay-btn" data-pay="18000" data-title="Подготовка к ЕГЭ · 20 занятий">Оплатить онлайн</button></div>
           <div class="tariff"><span class="qty">60 занятий</span><span class="sum">48 000 ₽</span><span class="per">800 ₽ / занятие</span><button type="button" class="btn pay-btn" data-pay="48000" data-title="Подготовка к ЕГЭ · 60 занятий">Оплатить онлайн</button></div>
         </div>
+        <div class="hero-cta" style="opacity:1;animation:none">
+          <a class="btn" href="https://t.me/wodao_online">Записаться в группу</a>
+          <a class="btn ghost" href="/test/">Проверить уровень</a>
+        </div>
+        <p class="note" style="margin-top:1.2rem">Оплата картой на сайте, чек приходит на почту. Остаток пакета можно перевести в другой формат — сгоревших занятий не будет.</p>
       </div>
     </div>
-    <div class="course-block rv" id="t-korporativnyj-kitajskij">
+  </div>
+
+  <hr class="rule" style="margin-top:4rem">
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label">Другие курсы</span>
+        <h2 style="font-size:var(--step-2)">Посмотреть остальные форматы</h2>
+      </div>
+      <div class="mini-list rv">
+        <a class="mini" href="/kursy/vzroslye/"><span class="m-cn">成人</span><span class="m-name">Взрослая группа</span><span class="m-desc">Очно и онлайн, 2 раза в неделю по 90 минут</span><span class="m-price">от 1 400 ₽ / занятие</span></a>
+        <a class="mini" href="/kursy/deti/"><span class="m-cn">儿童</span><span class="m-name">Детская группа</span><span class="m-desc">Очно и онлайн, 2 раза в неделю по 60 минут</span><span class="m-price">от 1 050 ₽ / занятие</span></a>
+        <a class="mini" href="/kursy/onlain-hsk-3/"><span class="m-cn">在线</span><span class="m-name">Онлайн с нуля до HSK 3</span><span class="m-desc">300+ видеоуроков, домашние задания с проверкой, свой темп</span><span class="m-price">32 000 ₽ за курс</span></a>
+        <a class="mini" href="/kursy/s-nositelem/"><span class="m-cn">外教</span><span class="m-name">Индивидуально с носителем</span><span class="m-desc">Произношение, тоны и живая речь один на один · 60 минут</span><span class="m-price">от 1 900 ₽ / занятие</span></a>
+        <a class="mini" href="/kursy/s-russkim/"><span class="m-cn">一对一</span><span class="m-name">Индивидуально с русским</span><span class="m-desc">Грамматика по-русски, программа под вашу цель · 60 минут</span><span class="m-price">от 1 600 ₽ / занятие</span></a>
+        <a class="mini" href="/kursy/korporativnyi/"><span class="m-cn">公司</span><span class="m-name">Корпоративный китайский</span><span class="m-desc">Переговоры, переписка, поездки на фабрики · группа или вебинар, 90 минут</span><span class="m-price">от 800 ₽ / занятие</span></a>
+      </div>
+      <p class="note" style="margin-top:1.6rem">Вопросы перед первым занятием — <a href="/kursy/" data-scroll="faq" style="color:var(--neon-text)">на странице курсов</a>. Не знаете свой уровень — <a href="/test/" style="color:var(--neon-text)">тест за минуту</a>.</p>
+    </div>
+  </section>
+</div>
+
+<!-- ══════════════ КУРС: КОРПОРАТИВНЫЙ КИТАЙСКИЙ ══════════════ -->
+<div class="page" data-page="/kursy/korporativnyi">
+  <section class="page-head">
+    <div class="eyebrow-cn">公司</div>
+    <div class="wrap">
+      <a class="back" href="/kursy/">← все курсы</a>
+      <div class="sec-head">
+        <span class="label">Курсы и цены</span>
+        <h2>Корпоративный китайский</h2>
+        <p>Китайский для команды: переговоры, переписка с поставщиками, поездки на фабрики.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="course-block rv" id="t-korporativnyj-kitajskij" style="margin-top:0">
       <div>
         <div class="hz-big">公司</div>
         <h3>Корпоративный китайский</h3>
         <div class="facts-line">ГРУППА ОЧНО ИЛИ ВЕБИНАР · 90 МИНУТ · 1 ЗАНЯТИЕ — 1 000 ₽ С ЧЕЛОВЕКА</div>
+        <p>Группа для сотрудников одной компании — у вас в офисе, у нас в школе или вебинаром. Программа под вашу отрасль: деловая переписка, переговоры, деловой этикет и то, что понадобится в поездке.</p>
+        <ul class="ul">
+          <li>Лексика вашей отрасли и реальные ситуации из работы</li>
+          <li>Занятия в офисе, в школе или онлайн — как удобнее команде</li>
+          <li>Счёт и договор для организации, закрывающие документы</li>
+          <li>Цена — за одного человека в группе</li>
+        </ul>
       </div>
       <div>
         <div class="tariffs">
@@ -2185,11 +2509,36 @@ footer a:hover { color: var(--neon); }
           <div class="tariff"><span class="qty">20 занятий</span><span class="sum">18 000 ₽</span><span class="per">900 ₽ / занятие</span><button type="button" class="btn pay-btn" data-pay="18000" data-title="Корпоративный китайский · 20 занятий">Оплатить онлайн</button></div>
           <div class="tariff"><span class="qty">60 занятий</span><span class="sum">48 000 ₽</span><span class="per">800 ₽ / занятие</span><button type="button" class="btn pay-btn" data-pay="48000" data-title="Корпоративный китайский · 60 занятий">Оплатить онлайн</button></div>
         </div>
+        <div class="hero-cta" style="opacity:1;animation:none">
+          <a class="btn" href="https://t.me/wodao_online">Обсудить программу</a>
+          <a class="btn ghost" href="/zayavka/">Оставить заявку</a>
+        </div>
+        <p class="note" style="margin-top:1.2rem">Оплата картой на сайте, чек приходит на почту. Остаток пакета можно перевести в другой формат — сгоревших занятий не будет.</p>
       </div>
     </div>
+  </div>
+
+  <hr class="rule" style="margin-top:4rem">
+
+  <section>
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label">Другие курсы</span>
+        <h2 style="font-size:var(--step-2)">Посмотреть остальные форматы</h2>
+      </div>
+      <div class="mini-list rv">
+        <a class="mini" href="/kursy/vzroslye/"><span class="m-cn">成人</span><span class="m-name">Взрослая группа</span><span class="m-desc">Очно и онлайн, 2 раза в неделю по 90 минут</span><span class="m-price">от 1 400 ₽ / занятие</span></a>
+        <a class="mini" href="/kursy/deti/"><span class="m-cn">儿童</span><span class="m-name">Детская группа</span><span class="m-desc">Очно и онлайн, 2 раза в неделю по 60 минут</span><span class="m-price">от 1 050 ₽ / занятие</span></a>
+        <a class="mini" href="/kursy/onlain-hsk-3/"><span class="m-cn">在线</span><span class="m-name">Онлайн с нуля до HSK 3</span><span class="m-desc">300+ видеоуроков, домашние задания с проверкой, свой темп</span><span class="m-price">32 000 ₽ за курс</span></a>
+        <a class="mini" href="/kursy/s-nositelem/"><span class="m-cn">外教</span><span class="m-name">Индивидуально с носителем</span><span class="m-desc">Произношение, тоны и живая речь один на один · 60 минут</span><span class="m-price">от 1 900 ₽ / занятие</span></a>
+        <a class="mini" href="/kursy/s-russkim/"><span class="m-cn">一对一</span><span class="m-name">Индивидуально с русским</span><span class="m-desc">Грамматика по-русски, программа под вашу цель · 60 минут</span><span class="m-price">от 1 600 ₽ / занятие</span></a>
+        <a class="mini" href="/kursy/ege/"><span class="m-cn">考试</span><span class="m-name">Подготовка к ЕГЭ</span><span class="m-desc">Структура заданий, письмо, аудирование, пробники · группа, 60 минут</span><span class="m-price">от 800 ₽ / занятие</span></a>
+      </div>
+      <p class="note" style="margin-top:1.6rem">Вопросы перед первым занятием — <a href="/kursy/" data-scroll="faq" style="color:var(--neon-text)">на странице курсов</a>. Не знаете свой уровень — <a href="/test/" style="color:var(--neon-text)">тест за минуту</a>.</p>
     </div>
   </section>
 </div>
+
 
 <!-- ══════════════ ПРЕПОДАВАТЕЛИ ══════════════ -->
 <div class="page" data-page="/prepodavateli">
@@ -3063,7 +3412,7 @@ footer a:hover { color: var(--neon); }
             <div class="line"><dt><span class="cn">电话</span>Телефон</dt><dd><a href="tel:+79106775143">+7 (910) 677-51-43</a> — Telegram и WhatsApp</dd></div>
             <div class="line"><dt><span class="cn">邮件</span>Почта</dt><dd><a href="mailto:wodao@yandex.ru">wodao@yandex.ru</a></dd></div>
             <div class="line"><dt><span class="cn">时间</span>Часы</dt><dd>Пн–Пт, 9:30–18:30</dd></div>
-            <div class="line"><dt><span class="cn">课表</span>Расписание</dt><dd><a href="/kursy/">Расписание групп</a></dd></div>
+            <div class="line"><dt><span class="cn">课表</span>Расписание</dt><dd><a href="/">Расписание групп</a></dd></div>
             <div class="line"><dt><span class="cn">信息</span>Реквизиты</dt><dd><a href="/litsenziya/">Информация об организации</a></dd></div>
           </dl>
         </div>
@@ -5334,7 +5683,7 @@ footer a:hover { color: var(--neon); }
       var a = e.target.closest("a[href]");
       if (!a || e.metaKey || e.ctrlKey || e.shiftKey || a.target === "_blank") return;
       var href = a.getAttribute("href");
-      if (!/^\/[a-z-]*\/?$/.test(href)) return;
+      if (!/^\/[a-z0-9-]*(\/[a-z0-9-]+)?\/?$/.test(href)) return;
       var r = href.replace(/\/+$/, "") || "/";
       if (ROUTES.indexOf(r) < 0) return;
       e.preventDefault();
@@ -5355,7 +5704,10 @@ footer a:hover { color: var(--neon); }
       pages[0].classList.add("active");
       route = "/";
     }
-    navLinks.forEach(function (a) { a.classList.toggle("on", a.dataset.route === route); });
+    navLinks.forEach(function (a) {
+      var r = a.dataset.route;
+      a.classList.toggle("on", !!r && (r === route || (!a.closest(".sub") && route.indexOf(r + "/") === 0)));
+    });
     nav.classList.remove("open");
     burger.setAttribute("aria-expanded", "false");
 
