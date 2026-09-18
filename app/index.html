@@ -169,7 +169,7 @@ html.no-tg .fallback { display: block; }
 
 <div class="sheet" id="sheet">
   <div class="sum"><span id="sum-what">—</span><span class="price" id="sum-price"></span></div>
-  <div class="mail"><input type="email" id="email" placeholder="Почта для чека" autocomplete="email" inputmode="email"></div>
+  <div class="mail"><input type="email" id="email" placeholder="Почта для чека (необязательно)" autocomplete="email" inputmode="email"></div>
   <div class="err" id="err" hidden></div>
   <div class="fine">Нажимая «Занять», вы соглашаетесь с <a href="https://wodao.ru/oferta/" target="_blank">офертой</a> и <a href="https://wodao.ru/policy/" target="_blank">политикой обработки персональных данных</a>. Имя и номер телефона берутся из Telegram.</div>
   <div class="fallback"><a class="btn" href="https://t.me/wodaobbot?start=kovorking">Открыть в Telegram</a><div class="fine">Бронь работает внутри Telegram — откройте бота и нажмите «Занять место».</div></div>
@@ -386,11 +386,17 @@ html.no-tg .fallback { display: block; }
   function send() {
     var s = summary(); if (!s) return;
     var m = email.value.trim(), err = document.getElementById("err");
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m)) { err.textContent = "Укажите почту — на неё придёт чек."; err.hidden = false; email.focus(); return; }
-    try { localStorage.setItem("wodao-email", m); } catch (e) {}
-    if (cloud) try { TG.CloudStorage.setItem("email", m, function () {}); } catch (e) {}
+    function fail(text) { err.textContent = text; err.hidden = false; if (TG) try { TG.showAlert(text); } catch (e) {} }
+    /* почта не обязательна: чек уходит на телефон из Telegram; неверную почту не пропускаем */
+    if (m && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m)) { fail("Почта с ошибкой — поправьте или оставьте поле пустым, чек придёт на телефон."); email.focus(); return; }
+    if (m) {
+      try { localStorage.setItem("wodao-email", m); } catch (e) {}
+      if (cloud) try { TG.CloudStorage.setItem("email", m, function () {}); } catch (e) {}
+    }
     s.data.email = m;
-    if (!inTG) { err.textContent = "Откройте через бота @wodaobbot — там появится оплата."; err.hidden = false; return; }
+    if (!inTG) { fail("Откройте через бота @wodaobbot — там появится оплата."); return; }
+    /* из инлайн-кнопки sendData не доходит до бота — предупреждаем, а не молчим */
+    if (TG.initDataUnsafe && TG.initDataUnsafe.query_id) { fail("Откройте план кнопкой «Занять место» внизу чата — из этой кнопки бронь не уходит."); return; }
     try { TG.HapticFeedback.notificationOccurred("success"); } catch (e) {}
     TG.sendData(JSON.stringify(s.data));
   }
