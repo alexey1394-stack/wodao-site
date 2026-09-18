@@ -1295,10 +1295,40 @@ html.pay-ready .tariff .pay-btn { width: 100%; justify-content: center; }
 .seat-legend .l-pick i { background: var(--cinnabar); border-color: var(--cinnabar); }
 
 .rooms { display: grid; grid-template-columns: 1fr; gap: .8rem; align-content: start; }
-.room .busy { font-family: var(--f-mono); font-size: var(--step--2); line-height: 1.55; color: var(--ink-2); margin-top: .45rem; display: grid; grid-template-columns: auto 1fr; gap: .1rem .7rem; }
-.room .busy b { grid-column: 1 / -1; }
-.room .busy .bd { color: var(--ink-3); white-space: nowrap; }
-.room .busy .bd.today { color: var(--neon-text); }
+.room .busy { font-family: var(--f-mono); font-size: var(--step--2); line-height: 1.5; color: var(--ink-2); margin-top: .5rem; padding-top: .5rem; border-top: 1px solid var(--hairline-2); }
+.room[aria-pressed="true"] .busy { border-color: color-mix(in oklab, var(--paper) 25%, transparent); }
+.room .slot-pick { display: block; margin-top: .2rem; color: var(--neon-text); }
+.room[aria-pressed="true"] .slot-pick { color: var(--paper); }
+
+/* свободное время залов на неделю — отдельной сеткой под планом, время нажимается */
+.halls-week { margin-top: 2rem; border: 1px solid var(--hairline); border-radius: 3px; background: var(--paper-2); padding: 1.4rem clamp(1rem, 3vw, 2rem) 1.6rem; }
+.hw-top h3 { font-size: var(--step-1); margin-top: .5rem; }
+.hw-top p { color: var(--ink-2); font-size: var(--step--1); margin-top: .5rem; }
+.hw-grid { display: grid; grid-template-columns: 7.5rem 1fr 1fr; margin-top: 1.2rem; }
+.hw-grid > * { padding: .75rem .6rem; border-top: 1px solid var(--hairline-2); }
+.hw-head { font-family: var(--f-mono); font-size: var(--step--2); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-3); border-top: 0 !important; padding-bottom: .4rem; }
+.hw-head b { color: var(--ink); font-weight: 600; }
+.hw-day { font-family: var(--f-mono); font-size: var(--step--2); color: var(--ink-2); line-height: 1.5; }
+.hw-day.today { color: var(--neon-text); }
+.hw-day small { display: block; color: var(--ink-3); }
+.hw-cell { display: flex; flex-wrap: wrap; gap: .45rem; align-content: flex-start; }
+.hw-lab { display: none; }
+.hw-none { font-family: var(--f-mono); font-size: var(--step--2); color: var(--ink-3); padding: .35rem 0; }
+.slot {
+  font: inherit; font-family: var(--f-mono); font-size: var(--step--2); letter-spacing: .04em; cursor: pointer;
+  padding: .4rem .7rem; border-radius: 2px; color: var(--neon-text);
+  background: color-mix(in oklab, var(--neon) 12%, var(--paper)); border: 1px solid color-mix(in oklab, var(--neon) 40%, var(--hairline));
+  transition: border-color .2s, transform .2s, background .2s;
+}
+.slot:hover { border-color: var(--neon); transform: translateY(-2px); }
+.slot.on { background: var(--cinnabar); border-color: var(--cinnabar); color: var(--seal-text); }
+@media (max-width: 700px) {
+  .hw-grid { grid-template-columns: 1fr; }
+  .hw-head { display: none; }
+  .hw-day { padding-top: 1rem; border-top: 1px solid var(--hairline); }
+  .hw-cell { border-top: 0; padding-top: .2rem; }
+  .hw-lab { display: block; width: 100%; font-family: var(--f-mono); font-size: var(--step--2); color: var(--ink-3); letter-spacing: .1em; }
+}
 .room .busy b { color: var(--cinnabar); font-weight: 600; }
 .room[aria-pressed="true"] .busy, .room[aria-pressed="true"] .busy b { color: color-mix(in oklab, var(--paper) 80%, transparent); }
 .room {
@@ -3031,6 +3061,7 @@ footer a:hover { color: var(--neon); }
           </div>
           <p class="seat-legend"><span class="l-free"><i></i>свободно — можно бронировать</span><span class="l-taken"><i></i>занято резидентом, дата — до какого числа</span><span class="l-pick"><i></i>ваш выбор</span></p>
           </div>
+          </div>
 
           <div class="legend">
             <span><i></i> свободно</span>
@@ -3055,6 +3086,15 @@ footer a:hover { color: var(--neon); }
           <a class="btn ghost" href="tel:+79106775143">Позвонить: +7 (910) 677-51-43</a>
           <p class="hintline">Бронь подтверждает администратор — он проверит, свободно ли выбранное место на нужную дату, и ответит в течение рабочего дня.</p>
         </aside>
+      </div>
+
+      <div class="halls-week" id="halls-week">
+        <div class="hw-top">
+          <span class="label">Залы</span>
+          <h3>Свободное время залов на ближайшие 7 дней</h3>
+          <p>Нажмите на время — зал и часы попадут в бронь справа. Во время уроков залы не сдаются.</p>
+        </div>
+        <div class="hw-grid" id="hw-grid"></div>
       </div>
     </div>
   </section>
@@ -5480,6 +5520,7 @@ footer a:hover { color: var(--neon); }
 
     var PRICE = { day: 656, month: 6560, room: 1500 };
     var seats = new Set(), rooms = new Set(), tariff = "day";
+    var СЛОТЫ;                                                 /* заполняется ниже, у сетки залов */
 
     var pickedEl = document.getElementById("picked");
     var sumEl = document.getElementById("total-sum");
@@ -5500,7 +5541,7 @@ footer a:hover { color: var(--neon); }
       var parts = [];
       if (list.length) parts.push("<b>" + list.join(", ") + "</b> — " + list.length +
         (list.length === 1 ? " место" : (list.length < 5 ? " места" : " мест")));
-      if (rl.length) parts.push("<b>" + rl.join(" и ") + "</b>");
+      if (rl.length) parts.push(rl.map(function (n) { return "<b>" + n + "</b>" + (СЛОТЫ[n] ? " · " + СЛОТЫ[n] : ""); }).join("<br>"));
       pickedEl.innerHTML = parts.length
         ? parts.join("<br>")
         : "Место пока не выбрано. Нажмите на квадрат в плане — можно выбрать несколько.";
@@ -5541,7 +5582,7 @@ footer a:hover { color: var(--neon); }
       var msg = "Здравствуйте! Хочу забронировать в коворкинге ВОДАО";
       if (list.length) msg += ": " + (list.length === 1 ? "место " : "места ") + list.join(", ") +
         " (тариф «" + (tariff === "day" ? "день" : "месяц") + "», " + money(seatSum) + ")";
-      if (rl.length) msg += (list.length ? ", а также " : ": ") + rl.join(" и ") + " почасово";
+      if (rl.length) msg += (list.length ? ", а также " : ": ") + rl.map(function (n) { return n + (СЛОТЫ[n] ? " — " + СЛОТЫ[n] : " почасово"); }).join(" и ");
       msg += ". Подскажите, свободно ли?";
       btn.href = "https://t.me/wodao_online?text=" + encodeURIComponent(msg);
     }
@@ -5559,11 +5600,13 @@ footer a:hover { color: var(--neon); }
     /* залы во время уроков не сдаются — часы занятий из CRM по дням недели (пишет расписание.py).
        Алексей 18.09.2026: показываем не занятое, а СВОБОДНОЕ время на ближайшие семь дней. */
     /*ЗАЛЫ-START*/var ЗАЛЫ = {"big": {"пт": ["16:30–18:00", "18:00–19:30", "19:30–21:00"], "вт": ["10:30–11:00", "16:30–18:00", "18:00–19:30", "19:30–21:00"], "сб": ["12:00–13:00", "15:00–16:30", "17:00–18:00", "17:00–18:30"], "ср": ["10:00–11:00", "17:00–18:30"], "пн": ["17:00–18:00", "18:30–20:00"], "чт": ["16:00–17:00", "17:00–18:00", "18:30–20:00"]}, "small": {"сб": ["12:00–13:30", "13:00–14:00", "14:00–15:00", "15:00–16:00"], "пт": ["15:00–16:00", "17:00–18:00", "19:00–20:00"], "чт": ["09:00–10:00", "18:00–19:00", "19:00–20:00"], "вт": ["15:00–16:00", "17:00–18:00", "19:00–20:00"], "ср": ["12:00–13:00"], "пн": ["18:00–19:00"]}};/*ЗАЛЫ-END*/
+    СЛОТЫ = {};                                                /* зал → выбранное время «сб 19.09 · 10:00–12:00» */
     (function () {
       var ОТКР = 9 * 60, ЗАКР = 21 * 60;                       /* окно аренды залов, минуты от полуночи */
       var ДНИ = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"];
+      var ИМЕНА = { big: "Большой зал", small: "Малый зал" };
       function мин(t) { var m = /(\d{1,2}):(\d{2})/.exec(t); return m ? +m[1] * 60 + +m[2] : null; }
-      function чч(m) { return (m / 60 | 0) + ":" + ("0" + m % 60).slice(-2); }
+      function чч(m) { return ("0" + (m / 60 | 0)).slice(-2) + ":" + ("0" + m % 60).slice(-2); }
       function свободно(занято, от) {
         var з = занято.map(function (x) { var p = x.split(/[–-]/); return [мин(p[0]), мин(p[1])]; })
           .filter(function (x) { return x[0] !== null && x[1] !== null; })
@@ -5573,20 +5616,51 @@ footer a:hover { color: var(--neon); }
         if (т < ЗАКР) окна.push([т, ЗАКР]);
         return окна.filter(function (o) { return o[1] - o[0] >= 60; });   /* меньше часа — не аренда */
       }
-      var сейчас = new Date();
-      Object.keys(ЗАЛЫ).forEach(function (k) {
+      var сейчас = new Date(), сетка = document.getElementById("hw-grid"), залы = Object.keys(ЗАЛЫ);
+      if (!сетка || !залы.length) return;
+      var html = '<div class="hw-head">день</div>' + залы.map(function (k) {
+        var карта = document.querySelector('.room[data-hall="' + k + '"]');
+        return '<div class="hw-head"><b>' + (ИМЕНА[k] || k) + "</b>" + (карта ? " · " + карта.dataset.cap + " чел." : "") + "</div>";
+      }).join("");
+      var первое = {};
+      for (var i = 0; i < 7; i++) {
+        var d = new Date(сейчас.getFullYear(), сейчас.getMonth(), сейчас.getDate() + i);
+        var от = i === 0 ? Math.ceil((сейчас.getHours() * 60 + сейчас.getMinutes()) / 30) * 30 : ОТКР;
+        var дата = ("0" + d.getDate()).slice(-2) + "." + ("0" + (d.getMonth() + 1)).slice(-2);
+        var день = (i === 0 ? "сегодня" : ДНИ[d.getDay()]) + " " + дата;
+        html += '<div class="hw-day' + (i === 0 ? " today" : "") + '">' + (i === 0 ? "сегодня" : ДНИ[d.getDay()]) + "<small>" + дата + "</small></div>";
+        залы.forEach(function (k) {
+          var карта = document.querySelector('.room[data-hall="' + k + '"]');
+          var окна = свободно(ЗАЛЫ[k][ДНИ[d.getDay()]] || [], от);
+          html += '<div class="hw-cell"><span class="hw-lab">' + (ИМЕНА[k] || k) + "</span>";
+          if (!окна.length) html += '<span class="hw-none">' + (i === 0 ? "сегодня уже занят" : "занят весь день") + "</span>";
+          окна.forEach(function (o) {
+            var t = чч(o[0]) + "–" + чч(o[1]);
+            if (!первое[k]) первое[k] = день + " · " + t;
+            html += '<button type="button" class="slot" data-hall="' + k + '" data-room="' + (карта ? карта.dataset.room : ИМЕНА[k]) + '" data-slot="' + день + " · " + t + '">' + t + "</button>";
+          });
+          html += "</div>";
+        });
+      }
+      сетка.innerHTML = html;
+      залы.forEach(function (k) {
         var el = document.querySelector('[data-busy="' + k + '"]'); if (!el) return;
-        var дни = ЗАЛЫ[k], html = "<b>Свободно на ближайшие 7 дней</b>";
-        for (var i = 0; i < 7; i++) {
-          var d = new Date(сейчас.getFullYear(), сейчас.getMonth(), сейчас.getDate() + i);
-          var от = i === 0 ? Math.ceil((сейчас.getHours() * 60 + сейчас.getMinutes()) / 30) * 30 : ОТКР;
-          var окна = свободно(дни[ДНИ[d.getDay()]] || [], от);
-          var текст = !окна.length ? "занят" :
-            (окна.length === 1 && окна[0][0] === ОТКР && окна[0][1] === ЗАКР) ? "весь день " + чч(ОТКР) + "–" + чч(ЗАКР) :
-            окна.map(function (o) { return чч(o[0]) + "–" + чч(o[1]); }).join(", ");
-          html += '<span class="bd' + (i === 0 ? " today" : "") + '">' + (i === 0 ? "сегодня" : ДНИ[d.getDay()] + " " + ("0" + d.getDate()).slice(-2) + "." + ("0" + (d.getMonth() + 1)).slice(-2)) + "</span><span>" + текст + "</span>";
+        el.innerHTML = первое[k] ? "ближайшее свободное: " + первое[k] + '<span class="slot-pick"></span>' : "на неделю свободных часов нет";
+      });
+      /* клик по времени: зал в бронь вместе с часами; повторный клик — снять */
+      сетка.addEventListener("click", function (e) {
+        var b = e.target.closest(".slot"); if (!b) return;
+        var name = b.dataset.room, карта = document.querySelector('.room[data-hall="' + b.dataset.hall + '"]');
+        var было = b.classList.contains("on");
+        сетка.querySelectorAll('.slot[data-hall="' + b.dataset.hall + '"]').forEach(function (x) { x.classList.remove("on"); });
+        if (было) { rooms.delete(name); delete СЛОТЫ[name]; }
+        else { rooms.add(name); СЛОТЫ[name] = b.dataset.slot; b.classList.add("on"); }
+        if (карта) {
+          карта.setAttribute("aria-pressed", String(!было));
+          var пик = карта.querySelector(".slot-pick"); if (пик) пик.textContent = было ? "" : "выбрано: " + b.dataset.slot;
         }
-        el.innerHTML = html;
+        if (!было) flyTo(b);
+        update();
       });
     })();
     function makeSeat(id) {
@@ -5688,6 +5762,11 @@ footer a:hover { color: var(--neon); }
         var name = r.dataset.room, ron = rooms.has(name);
         if (ron) rooms.delete(name); else rooms.add(name);
         r.setAttribute("aria-pressed", String(!ron));
+        if (ron) {                                          /* снят зал — снимаем и выбранное время */
+          delete СЛОТЫ[name];
+          var пик = r.querySelector(".slot-pick"); if (пик) пик.textContent = "";
+          document.querySelectorAll('.slot.on[data-hall="' + r.dataset.hall + '"]').forEach(function (x) { x.classList.remove("on"); });
+        }
         if (!ron) flyTo(r);
         update();
       }
