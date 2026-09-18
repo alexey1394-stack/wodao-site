@@ -394,6 +394,25 @@ header.top {
 @media (max-width: 1100px) { .vids { grid-template-columns:repeat(3, 1fr); } }
 @media (max-width: 600px) { .vids { grid-template-columns:repeat(2, 1fr); gap:.6rem; } .vid .vt { font-size:.72rem; } }
 
+
+/* ── библиотека: разделы-аккордеоны, каждая строка — файл на Диске ── */
+.lib { margin-top: 2.4rem; border-top: 1px solid var(--hairline); }
+.lib-sec { border-bottom: 1px solid var(--hairline); }
+.lib-sec summary { display: flex; align-items: center; gap: 1rem; padding: 1.1rem .4rem; cursor: pointer; list-style: none; }
+.lib-sec summary::-webkit-details-marker { display: none; }
+.lib-sec summary .cn { font-family: var(--f-han); color: var(--cinnabar); font-size: 1.1rem; min-width: 2.6rem; }
+.lib-sec summary b { font-family: var(--f-display); font-size: var(--step-1); font-weight: var(--h-weight); flex: 1; }
+.lib-sec summary .lib-n { font-family: var(--f-mono); font-size: var(--step--2); color: var(--ink-3); }
+.lib-sec summary::after { content: "+"; font-family: var(--f-mono); color: var(--neon-text); font-size: 1.2rem; }
+.lib-sec[open] summary::after { content: "−"; }
+.lib-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: .5rem; padding: 0 .4rem 1.2rem; }
+.lib-item { display: grid; grid-template-columns: 1fr auto; gap: .2rem .8rem; padding: .7rem .9rem; border: 1px solid var(--hairline-2); border-radius: 3px; background: var(--paper); text-decoration: none; color: inherit; transition: border-color .25s, transform .25s; }
+.lib-item:hover { border-color: var(--neon); transform: translateY(-2px); }
+.lib-item .lt { font-size: var(--step--1); font-weight: 500; }
+.lib-item .ld { grid-column: 1; font-family: var(--f-mono); font-size: var(--step--2); color: var(--ink-2); }
+.lib-item .lk { grid-column: 2; grid-row: 1 / span 2; align-self: center; font-family: var(--f-mono); font-size: var(--step--2); color: var(--neon-text); white-space: nowrap; }
+.lib-item.t-аудио .lk, .lib-item.t-видео .lk { color: var(--cinnabar); }
+
 /* ── фотографии школы ── */
 
 .shot {
@@ -1152,17 +1171,21 @@ html.pay-ready .tariff .pay-btn { width: 100%; justify-content: center; }
   font-family: var(--f-mono); font-size: var(--step--2); color: var(--ink-3); opacity: .6;
 }
 
-/* окно во всю стену */
+/* окно во всю стену — слева от столов */
+.floor { display: grid; grid-template-columns: auto 1fr; gap: 1.2rem; align-items: stretch; }
+.floor-main { display: grid; grid-template-columns: auto minmax(220px, 1fr); gap: 1.6rem; align-items: start; }
+@media (max-width: 900px) { .floor-main { grid-template-columns: 1fr; } }
+.window-side { display: flex; gap: .5rem; align-items: stretch; }
 .window {
-  height: 14px; border-radius: 2px; margin-bottom: .35rem;
-  background: repeating-linear-gradient(90deg, var(--neon-soft) 0 26%, transparent 26% 28%);
+  width: 14px; border-radius: 2px; align-self: stretch;
+  background: repeating-linear-gradient(180deg, var(--neon-soft) 0 26%, transparent 26% 28%);
   border: 1px solid var(--neon-soft);
-  box-shadow: 0 8px 26px -14px var(--neon);
+  box-shadow: 8px 0 26px -14px var(--neon);
 }
-.window-label { font-family: var(--f-mono); font-size: var(--step--2); letter-spacing: .16em; text-transform: uppercase; color: var(--neon-text); margin-bottom: 1.2rem; display: block; }
+.window-label { font-family: var(--f-mono); font-size: var(--step--2); letter-spacing: .16em; text-transform: uppercase; color: var(--neon-text); writing-mode: vertical-rl; transform: rotate(180deg); align-self: center; }
 
 /* двойной стол: люди сидят друг напротив друга */
-.table-block { display: flex; flex-direction: column; gap: .4rem; margin-bottom: 1.6rem; width: max-content; max-width: 100%; }
+.table-block { display: flex; flex-direction: column; gap: .4rem; margin-bottom: 1.2rem; width: max-content; max-width: 100%; }
 .table-block .rname { font-family: var(--f-mono); font-size: var(--step--2); letter-spacing: .14em; color: var(--ink-3); align-self: flex-start; margin-bottom: .1rem; }
 .seats { display: flex; gap: .45rem; }
 .desk {
@@ -1217,8 +1240,10 @@ html.pay-ready .tariff .pay-btn { width: 100%; justify-content: center; }
 .seat-legend .l-taken i { background: color-mix(in oklab, var(--ink-3) 14%, var(--paper-3)); }
 .seat-legend .l-pick i { background: var(--cinnabar); border-color: var(--cinnabar); }
 
-.rooms { display: grid; grid-template-columns: 1.4fr 1fr; gap: .8rem; margin-top: 1.6rem; }
-@media (max-width: 520px) { .rooms { grid-template-columns: 1fr; } }
+.rooms { display: grid; grid-template-columns: 1fr; gap: .8rem; align-content: start; }
+.room .busy { font-family: var(--f-mono); font-size: var(--step--2); line-height: 1.5; color: var(--ink-2); margin-top: .35rem; }
+.room .busy b { color: var(--cinnabar); font-weight: 600; }
+.room[aria-pressed="true"] .busy, .room[aria-pressed="true"] .busy b { color: color-mix(in oklab, var(--paper) 80%, transparent); }
 .room {
   border: 1px dashed var(--hairline); border-radius: 3px;
   padding: 1rem 1rem 1.1rem; background: var(--paper);
@@ -1230,7 +1255,7 @@ html.pay-ready .tariff .pay-btn { width: 100%; justify-content: center; }
 .room[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-style: solid; border-color: var(--ink); }
 .room .rt { font-family: var(--f-display); font-size: var(--step-1); font-weight: var(--h-weight); }
 .room .rs { font-family: var(--f-mono); font-size: var(--step--2); opacity: .75; }
-.room .door { position: absolute; right: -1px; top: 50%; width: 3px; height: 26px; background: var(--neon); transform: translateY(-50%); }
+.room .door { position: absolute; left: -1px; top: 50%; width: 3px; height: 26px; background: var(--neon); transform: translateY(-50%); }
 .room .dots { display: flex; flex-wrap: wrap; gap: 3px; margin-block: .5rem .2rem; max-width: 190px; }
 .room .dots i { width: 7px; height: 7px; border-radius: 1px; background: var(--hairline); display: block; }
 .room[aria-pressed="true"] .dots i { background: color-mix(in oklab, var(--neon) 70%, transparent); }
@@ -1529,14 +1554,14 @@ footer a:hover { color: var(--neon); }
       </span>
     </a>
     <nav class="nav" id="nav">
-      <a href="/" data-route="/"><span class="cn">首页</span>Главная</a>
       <a href="/kursy/" data-route="/kursy"><span class="cn">课程</span>Курсы</a>
+      <a href="/" data-scroll="raspisanie"><span class="cn">时间</span>Расписание</a>
       <a href="/prepodavateli/" data-route="/prepodavateli"><span class="cn">老师</span>Преподаватели</a>
       <a href="/kitay/" data-route="/kitay"><span class="cn">中国</span>Китай</a>
       <a href="/studenty/" data-route="/studenty"><span class="cn">学生</span>Студенты</a>
       <a href="/igry/" data-route="/igry"><span class="cn">游戏</span>Игры</a>
       <a href="/kovorking/" data-route="/kovorking"><span class="cn">共享</span>Коворкинг</a>
-      <a href="/zayavka/" data-route="/zayavka"><span class="cn">报名</span>Заявка</a>
+      <a href="/biblioteka/" data-route="/biblioteka"><span class="cn">图书</span>Библиотека</a>
       <a href="/kontakty/" data-route="/kontakty"><span class="cn">联系</span>Контакты</a>
     </nav>
     <a class="top-phone" href="tel:+79106775143" aria-label="Позвонить в школу: +7 910 677-51-43">
@@ -2585,38 +2610,42 @@ footer a:hover { color: var(--neon); }
       <div class="sec-head">
         <span class="label">Бронь</span>
         <h2>Выберите место на плане — и напишите нам одним нажатием</h2>
-        <p>Двадцать два рабочих места за тремя двойными столами: люди сидят друг напротив друга — шесть у окна, восемь в середине зала и восемь у кофе-корнера. Отдельно — два зала под мастер-классы и мероприятия. Отметьте, что вам нужно: мы соберём сообщение и откроем Telegram, останется отправить.</p>
+        <p>Двадцать два рабочих места за тремя двойными столами и два зала: люди сидят друг напротив друга — шесть у окна, восемь в середине зала и восемь у кофе-корнера. Отдельно — два зала под мастер-классы и мероприятия. Отметьте, что вам нужно: мы соберём сообщение и откроем Telegram, останется отправить.</p>
       </div>
 
       <div class="plan-wrap">
         <div class="plan">
-          <div class="window" aria-hidden="true"></div>
-          <span class="window-label">окно · вид на город</span>
-
+          <div class="floor">
+          <div class="window-side" aria-hidden="true"><div class="window"></div><span class="window-label">окно · вид на город</span></div>
+          <div class="floor-main">
           <div id="desks"></div>
           <p class="seat-legend"><span class="l-free"><i></i>свободно — можно бронировать</span><span class="l-taken"><i></i>занято резидентом, дата — до какого числа</span><span class="l-pick"><i></i>ваш выбор</span></p>
 
+          </div>
           <div class="rooms">
-            <button type="button" class="room" aria-pressed="false" data-room="Зал на 32 человека" data-cap="32">
+            <button type="button" class="room" aria-pressed="false" data-room="Большой зал (до 32 человек)" data-cap="32" data-hall="big">
               <span class="door" aria-hidden="true"></span>
-              <span class="rt">Зал мастер-классов</span>
+              <span class="rt">Большой зал</span>
               <span class="rs">до 32 человек · проектор, экран, телевизор</span>
               <span class="dots" data-dots="32" aria-hidden="true"></span>
               <span class="rs">аренда <s>3 000</s> 1 500 ₽ / час</span>
+              <span class="busy" data-busy="big"></span>
             </button>
-            <button type="button" class="room" aria-pressed="false" data-room="Зал на 15 человек" data-cap="15">
+            <button type="button" class="room" aria-pressed="false" data-room="Малый зал (до 10 человек)" data-cap="10" data-hall="small">
               <span class="door" aria-hidden="true"></span>
               <span class="rt">Малый зал</span>
-              <span class="rs">до 15 человек · компьютер и ТВ</span>
-              <span class="dots" data-dots="15" aria-hidden="true"></span>
+              <span class="rs">до 10 человек · компьютер и ТВ</span>
+              <span class="dots" data-dots="10" aria-hidden="true"></span>
               <span class="rs">аренда <s>3 000</s> 1 500 ₽ / час</span>
+              <span class="busy" data-busy="small"></span>
             </button>
+          </div>
           </div>
 
           <div class="legend">
             <span><i></i> свободно</span>
             <span><i class="sel"></i> вы выбрали</span>
-            <span>окно — сверху, кофе-корнер — снизу</span>
+            <span>окно — слева, кофе-корнер — у столов C</span>
           </div>
         </div>
 
@@ -2669,24 +2698,135 @@ footer a:hover { color: var(--neon); }
       <a class="back" href="/">← на главную</a>
       <div class="sec-head">
         <span class="label">Библиотека · 图书馆</span>
-        <h2>Учебники, тетради, аудио и тесты — открыто и бесплатно</h2>
+        <h2>98 учебников, тетрадей, аудио и тестов — открыто и бесплатно</h2>
         <p>Мы собрали библиотеку из основных курсов китайского и материалов для подготовки к HSK. Учебники, рабочие тетради, аудио к каждому уроку, видео и пробные тесты — всё скачивается, доступ не закрывается после курса.</p>
       </div>
-      <div class="cards rv">
-        <div class="card"><span class="cn">课本</span><h3>Курс китайского языка</h3><p>Классический трёхтомник, части I и II каждого тома. К первому, второму и третьему тому — аудиокниги двумя частями.</p><span class="wm">课</span></div>
-        <div class="card"><span class="cn">视野</span><h3>Новые горизонты</h3><p>Интегральный курс, части 1–4: учебник, рабочая тетрадь и аудио к каждой части отдельно.</p><span class="wm">新</span></div>
-        <div class="card"><span class="cn">实践</span><h3>Новый практический курс</h3><p>Части 1–5: учебник, сборник упражнений, аудио к обоим и видео к урокам первых трёх частей.</p><span class="wm">实</span></div>
-        <div class="card"><span class="cn">轻松</span><h3>Китайский легко!</h3><p>Полный курс для тех, кто начинает с нуля и хочет мягкий вход в язык.</p><span class="wm">轻</span></div>
-        <div class="card"><span class="cn">考试</span><h3>HSK 1–2</h3><p>Учебники и рабочие тетради с аудио, отдельно грамматика и списки слов, пять пробных тестов к HSK 2.</p><span class="wm">一</span></div>
-        <div class="card"><span class="cn">考试</span><h3>HSK 3–4</h3><p>Учебники по частям, рабочие тетради, грамматика, слова, аудио ко всему и комплекты тестов с аудио.</p><span class="wm">四</span></div>
-        <div class="card"><span class="cn">高级</span><h3>HSK 5 и выше</h3><p>Учебники и рабочие тетради по частям — для тех, кто идёт на продвинутые уровни.</p><span class="wm">五</span></div>
-        <div class="card"><span class="cn">音频</span><h3>Аудио и видео</h3><p>К каждому учебнику и тетради — записи носителей. Слушать можно с телефона, скачивать без ограничений.</p><span class="wm">音</span></div>
-      </div>
+      <!--БИБЛИОТЕКА-START-->
+<div class="lib">
+  <details class="lib-sec rv" open><summary><span class="cn">课本</span><b>Курс китайского языка</b><span class="lib-n">10 файлов</span></summary><div class="lib-list">
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/flHPRpNJV-azdA" target="_blank" rel="noopener"><span class="lt">Курс китайского языка</span><span class="ld">Первый том (I)</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/30qRo3lq-S8Izw" target="_blank" rel="noopener"><span class="lt">Курс китайского языка</span><span class="ld">Первый том (II)</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/U6hvUQR1x7aIeA" target="_blank" rel="noopener"><span class="lt">Курс китайского языка</span><span class="ld">Второй том (I)</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/pYK-Z5sAwXpbzw" target="_blank" rel="noopener"><span class="lt">Курс китайского языка</span><span class="ld">Второй том (II)</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/sJZuHYc9ikrFwg" target="_blank" rel="noopener"><span class="lt">Курс китайского языка</span><span class="ld">Третий том (I)</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/3fzqD4WkCEX7sQ" target="_blank" rel="noopener"><span class="lt">Курс китайского языка</span><span class="ld">Третий том (II)</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/hSSumT8fQBrF4g" target="_blank" rel="noopener"><span class="lt">Аудиокнига &quot;Курс китайского языка&quot;</span><span class="ld">Первый том ч1, ч2</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/Zz-HndYpWt2Stw" target="_blank" rel="noopener"><span class="lt">Аудиокнига &quot;Курс китайского языка&quot;</span><span class="ld">Второй том ч1, ч2</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/DxP9dnfineF69g" target="_blank" rel="noopener"><span class="lt">Аудиокнига &quot;Курс китайского языка&quot;</span><span class="ld">Третий том ч1, ч2</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/fyd-QWCGEV1YxA" target="_blank" rel="noopener"><span class="lt">Полный курс китайского языка</span><span class="lk">учебник ↗</span></a>
+  </div></details>
+  <details class="lib-sec rv" open><summary><span class="cn">轻松</span><b>Китайский легко!</b><span class="lib-n">1 файлов</span></summary><div class="lib-list">
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/9ncpnFxrFqRm-w" target="_blank" rel="noopener"><span class="lt">Китайский легко!</span><span class="lk">учебник ↗</span></a>
+  </div></details>
+  <details class="lib-sec rv" open><summary><span class="cn">视野</span><b>Новые горизонты · интегральный курс</b><span class="lib-n">15 файлов</span></summary><div class="lib-list">
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/73y_AbzDvXvarg" target="_blank" rel="noopener"><span class="lt">Новые горизонты. Интегральный курс китайского языка. 1 часть</span><span class="ld">Учебник</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-тетрадь" href="https://disk.yandex.ru/i/ZTIlQsCq0Flb0Q" target="_blank" rel="noopener"><span class="lt">Новые горизонты. Рабочая тетрадь. 1 часть</span><span class="ld">Рабочая тетрадь</span><span class="lk">тетрадь ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/O3Qy1mp1Z0Tg_g" target="_blank" rel="noopener"><span class="lt">Аудио к учебнику 1 часть</span><span class="ld">1</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/OKvL8IgRGAVh3g" target="_blank" rel="noopener"><span class="lt">Аудио к рабочей тетради. 1 часть</span><span class="ld">2</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/EwG4ti95_0yrAw" target="_blank" rel="noopener"><span class="lt">Новые горизонты. Интегральный курс китайского языка. 2 часть</span><span class="ld">Учебник</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-тетрадь" href="https://disk.yandex.ru/i/_JkpG28QE4TyHw" target="_blank" rel="noopener"><span class="lt">Новые горизонты. Рабочая тетрадь. 2 часть</span><span class="ld">Рабочая тетрадь</span><span class="lk">тетрадь ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/JNI1gjla2aKpGg" target="_blank" rel="noopener"><span class="lt">Аудио к учебнику. 2 часть</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/R5ME3Hq9-VTHhA" target="_blank" rel="noopener"><span class="lt">Аудио к рабочей тетради. 2 часть</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/dMN9GowBc9kZkg" target="_blank" rel="noopener"><span class="lt">Новые горизонты. Интегральный курс китайского языка. Учебник 3 часть</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-тетрадь" href="https://disk.yandex.ru/i/AfefukqEoyJBMw" target="_blank" rel="noopener"><span class="lt">Новые горизонты 3 часть. Рабочая тетрадь.</span><span class="lk">тетрадь ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/GXs2VzFWl7r9Cw" target="_blank" rel="noopener"><span class="lt">Аудио к 3 учебнику</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/DF_9jTlQvhee1w" target="_blank" rel="noopener"><span class="lt">Аудио к рабочей тетради</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/e0opjzGxY32LHA" target="_blank" rel="noopener"><span class="lt">Новые горизонты. Интегральный курс китайского языка. Учебник 4 часть</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-тетрадь" href="https://disk.yandex.ru/i/htHI89-Gf5Muew" target="_blank" rel="noopener"><span class="lt">Новые горизонты 4 часть. Рабочая тетрадь.</span><span class="lk">тетрадь ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/zw0cU4udGIm11w" target="_blank" rel="noopener"><span class="lt">Новые горизонты 4. Аудио.</span><span class="lk">аудио ↗</span></a>
+  </div></details>
+  <details class="lib-sec rv" open><summary><span class="cn">实践</span><b>Новый практический курс китайского языка</b><span class="lib-n">22 файлов</span></summary><div class="lib-list">
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/d/dR5uSntgSPRDVw" target="_blank" rel="noopener"><span class="lt">Новый практический курс китайского языка. Часть 1</span><span class="ld">Учебник</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/d/y_l9deCT6RnWOg" target="_blank" rel="noopener"><span class="lt">Новый практический курс китайского языка. Часть 1</span><span class="ld">Сборник упражнений</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/PCShj-XqdDqd5w" target="_blank" rel="noopener"><span class="lt">Аудио к учебнику. Часть 1</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/BKdAG474TK2JLw" target="_blank" rel="noopener"><span class="lt">Аудио к сборнику упражнений. Часть 1</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-видео" href="https://disk.yandex.ru/d/Envl1MJe8UBcVQ" target="_blank" rel="noopener"><span class="lt">Видео к учебнику. Часть 1</span><span class="lk">видео ↗</span></a>
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/KPRjCgecRL0lVA" target="_blank" rel="noopener"><span class="lt">Новый практический курс китайского языка. Часть 2</span><span class="ld">Учебник</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/g5G1EtzbkveA9A" target="_blank" rel="noopener"><span class="lt">Новый практический курс китайского языка. Часть 2</span><span class="ld">Сборник упражнений</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/PukH0Kit66Cq4g" target="_blank" rel="noopener"><span class="lt">Аудио к учебнику. Часть 2</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/LYhJ-2XPYVmAMw" target="_blank" rel="noopener"><span class="lt">Аудио к сборнику упражнений. Часть 2</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-видео" href="https://disk.yandex.ru/d/TMYEI52g29Yr1A" target="_blank" rel="noopener"><span class="lt">Видео к учебнику. Часть 2</span><span class="lk">видео ↗</span></a>
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/T1uqa45biDERUA" target="_blank" rel="noopener"><span class="lt">Новый практический курс китайского языка. Часть 3</span><span class="ld">Учебник</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/q_5aiCcreKbvUQ" target="_blank" rel="noopener"><span class="lt">Новый практический курс китайского языка. Часть 3</span><span class="ld">Сборник упражнений</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/9BuL3OnaKqe6Xg" target="_blank" rel="noopener"><span class="lt">Аудио к учебнику. Часть 3</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/RYXYTUYRhybVCg" target="_blank" rel="noopener"><span class="lt">Аудио к сборнику упражнений. Часть 3</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-видео" href="https://disk.yandex.ru/d/EaITyLrw23fsHw" target="_blank" rel="noopener"><span class="lt">Видео к учебнику. Часть 3</span><span class="lk">видео ↗</span></a>
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/oOg4Tcs2-Jxcrg" target="_blank" rel="noopener"><span class="lt">Новый практический курс китайского языка. Часть 4</span><span class="ld">Учебник</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/2BVnlrf2gEPMRQ" target="_blank" rel="noopener"><span class="lt">Новый практический курс китайского языка. Часть 4</span><span class="ld">Сборник упражнений</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/vgvCesFUkH-KOA" target="_blank" rel="noopener"><span class="lt">Аудио к учебнику. Часть 4</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/FYs-1p4Tc45NSw" target="_blank" rel="noopener"><span class="lt">Аудио к сборнику упражнений. Часть 4</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/myD2RNNQptQJlA" target="_blank" rel="noopener"><span class="lt">Новый практический курс китайского языка. Часть 5</span><span class="ld">Учебник</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/faZdOySHUKPu_A" target="_blank" rel="noopener"><span class="lt">Новый практический курс китайского языка. Часть 5</span><span class="ld">Сборник упражнений</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/9ZKDCt3BKvxstQ" target="_blank" rel="noopener"><span class="lt">Аудио к учебнику и сборнику упражнений. Часть 5</span><span class="lk">аудио ↗</span></a>
+  </div></details>
+  <details class="lib-sec rv" open><summary><span class="cn">考试</span><b>HSK 1</b><span class="lib-n">4 файлов</span></summary><div class="lib-list">
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/-c6Q2C8UwjfJTw" target="_blank" rel="noopener"><span class="lt">HSK 1 Учебник</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-тетрадь" href="https://disk.yandex.ru/i/4fXjxl290neypw" target="_blank" rel="noopener"><span class="lt">HSK 1 Рабочая тетрадь</span><span class="lk">тетрадь ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/8NMFQX9UdsOcTQ" target="_blank" rel="noopener"><span class="lt">Аудио для учебника HSK 1</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/krz7kYLURz-yjA" target="_blank" rel="noopener"><span class="lt">Аудио для рабочей тетради HSK 1</span><span class="lk">аудио ↗</span></a>
+  </div></details>
+  <details class="lib-sec rv" open><summary><span class="cn">考试</span><b>HSK 2</b><span class="lib-n">11 файлов</span></summary><div class="lib-list">
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/wOf4QOSybHo_GQ" target="_blank" rel="noopener"><span class="lt">HSK 2 Учебник</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-тетрадь" href="https://disk.yandex.ru/i/evzO55aNzUPVBA" target="_blank" rel="noopener"><span class="lt">HSK 2 Рабочая тетрадь</span><span class="lk">тетрадь ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/g1Fo2yojjvDGMw" target="_blank" rel="noopener"><span class="lt">Аудио для учебника HSK 2</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/Te4jIe_2PD6BzQ" target="_blank" rel="noopener"><span class="lt">Аудио для рабочей тетради HSK 2</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/JwP9uTo06jVUgQ" target="_blank" rel="noopener"><span class="lt">HSK 2 Учебник Грамматика</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/rp_lrGX1uEIzkg" target="_blank" rel="noopener"><span class="lt">HSK 2 Слова</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-тест" href="https://disk.yandex.ru/d/7qRubG7OD-WV6A" target="_blank" rel="noopener"><span class="lt">Тест 1</span><span class="ld">HSK 2</span><span class="lk">тест ↗</span></a>
+    <a class="lib-item t-тест" href="https://disk.yandex.ru/d/1X8hY-wsQdt0rA" target="_blank" rel="noopener"><span class="lt">Тест 2</span><span class="ld">HSK 2</span><span class="lk">тест ↗</span></a>
+    <a class="lib-item t-тест" href="https://disk.yandex.ru/d/7IgQv6chp6jIeQ" target="_blank" rel="noopener"><span class="lt">Тест 3</span><span class="ld">HSK 2</span><span class="lk">тест ↗</span></a>
+    <a class="lib-item t-тест" href="https://disk.yandex.ru/d/acqRf9HQYGo3mA" target="_blank" rel="noopener"><span class="lt">Тест 4</span><span class="ld">HSK 2</span><span class="lk">тест ↗</span></a>
+    <a class="lib-item t-тест" href="https://disk.yandex.ru/d/d2XfWAlxGjDwFA" target="_blank" rel="noopener"><span class="lt">Тест 5</span><span class="ld">HSK 2</span><span class="lk">тест ↗</span></a>
+  </div></details>
+  <details class="lib-sec rv" open><summary><span class="cn">考试</span><b>HSK 3</b><span class="lib-n">9 файлов</span></summary><div class="lib-list">
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/9Z7jac7ZapBx1w" target="_blank" rel="noopener"><span class="lt">HSK 3 Учебник</span><span class="ld">1 часть</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/nI2sk8eHEmqryA" target="_blank" rel="noopener"><span class="lt">HSK 3 Учебник</span><span class="ld">2 часть</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-тетрадь" href="https://disk.yandex.ru/i/FnatfNDNDfGyDg" target="_blank" rel="noopener"><span class="lt">HSK 3 Рабочая тетрадь</span><span class="ld">Рабочая тетрадь</span><span class="lk">тетрадь ↗</span></a>
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/otXkqgjMQFEdWQ" target="_blank" rel="noopener"><span class="lt">Учебник HSK 3 Грамматика</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/5iNqoAT67ylnQA" target="_blank" rel="noopener"><span class="lt">HSK 3 Слова</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/DKG_z5N9oYLz4w" target="_blank" rel="noopener"><span class="lt">Аудио для HSK 3 Учебника</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/hLFkMgtaFl3F3Q" target="_blank" rel="noopener"><span class="lt">Аудио для HSK 3 Рабочей тетради</span><span class="ld">Часть 1</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/qTHvDTKZBhzhag" target="_blank" rel="noopener"><span class="lt">Аудио для HSK 3 Рабочей тетради</span><span class="ld">Часть 2</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/6WDV_ENk_Rvgsg" target="_blank" rel="noopener"><span class="lt">Тесты + аудио</span><span class="ld">HSK 3</span><span class="lk">аудио ↗</span></a>
+  </div></details>
+  <details class="lib-sec rv" open><summary><span class="cn">考试</span><b>HSK 4</b><span class="lib-n">13 файлов</span></summary><div class="lib-list">
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/xjXUy16QzZtvzQ" target="_blank" rel="noopener"><span class="lt">HSK 4 Учебник</span><span class="ld">1 часть</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/gh-GaBYapLynxQ" target="_blank" rel="noopener"><span class="lt">HSK 4 Учебник</span><span class="ld">2 часть</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-тетрадь" href="https://disk.yandex.ru/i/axVPXWyPqc72bQ" target="_blank" rel="noopener"><span class="lt">HSK 4 Рабочая тетрадь</span><span class="ld">1 часть</span><span class="lk">тетрадь ↗</span></a>
+    <a class="lib-item t-тетрадь" href="https://disk.yandex.ru/i/Bm4WKpA_MJ7JrA" target="_blank" rel="noopener"><span class="lt">HSK 4 Рабочая тетрадь</span><span class="ld">2 часть</span><span class="lk">тетрадь ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/sVab8rId_xci_Q" target="_blank" rel="noopener"><span class="lt">Аудио для HSK 4 Учебника</span><span class="ld">1 часть</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/mwnDBAn2iwvKNQ" target="_blank" rel="noopener"><span class="lt">Аудио для HSK 4 Учебника</span><span class="ld">2 часть</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/vOCbrzjfv63S2w" target="_blank" rel="noopener"><span class="lt">Аудио для HSK 4 Рабочей тетради</span><span class="ld">Часть 1</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/rZq4DzFYu_dt9w" target="_blank" rel="noopener"><span class="lt">Аудио для HSK 4 Рабочей тетради</span><span class="ld">Часть 2</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/KmEFUgwQpX7rMw" target="_blank" rel="noopener"><span class="lt">Учебник HSK 4 Грамматика</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/hlc2GjWGtDQ7mw" target="_blank" rel="noopener"><span class="lt">HSK 4 Слова</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-аудио" href="https://drive.google.com/file/d/1osyrTannlKuJwuGj6rR3Eo5wA-K87A52/view?usp=sharing" target="_blank" rel="noopener"><span class="lt">Аудио к грамматике HSK 4</span><span class="ld">1 часть</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-аудио" href="https://drive.google.com/file/d/1YQti4LPKXSfx7OCFLFPyQcBlbkueuOVF/view?usp=sharing" target="_blank" rel="noopener"><span class="lt">Аудио к грамматике HSK 4</span><span class="ld">2 часть</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/5NY2-YwOuoj6Fw" target="_blank" rel="noopener"><span class="lt">Тесты + аудио</span><span class="ld">HSK 4</span><span class="lk">аудио ↗</span></a>
+  </div></details>
+  <details class="lib-sec rv" open><summary><span class="cn">高级</span><b>HSK 5 и HSK 6</b><span class="lib-n">7 файлов</span></summary><div class="lib-list">
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/pZkU7ohYpsbgEQ" target="_blank" rel="noopener"><span class="lt">HSK 5 Учебник (1 часть)</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/FdqkB8atvOhAVw" target="_blank" rel="noopener"><span class="lt">HSK 5 Учебник (2 часть)</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-тетрадь" href="https://disk.yandex.ru/i/BdBOCMXal1NOFQ" target="_blank" rel="noopener"><span class="lt">HSK 5 Рабочая тетрадь (1 часть)</span><span class="lk">тетрадь ↗</span></a>
+    <a class="lib-item t-тетрадь" href="https://disk.yandex.ru/i/l0acTGUp65R9lw" target="_blank" rel="noopener"><span class="lt">HSK 5 Рабочая тетрадь (2 часть)</span><span class="lk">тетрадь ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/3hRevEbVCGgRZQ" target="_blank" rel="noopener"><span class="lt">Аудио к учебнику 1</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/GMoMwdUWsCK58g" target="_blank" rel="noopener"><span class="lt">Аудио к учебнику 2</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/d/xorDEj1hDSO0KA" target="_blank" rel="noopener"><span class="lt">HSK 6</span><span class="lk">учебник ↗</span></a>
+  </div></details>
+  <details class="lib-sec rv" open><summary><span class="cn">儿童</span><b>Царство китайского языка · для детей</b><span class="lib-n">6 файлов</span></summary><div class="lib-list">
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/CYHQUYfMuVgxWQ" target="_blank" rel="noopener"><span class="lt">Царство китайского языка 1а</span><span class="ld">1 часть</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/fMfXh2l0Y7grow" target="_blank" rel="noopener"><span class="lt">Царство китайского языка 1б</span><span class="ld">2 часть</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/FlFNi40W4qGxsQ" target="_blank" rel="noopener"><span class="lt">Аудио к учебникам Царство китайского языка 1</span><span class="lk">аудио ↗</span></a>
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/fTtOPvQOqQfNvA" target="_blank" rel="noopener"><span class="lt">Царство китайского языка 2а</span><span class="ld">1 часть</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-учебник" href="https://disk.yandex.ru/i/Epom5L_wZ8Hwfg" target="_blank" rel="noopener"><span class="lt">Царство китайского языка 2b</span><span class="ld">2 часть</span><span class="lk">учебник ↗</span></a>
+    <a class="lib-item t-аудио" href="https://disk.yandex.ru/d/qI89V3Xz7tNmPw" target="_blank" rel="noopener"><span class="lt">Аудио к учебникам Царство китайского языка 2</span><span class="lk">аудио ↗</span></a>
+  </div></details>
+</div>
+      <!--БИБЛИОТЕКА-END-->
       <div class="hero-cta" style="opacity:1;animation:none">
-        <a class="btn" href="/biblioteka/">Открыть библиотеку и скачать</a>
-        <a class="btn ghost" href="https://t.me/wodao_online">Не нашли учебник — напишите</a>
+        <a class="btn ghost" href="https://t.me/wodao_online" target="_blank" rel="noopener">Не нашли учебник — напишите</a>
       </div>
-      <p class="note">Файлы лежат на wodao.ru/biblioteka — ссылка открывает страницу со всеми материалами.</p>
+      <p class="note">Файлы лежат на Яндекс.Диске школы: откроются в новой вкладке, там же кнопка «Скачать». Материалы — для учеников школы и всех, кто учит китайский сам.</p>
     </div>
   </section>
 </div>
@@ -2861,7 +3001,7 @@ footer a:hover { color: var(--neon); }
       <a href="/kalligrafiya/">Каллиграфия</a>
       <a href="/test/">Тест уровня</a>
       <a href="/foto/">Фото</a>
-      <a href="/biblioteka/">Библиотека</a>
+      <a href="/zayavka/">Заявка</a>
       <a href="/kovorking/">Коворкинг</a>
       <a href="/franshiza/">Франшиза</a>
       <a href="/kontakty/">Контакты</a>
@@ -4501,7 +4641,9 @@ footer a:hover { color: var(--neon); }
     function открыть(текст) {
       что = текст;
       document.getElementById("sign-what").textContent = текст;
-      document.getElementById("sign-title").textContent = /^Мастер-класс/.test(текст) ? "Записаться на мастер-класс" : "Записаться в группу";
+      var мк = /^Мастер-класс/.test(текст);
+      document.getElementById("sign-title").textContent = мк ? "Записаться на мастер-класс" : "Записаться в группу";
+      document.getElementById("sign-note").placeholder = мк ? "Сколько вас будет — необязательно" : "Уровень, возраст ребёнка, удобное время — необязательно";
       form.style.display = ""; done.classList.remove("on");
       try { var п = JSON.parse(localStorage.getItem("wodao-pay") || "{}"); if (!v("sign-name") && п.name) document.getElementById("sign-name").value = п.name; if (!v("sign-phone") && п.phone) document.getElementById("sign-phone").value = п.phone; } catch (e) {}
       win.classList.add("on");
@@ -4884,6 +5026,14 @@ footer a:hover { color: var(--neon); }
     /* места постоянных резидентов — их выбрать нельзя. Список ведёт
        коворкинг_места.py по данным CRM и ответу администратора в чате школы. */
     /*ЗАНЯТО-START*/var ЗАНЯТО = {"B8": "занято до 18.09", "B3": "занято до 06.10", "C1": "занято до 02.10", "A1": "занято до 13.10", "C7": "занято до 07.10", "C5": "занято до 07.10", "B6": "занято до 22.09", "B5": "занято до 26.09", "A3": "занято до 03.10"};/*ЗАНЯТО-END*/
+    /* залы во время уроков не сдаются — часы занятий из CRM (пишет расписание.py) */
+    /*ЗАЛЫ-START*/var ЗАЛЫ = {"big": {"пт": ["16:30–18:00", "18:00–19:30", "19:30–21:00"], "вт": ["10:30–11:00", "16:30–18:00", "18:00–19:30", "19:30–21:00"], "сб": ["12:00–13:00", "15:00–16:30", "17:00–18:00", "17:00–18:30"], "ср": ["10:00–11:00", "17:00–18:30"], "пн": ["17:00–18:00", "18:30–20:00"], "чт": ["16:00–17:00", "17:00–18:00", "18:30–20:00"]}, "small": {"сб": ["12:00–13:30", "13:00–14:00", "14:00–15:00", "15:00–16:00"], "пт": ["15:00–16:00", "17:00–18:00", "19:00–20:00"], "чт": ["09:00–10:00", "18:00–19:00", "19:00–20:00"], "вт": ["15:00–16:00", "17:00–18:00", "19:00–20:00"], "ср": ["12:00–13:00"], "пн": ["18:00–19:00"]}};/*ЗАЛЫ-END*/
+    Object.keys(ЗАЛЫ).forEach(function (k) {
+      var el = document.querySelector('[data-busy="' + k + '"]'); if (!el) return;
+      var дни = ЗАЛЫ[k], части = [];
+      ["пн", "вт", "ср", "чт", "пт", "сб", "вс"].forEach(function (д) { if (дни[д] && дни[д].length) части.push(д + " " + дни[д].join(", ")); });
+      el.innerHTML = части.length ? "<b>Уроки:</b> " + части.join(" · ") + "<br>в остальное время — свободен для брони" : "Свободен для брони в любое время";
+    });
     function makeSeat(id) {
       var b = document.createElement("button");
       b.type = "button";
