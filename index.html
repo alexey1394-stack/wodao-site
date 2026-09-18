@@ -1179,7 +1179,7 @@ html.pay-ready .tariff .pay-btn { width: 100%; justify-content: center; }
 .desk::after { top: 66%; }
 
 .seat {
-  width: clamp(38px, 8vw, 50px); aspect-ratio: 1;
+  width: clamp(42px, 8.5vw, 54px); aspect-ratio: 1;
   display: grid; place-items: center;
   font-family: var(--f-mono); font-size: var(--step--2);
   border: 1px solid var(--hairline); border-radius: 3px;
@@ -1198,11 +1198,23 @@ html.pay-ready .tariff .pay-btn { width: 100%; justify-content: center; }
   transform: translateY(-3px);
 }
 .seat[aria-pressed="true"]::before { background: color-mix(in oklab, var(--seal-text) 70%, transparent); }
+/* свободно — зелёный тон сайта, занято — серое с датой «до …» */
+.seat small { display: block; font-size: .48rem; letter-spacing: .04em; line-height: 1; margin-top: 3px; opacity: .85; font-weight: 400; }
+.seat.free { background: color-mix(in oklab, var(--neon) 14%, var(--paper)); border-color: color-mix(in oklab, var(--neon) 45%, var(--hairline)); color: var(--neon-text); }
+.seat.free::before { background: color-mix(in oklab, var(--neon) 50%, var(--hairline)); }
+.seat.free[aria-pressed="true"] { background: var(--cinnabar); border-color: var(--cinnabar); color: var(--seal-text); }
+.seat.free[aria-pressed="true"] small { display: none; }
 .seat.taken, .seat.taken:hover {
   cursor: not-allowed; transform: none; box-shadow: none; color: var(--ink-3); border-color: var(--hairline-2);
-  background: repeating-linear-gradient(135deg, var(--paper) 0 4px, var(--paper-3) 4px 7px);
+  background: color-mix(in oklab, var(--ink-3) 14%, var(--paper-3));
 }
-.seat.taken::after { content: "занято"; position: absolute; bottom: 2px; left: 0; right: 0; font-size: .5rem; letter-spacing: .04em; text-align: center; opacity: .8; }
+.seat.taken::before { background: var(--hairline-2); }
+.seat.taken small { color: var(--ink-3); opacity: 1; }
+.seat-legend { display: flex; gap: 1.2rem; flex-wrap: wrap; margin: .8rem 0 0; font-family: var(--f-mono); font-size: var(--step--2); color: var(--ink-2); }
+.seat-legend i { display: inline-block; width: 12px; height: 12px; border-radius: 2px; vertical-align: -1px; margin-right: .4rem; border: 1px solid var(--hairline); }
+.seat-legend .l-free i { background: color-mix(in oklab, var(--neon) 14%, var(--paper)); border-color: color-mix(in oklab, var(--neon) 45%, var(--hairline)); }
+.seat-legend .l-taken i { background: color-mix(in oklab, var(--ink-3) 14%, var(--paper-3)); }
+.seat-legend .l-pick i { background: var(--cinnabar); border-color: var(--cinnabar); }
 
 .rooms { display: grid; grid-template-columns: 1.4fr 1fr; gap: .8rem; margin-top: 1.6rem; }
 @media (max-width: 520px) { .rooms { grid-template-columns: 1fr; } }
@@ -2581,6 +2593,7 @@ footer a:hover { color: var(--neon); }
           <span class="window-label">окно · вид на город</span>
 
           <div id="desks"></div>
+          <p class="seat-legend"><span class="l-free"><i></i>свободно — можно бронировать</span><span class="l-taken"><i></i>занято резидентом, дата — до какого числа</span><span class="l-pick"><i></i>ваш выбор</span></p>
 
           <div class="rooms">
             <button type="button" class="room" aria-pressed="false" data-room="Зал на 32 человека" data-cap="32">
@@ -4876,15 +4889,24 @@ footer a:hover { color: var(--neon); }
       b.className = "seat";
       b.dataset.seat = id;
       b.textContent = id;
-      if (ЗАНЯТО[id]) {
+      var з = ЗАНЯТО[id];
+      if (з) {
+        /* занято: серое, под номером — до какой даты; выбрать нельзя */
+        /* значение из коворкинг_места.py: «занято до 06.10» или «занято, срок уточняется» */
+        var текст = typeof з === "string" ? з : (з.до ? "занято до " + з.до : "занято");
+        var кратко = текст.replace(/^занято,?\s*/, "") || "занято";
+        if (/уточняется/.test(кратко)) кратко = "занято";
         b.classList.add("taken");
         b.disabled = true;
-        b.setAttribute("aria-label", "Место " + id + " занято — " + ЗАНЯТО[id]);
-        b.title = "Занято · " + ЗАНЯТО[id];
+        b.innerHTML = id + "<small>" + кратко + "</small>";
+        b.setAttribute("aria-label", "Место " + id + " — " + текст);
+        b.title = текст.charAt(0).toUpperCase() + текст.slice(1);
         return b;
       }
+      b.classList.add("free");
+      b.innerHTML = id + "<small>свободно</small>";
       b.setAttribute("aria-pressed", "false");
-      b.setAttribute("aria-label", "Рабочее место " + id + " — забронировать");
+      b.setAttribute("aria-label", "Рабочее место " + id + " свободно — забронировать");
       b.title = "Забронировать место " + id;
       return b;
     }
