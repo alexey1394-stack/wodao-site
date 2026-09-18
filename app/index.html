@@ -354,7 +354,8 @@ html.no-tg .fallback { display: block; }
   /* ── почта для чека: помним ── */
   var email = document.getElementById("email");
   try { email.value = localStorage.getItem("wodao-email") || ""; } catch (e) {}
-  if (TG && TG.CloudStorage) TG.CloudStorage.getItem("email", function (err, v) { if (!err && v && !email.value) email.value = v; });
+  var cloud = !!(TG && TG.CloudStorage && TG.isVersionAtLeast && TG.isVersionAtLeast("6.9"));
+  if (cloud) try { TG.CloudStorage.getItem("email", function (err, v) { if (!err && v && !email.value) email.value = v; }); } catch (e) {}
   email.addEventListener("input", function () { document.getElementById("err").hidden = true; });
 
   /* ── итог и главная кнопка ── */
@@ -377,17 +378,17 @@ html.no-tg .fallback { display: block; }
   function update() {
     var s = summary();
     sheet.classList.toggle("on", !!s);
-    if (!s) { if (TG) TG.MainButton.hide(); return; }
+    if (!s) { if (TG) try { TG.MainButton.hide(); } catch (e) {} return; }
     document.getElementById("sum-what").innerHTML = "<b>" + s.what + "</b>";
     document.getElementById("sum-price").textContent = money(s.price) + (state.tab === "hall" ? "" : "");
-    if (TG) { TG.MainButton.setParams({ text: s.btn, color: "#B93A22", text_color: "#FFF6EE", is_visible: true, is_active: true }); }
+    if (TG) try { TG.MainButton.setParams({ text: s.btn, color: "#B93A22", text_color: "#FFF6EE", is_visible: true, is_active: true }); } catch (e) {}
   }
   function send() {
     var s = summary(); if (!s) return;
     var m = email.value.trim(), err = document.getElementById("err");
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m)) { err.textContent = "Укажите почту — на неё придёт чек."; err.hidden = false; email.focus(); return; }
     try { localStorage.setItem("wodao-email", m); } catch (e) {}
-    if (TG && TG.CloudStorage) TG.CloudStorage.setItem("email", m, function () {});
+    if (cloud) try { TG.CloudStorage.setItem("email", m, function () {}); } catch (e) {}
     s.data.email = m;
     if (!inTG) { err.textContent = "Откройте через бота @wodaobbot — там появится оплата."; err.hidden = false; return; }
     try { TG.HapticFeedback.notificationOccurred("success"); } catch (e) {}
