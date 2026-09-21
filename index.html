@@ -1596,8 +1596,13 @@ footer a:hover { color: var(--neon); }
       <div class="field"><label for="pay-name">Имя</label><input id="pay-name" type="text" autocomplete="name" placeholder="Как к вам обращаться"><span class="err">Нужно имя — чтобы понять, чья оплата</span></div>
       <div class="field"><label for="pay-email">Почта для чека</label><input id="pay-email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.ru"><span class="err">Чек приходит на почту — укажите её</span></div>
       <div class="field"><label for="pay-phone">Телефон</label><input id="pay-phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+7 (___) ___-__-__"><span class="err">Нужен телефон, чтобы связать оплату с учеником</span></div>
+      <!-- две галочки отдельно: с 01.09.2025 согласие на ПДн оформляется отдельно от иных документов (152-ФЗ ст. 9) -->
+      <div class="field consent" id="pay-oferta-f">
+        <label class="check"><input id="pay-oferta" type="checkbox"> <span>Принимаю условия <a href="/oferta/">договора-оферты</a></span></label>
+        <span class="err">Без принятия оферты оплату начать нельзя</span>
+      </div>
       <div class="field consent" id="pay-consent-f">
-        <label class="check"><input id="pay-consent" type="checkbox"> <span>Согласен с <a href="/oferta/">офертой</a> и на обработку персональных данных по <a href="/policy/" data-policy>политике конфиденциальности</a></span></label>
+        <label class="check"><input id="pay-consent" type="checkbox"> <span>Даю согласие на обработку персональных данных по <a href="/policy/" data-policy>политике конфиденциальности</a></span></label>
         <span class="err">Без согласия оплату начать нельзя — так требует закон</span>
       </div>
       <button class="btn" type="submit">Перейти к оплате</button>
@@ -5135,6 +5140,9 @@ footer a:hover { color: var(--neon); }
       ok = bad("pay-name", !v("pay-name")) && ok;
       ok = bad("pay-email", !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v("pay-email"))) && ok;
       ok = bad("pay-phone", v("pay-phone").replace(/\D/g, "").length < 10) && ok;
+      var оферта = document.getElementById("pay-oferta").checked;
+      document.getElementById("pay-oferta-f").classList.toggle("bad", !оферта);
+      if (!оферта) ok = false;
       var согласен = document.getElementById("pay-consent").checked;
       document.getElementById("pay-consent-f").classList.toggle("bad", !согласен);
       if (!согласен) ok = false;
