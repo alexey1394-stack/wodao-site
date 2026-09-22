@@ -59,6 +59,35 @@ figure figcaption{font-family:"JetBrains Mono",monospace;font-size:.72rem;letter
 .list a:hover{color:var(--neon)}
 .list .d{font-size:.95rem;color:var(--ink-2);margin:.35rem 0 0}
 .list .m{font-family:"JetBrains Mono",monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-top:.4rem}
+.share{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:0 0 1.8rem}
+.share.bottom{margin:2.2rem 0 0}
+.share .label{margin-right:.2rem}
+.share .sh{font-family:"JetBrains Mono",monospace;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;padding:.5rem .8rem;border:1px solid var(--line);background:var(--card);color:var(--ink);text-decoration:none;cursor:pointer;line-height:1.2}
+.share .sh:hover{border-color:var(--neon);color:var(--neon)}
+.react{margin-top:2.4rem;padding-top:1.4rem;border-top:1px solid var(--line)}
+.react .row{display:flex;gap:1rem;align-items:center;flex-wrap:wrap;margin-top:.8rem}
+.like{display:inline-flex;align-items:center;gap:.5rem;font-family:Jost,sans-serif;font-size:1rem;padding:.6rem 1.1rem;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.like:hover{border-color:var(--cinnabar)}
+.like .h{color:var(--cinnabar);font-size:1.15rem;line-height:1}
+.like.on{background:var(--cinnabar);border-color:var(--cinnabar);color:#fff}
+.like.on .h{color:#fff}
+.nojs{margin:.7rem 0 0;font-size:.92rem;color:var(--ink-3)}
+.comments{margin-top:2.4rem;padding-top:1.4rem;border-top:1px solid var(--line)}
+.comments h2{font-family:Jost,sans-serif;font-weight:500;font-size:1.35rem;margin:0 0 .3rem}
+.clist{list-style:none;padding:0;margin:1.2rem 0 0}
+.clist li{border-top:1px solid var(--line);padding:1rem 0}
+.clist .who{font-family:Jost,sans-serif;font-weight:500}
+.clist .when{font-family:"JetBrains Mono",monospace;font-size:.72rem;letter-spacing:.06em;color:var(--ink-3);margin-left:.6rem}
+.clist p{margin:.4rem 0 0;color:var(--ink-2);white-space:pre-line}
+.cform{display:grid;gap:.9rem;max-width:44rem;margin:1.6rem 0 0}
+.cform label{display:grid;gap:.35rem;font-family:"JetBrains Mono",monospace;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.cform input[type=text],.cform textarea{font-family:inherit;font-size:1rem;padding:.7rem .8rem;border:1px solid var(--line);background:var(--card);color:var(--ink);width:100%}
+.cform textarea{min-height:7.5rem;resize:vertical;line-height:1.5}
+.cform .agree{grid-template-columns:1.15rem 1fr;gap:.6rem;align-items:start;font-family:"Golos Text",-apple-system,sans-serif;font-size:.88rem;letter-spacing:0;text-transform:none;color:var(--ink-3)}
+.cform .agree input{width:1.15rem;height:1.15rem;margin:.2rem 0 0}
+.cform .trap{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.cform .st{margin:0;font-size:.92rem;color:var(--ink-3)}
+.cform button{justify-self:start;border:0;cursor:pointer}
 footer{border-top:1px solid var(--line);padding:1.6rem 1.4rem 2.4rem;font-family:"JetBrains Mono",monospace;font-size:.74rem;letter-spacing:.06em;color:var(--ink-3);display:flex;gap:1rem 1.6rem;flex-wrap:wrap}
 footer a{color:var(--ink-3);text-decoration:none}
 @media (max-width:640px){.top{flex-direction:column;align-items:flex-start}main{padding-top:1.8rem}}
@@ -72,10 +101,21 @@ footer a{color:var(--ink-3);text-decoration:none}
 <span class="label">Блог школы</span>
 <h1>О китайском языке, культуре и Китае — коротко и по делу</h1>
 <p class="lead">Раз в неделю — одна небольшая статья от школы китайского языка ВОДАО: как устроен язык, что происходит в культуре и экономике Китая, что важно знать тем, кто учит китайский или работает с Китаем.</p>
-<ul class="list"><li><img class="thumb" src="/img/gallery/hsk/14.jpg" alt="" loading="lazy" width="96" height="72"><div><a href="/blog/novyy-hsk-3-0-chto-menyaetsya/">Новый HSK 3.0 с декабря 2026: что меняется и что делать тем, кто готовится</a><p class="d">Девять уровней вместо шести, обязательная устная часть с HSK 3, перевод на 7–9. Сроки перехода на HSK 3.0 и как готовиться, если сдаёте в 2026–2027 году.</p><div class="m">22 сентября 2026 · Учёба и экзамены</div></div></li><li><img class="thumb" src="/img/gallery/zanyatiya/12.jpg" alt="" loading="lazy" width="96" height="72"><div><a href="/blog/slozhno-li-vyuchit-kitayskiy/">Сложно ли выучить китайский язык? Честный разбор от школы ВОДАО</a><p class="d">Что в китайском действительно трудно (тоны, иероглифы), что проще, чем в европейских языках, и сколько времени уходит на каждую ступень — по опыту школы с 2013 года.</p><div class="m">22 сентября 2026 · Китайский язык</div></div></li></ul>
+<ul class="list"><li><img class="thumb" src="/img/gallery/hsk/14.jpg" alt="" loading="lazy" width="96" height="72"><div><a href="/blog/novyy-hsk-3-0-chto-menyaetsya/">Новый HSK 3.0 с декабря 2026: что меняется и что делать тем, кто готовится</a><p class="d">Девять уровней вместо шести, обязательная устная часть с HSK 3, перевод на 7–9. Сроки перехода на HSK 3.0 и как готовиться, если сдаёте в 2026–2027 году.</p><div class="m">22 сентября 2026<span class="stat" data-slug="novyy-hsk-3-0-chto-menyaetsya"> · </span>Учёба и экзамены · ~5 мин</div></div></li><li><img class="thumb" src="/img/gallery/zanyatiya/12.jpg" alt="" loading="lazy" width="96" height="72"><div><a href="/blog/slozhno-li-vyuchit-kitayskiy/">Сложно ли выучить китайский язык? Честный разбор от школы ВОДАО</a><p class="d">Что в китайском действительно трудно (тоны, иероглифы), что проще, чем в европейских языках, и сколько времени уходит на каждую ступень — по опыту школы с 2013 года.</p><div class="m">22 сентября 2026<span class="stat" data-slug="slozhno-li-vyuchit-kitayskiy"> · </span>Китайский язык · ~3 мин</div></div></li></ul>
 <div class="cta"><span class="label">Читать ещё</span>
 <p>Прямые ответы на вопросы о школе, ценах и HSK — в разделе «Вопросы».</p>
 <a class="btn ghost" href="/voprosy/">Вопросы и ответы</a><a class="btn ghost" href="/kursy/">Курсы и цены</a></div>
 </main>
 <footer><a href="/">Школа китайского языка ВОДАО · Владимир</a><a href="tel:+79106775143">+7 (910) 677-51-43</a><a href="/litsenziya/">Лицензия и реквизиты</a><a href="/policy/">Конфиденциальность</a><span>千里之行，始于足下</span></footer>
+<script>(function(){
+var API="https://functions.yandexcloud.net/d4en9uq46unve22hm4pk"; if(!API)return;
+fetch(API+"?all=1").then(function(r){return r.json();}).then(function(j){
+  var м=document.querySelectorAll(".stat");
+  for(var i=0;i<м.length;i++){
+    var д=j[м[i].getAttribute("data-slug")]; if(!д)continue;
+    var т=[];
+    if(д["лайки"])т.push("♥ "+д["лайки"]);
+    if(д["комментарии"])т.push("✉ "+д["комментарии"]);
+    if(т.length)м[i].textContent=" · "+т.join(" · ")+" · ";}}).catch(function(){});
+})();</script>
 </body></html>
