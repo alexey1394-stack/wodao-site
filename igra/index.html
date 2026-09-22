@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>我道 · Иероглиф дня — игра школы ВОДАО</title>
+<meta name="description" content="Пять заданий в день по китайскому: собери иероглиф, слово, пиньинь, тон. Игра школы китайского языка ВОДАО.">
+<meta property="og:title" content="Иероглиф дня — игра школы ВОДАО">
+<meta property="og:description" content="Пять заданий в день: собери иероглиф, слово, пиньинь, тон. Серия дней и рейтинг.">
+<meta property="og:image" content="https://wodao.ru/img/gallery/zanyatiya/12.jpg">
+<!-- Мини-приложение Telegram: открывается из бота @wodaobbot кнопкой «Играть».
+     Работает и в обычном браузере — тогда без рейтинга, только личный результат.
+     Данные (слова, составные иероглифы, тоны) вставляет выложить.py между метками. -->
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{
+  --bg: var(--tg-theme-bg-color, #0C0F0D);
+  --bg2: var(--tg-theme-secondary-bg-color, #161C18);
+  --ink: var(--tg-theme-text-color, #E6E9E1);
+  --hint: var(--tg-theme-hint-color, #8a918c);
+  --line: color-mix(in oklab, var(--ink) 14%, transparent);
+  --red:#E85C3C; --neon:#35F0D2; --seal:#FFF6EE; --ok:#3FD08A; --no:#F0603C;
+  --mono:"JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --sans:-apple-system,"Golos Text","Inter",system-ui,sans-serif;
+  --han:"PingFang SC","Noto Serif SC","Songti SC",serif;
+}
+html[data-theme="light"]{--red:#B93A22;--neon:#0E9C89;--ok:#1E9E68;--no:#C3402A}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.45;-webkit-tap-highlight-color:transparent}
+body{padding:0 14px calc(28px + env(safe-area-inset-bottom))}
+button{font:inherit;color:inherit;cursor:pointer}
+
+header{display:flex;align-items:center;gap:.8rem;padding:14px 0 6px}
+header .han{font-family:var(--han);color:var(--red);font-size:1.35rem;letter-spacing:.12em;line-height:1}
+header .t{font-weight:700;font-size:1.05rem;letter-spacing:.04em}
+header .s{font-family:var(--mono);font-size:.68rem;color:var(--hint);letter-spacing:.08em;text-transform:uppercase}
+
+.bar{display:flex;gap:10px;align-items:center;margin:10px 0 14px;font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--hint)}
+.bar .dots{display:flex;gap:5px;flex:1}
+.bar .dot{flex:1;height:4px;border-radius:2px;background:var(--line)}
+.bar .dot.ok{background:var(--ok)}.bar .dot.no{background:var(--no)}.bar .dot.now{background:var(--red)}
+.time{font-variant-numeric:tabular-nums;color:var(--ink)}
+.time.low{color:var(--no)}
+
+.card{background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:20px 16px;margin-bottom:14px}
+.kind{font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--hint);display:flex;justify-content:space-between}
+.kind .lvl{color:var(--red)}
+.q{text-align:center;margin:18px 0 6px}
+.q .hz{font-family:var(--han);font-size:clamp(3rem,22vw,5.2rem);line-height:1.05;letter-spacing:.08em}
+.q .py{font-family:var(--mono);font-size:1rem;color:var(--neon);margin-top:.3rem;letter-spacing:.06em}
+.q .ru{font-size:1.5rem;font-weight:600;line-height:1.2}
+.q .sub{font-size:.85rem;color:var(--hint);margin-top:.5rem}
+.parts{display:flex;justify-content:center;gap:10px;align-items:center;margin:14px 0 2px}
+.parts .p{font-family:var(--han);font-size:2.6rem;border:1px dashed var(--line);border-radius:12px;padding:.2rem .6rem;min-width:66px;text-align:center}
+.parts .plus{color:var(--hint);font-size:1.4rem}
+.parts .p small{display:block;font-family:var(--mono);font-size:.55rem;letter-spacing:.06em;color:var(--hint);text-transform:uppercase;margin-top:.2rem}
+
+.answers{display:grid;gap:8px;margin-top:16px}
+.answers.two{grid-template-columns:1fr 1fr}
+.a{border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:.85rem 1rem;text-align:left;transition:border-color .15s,background .15s,transform .1s;min-height:52px;display:flex;align-items:center;gap:.6rem}
+.a .hzs{font-family:var(--han);font-size:1.6rem;line-height:1}
+.a:active{transform:scale(.985)}
+.a.ok{border-color:var(--ok);border-width:2px;background:color-mix(in oklab,var(--ok) 20%,var(--bg))}
+.a.no{border-color:var(--no);border-width:2px;background:color-mix(in oklab,var(--no) 18%,var(--bg))}
+/* Значок рядом с ответом, а не один цвет: в тёмной теме на телефоне рамку видно плохо,
+   а дальтоник красное от зелёного не отличит вовсе. */
+.a.ok::after{content:"✓";margin-left:auto;color:var(--ok);font-weight:700}
+.a.no::after{content:"✕";margin-left:auto;color:var(--no);font-weight:700}
+.a.dim{opacity:.45}
+.why{margin-top:12px;padding:.8rem .9rem;border-left:3px solid var(--red);background:var(--bg);border-radius:0 10px 10px 0;font-size:.9rem;color:var(--ink)}
+.why b{color:var(--red)}
+
+.btn{display:block;width:100%;border:0;border-radius:13px;background:var(--red);color:var(--seal);padding:.95rem;font-weight:600;letter-spacing:.02em;margin-top:6px}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn.link{background:transparent;color:var(--neon);border:0;padding:.6rem;font-size:.9rem}
+
+.big{text-align:center;padding:10px 0 4px}
+.big .num{font-family:var(--mono);font-size:3.4rem;font-weight:700;line-height:1;color:var(--red)}
+.big .cap{font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--hint);margin-top:.4rem}
+.rows{margin:16px 0 4px;border-top:1px solid var(--line)}
+.row{display:flex;justify-content:space-between;gap:1rem;padding:.6rem 0;border-bottom:1px solid var(--line);font-size:.92rem}
+.row span{color:var(--hint)}
+.row b{font-variant-numeric:tabular-nums}
+.miss{display:flex;gap:.7rem;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--line)}
+.miss .hzs{font-family:var(--han);font-size:1.7rem;min-width:2.2rem;text-align:center}
+.miss .tx{font-size:.88rem}
+.miss .tx i{font-style:normal;font-family:var(--mono);color:var(--neon);font-size:.78rem}
+.note{font-family:var(--mono);font-size:.66rem;line-height:1.5;color:var(--hint);text-align:center;margin-top:14px}
+.note a{color:var(--neon)}
+.streak{display:inline-flex;gap:.35rem;align-items:center;background:var(--bg2);border:1px solid var(--line);border-radius:999px;padding:.25rem .7rem;font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--hint)}
+.streak b{color:var(--red)}
+.hidden{display:none !important}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="han">我道</span>
+  <div><div class="t">Иероглиф дня</div><div class="s">Школа китайского ВОДАО</div></div>
+</header>
+
+<!-- старт -->
+<section id="start">
+  <div class="card">
+    <div class="kind"><span>Ежедневная миссия</span><span class="lvl" id="lvl-cap">HSK 1</span></div>
+    <div class="q"><div class="hz">日</div><div class="py" id="start-py">měi tiān wǔ tí</div></div>
+    <p style="margin:.2rem 0 0;text-align:center">Пять заданий, 25 секунд на каждое.<br>Собери иероглиф, узнай слово, услышь тон.</p>
+    <div style="text-align:center;margin-top:12px"><span class="streak" id="streak">серия <b>0</b> дней</span></div>
+    <button class="btn" id="go">Начать миссию</button>
+    <button class="btn ghost" id="go-free">Свободная тренировка</button>
+  </div>
+  <div class="note">Рекорд дня попадает в рейтинг канала школы. Имя берётся из Telegram — фамилия не показывается.</div>
+</section>
+
+<!-- игра -->
+<section id="play" class="hidden">
+  <div class="bar">
+    <div class="dots" id="dots"></div>
+    <div class="time" id="time">25</div>
+  </div>
+  <div class="card">
+    <div class="kind"><span id="kind">Что это значит</span><span class="lvl" id="lvl">HSK 1</span></div>
+    <div class="q" id="q"></div>
+    <div class="answers" id="answers"></div>
+    <div class="why hidden" id="why"></div>
+    <button class="btn hidden" id="next">Дальше</button>
+  </div>
+</section>
+
+<!-- итог -->
+<section id="done" class="hidden">
+  <div class="card">
+    <div class="big"><div class="num" id="score">0</div><div class="cap" id="verdict">очков</div></div>
+    <div class="rows">
+      <div class="row"><span>Верно</span><b id="r-ok">0 из 5</b></div>
+      <div class="row"><span>Лучшая серия</span><b id="r-chain">0</b></div>
+      <div class="row"><span>Личный рекорд</span><b id="r-best">0</b></div>
+      <div class="row"><span>Дней подряд</span><b id="r-streak">1</b></div>
+    </div>
+    <div id="misses"></div>
+    <button class="btn" id="again">Ещё раз</button>
+    <button class="btn ghost hidden" id="send">Отправить результат в рейтинг</button>
+    <button class="btn link" id="learn">Учить китайский в школе ВОДАО →</button>
+  </div>
+  <div class="note" id="tail">Новая миссия — завтра. Серия не прервётся, если играть каждый день.</div>
+</section>
+
+<script>
+/*ИГРА-START*/var ДАННЫЕ = {"слова": [{"hz": "你好", "py": "nǐ hǎo", "ru": "здравствуй", "hsk": 1}, {"hz": "谢谢", "py": "xiè xie", "ru": "спасибо", "hsk": 1}, {"hz": "老师", "py": "lǎo shī", "ru": "учитель", "hsk": 1}, {"hz": "学生", "py": "xué sheng", "ru": "ученик", "hsk": 1}, {"hz": "朋友", "py": "péng you", "ru": "друг", "hsk": 1}, {"hz": "家", "py": "jiā", "ru": "дом, семья", "hsk": 1}, {"hz": "水", "py": "shuǐ", "ru": "вода", "hsk": 1}, {"hz": "茶", "py": "chá", "ru": "чай", "hsk": 1}, {"hz": "饭", "py": "fàn", "ru": "еда, рис", "hsk": 1}, {"hz": "书", "py": "shū", "ru": "книга", "hsk": 1}, {"hz": "猫", "py": "māo", "ru": "кошка", "hsk": 1}, {"hz": "狗", "py": "gǒu", "ru": "собака", "hsk": 1}, {"hz": "天", "py": "tiān", "ru": "небо, день", "hsk": 1}, {"hz": "人", "py": "rén", "ru": "человек", "hsk": 1}, {"hz": "中国", "py": "zhōng guó", "ru": "Китай", "hsk": 1}, {"hz": "俄罗斯", "py": "é luó sī", "ru": "Россия", "hsk": 2}, {"hz": "学校", "py": "xué xiào", "ru": "школа", "hsk": 1}, {"hz": "医生", "py": "yī shēng", "ru": "врач", "hsk": 1}, {"hz": "妈妈", "py": "mā ma", "ru": "мама", "hsk": 1}, {"hz": "爸爸", "py": "bà ba", "ru": "папа", "hsk": 1}, {"hz": "孩子", "py": "hái zi", "ru": "ребёнок", "hsk": 2}, {"hz": "今天", "py": "jīn tiān", "ru": "сегодня", "hsk": 1}, {"hz": "明天", "py": "míng tiān", "ru": "завтра", "hsk": 1}, {"hz": "昨天", "py": "zuó tiān", "ru": "вчера", "hsk": 1}, {"hz": "时间", "py": "shí jiān", "ru": "время", "hsk": 2}, {"hz": "钱", "py": "qián", "ru": "деньги", "hsk": 1}, {"hz": "买", "py": "mǎi", "ru": "покупать", "hsk": 1}, {"hz": "卖", "py": "mài", "ru": "продавать", "hsk": 2}, {"hz": "吃", "py": "chī", "ru": "есть, кушать", "hsk": 1}, {"hz": "喝", "py": "hē", "ru": "пить", "hsk": 1}, {"hz": "看", "py": "kàn", "ru": "смотреть", "hsk": 1}, {"hz": "听", "py": "tīng", "ru": "слушать", "hsk": 1}, {"hz": "说", "py": "shuō", "ru": "говорить", "hsk": 1}, {"hz": "写", "py": "xiě", "ru": "писать", "hsk": 1}, {"hz": "读", "py": "dú", "ru": "читать", "hsk": 2}, {"hz": "走", "py": "zǒu", "ru": "идти", "hsk": 2}, {"hz": "坐", "py": "zuò", "ru": "сидеть, садиться", "hsk": 1}, {"hz": "开车", "py": "kāi chē", "ru": "вести машину", "hsk": 2}, {"hz": "火车", "py": "huǒ chē", "ru": "поезд", "hsk": 2}, {"hz": "飞机", "py": "fēi jī", "ru": "самолёт", "hsk": 1}, {"hz": "手机", "py": "shǒu jī", "ru": "телефон", "hsk": 2}, {"hz": "电脑", "py": "diàn nǎo", "ru": "компьютер", "hsk": 2}, {"hz": "工作", "py": "gōng zuò", "ru": "работа", "hsk": 2}, {"hz": "公司", "py": "gōng sī", "ru": "компания", "hsk": 2}, {"hz": "医院", "py": "yī yuàn", "ru": "больница", "hsk": 1}, {"hz": "商店", "py": "shāng diàn", "ru": "магазин", "hsk": 1}, {"hz": "饭店", "py": "fàn diàn", "ru": "ресторан", "hsk": 1}, {"hz": "大", "py": "dà", "ru": "большой", "hsk": 1}, {"hz": "小", "py": "xiǎo", "ru": "маленький", "hsk": 1}, {"hz": "多", "py": "duō", "ru": "много", "hsk": 1}, {"hz": "少", "py": "shǎo", "ru": "мало", "hsk": 1}, {"hz": "好", "py": "hǎo", "ru": "хороший", "hsk": 1}, {"hz": "新", "py": "xīn", "ru": "новый", "hsk": 2}, {"hz": "旧", "py": "jiù", "ru": "старый (о вещи)", "hsk": 3}, {"hz": "快", "py": "kuài", "ru": "быстрый", "hsk": 2}, {"hz": "慢", "py": "màn", "ru": "медленный", "hsk": 2}, {"hz": "热", "py": "rè", "ru": "жаркий", "hsk": 1}, {"hz": "冷", "py": "lěng", "ru": "холодный", "hsk": 1}, {"hz": "贵", "py": "guì", "ru": "дорогой", "hsk": 2}, {"hz": "便宜", "py": "pián yi", "ru": "дешёвый", "hsk": 2}, {"hz": "累", "py": "lèi", "ru": "усталый", "hsk": 2}, {"hz": "高兴", "py": "gāo xìng", "ru": "радостный", "hsk": 1}, {"hz": "漂亮", "py": "piào liang", "ru": "красивый", "hsk": 1}, {"hz": "喜欢", "py": "xǐ huan", "ru": "нравиться", "hsk": 1}, {"hz": "爱", "py": "ài", "ru": "любить", "hsk": 1}, {"hz": "知道", "py": "zhī dào", "ru": "знать", "hsk": 2}, {"hz": "认识", "py": "rèn shi", "ru": "быть знакомым", "hsk": 1}, {"hz": "学习", "py": "xué xí", "ru": "учиться", "hsk": 1}, {"hz": "工人", "py": "gōng rén", "ru": "рабочий", "hsk": 3}, {"hz": "名字", "py": "míng zi", "ru": "имя", "hsk": 1}, {"hz": "问题", "py": "wèn tí", "ru": "вопрос, проблема", "hsk": 2}, {"hz": "回答", "py": "huí dá", "ru": "отвечать", "hsk": 2}, {"hz": "开始", "py": "kāi shǐ", "ru": "начинать", "hsk": 2}, {"hz": "结束", "py": "jié shù", "ru": "заканчивать", "hsk": 3}, {"hz": "早上", "py": "zǎo shang", "ru": "утро", "hsk": 2}, {"hz": "晚上", "py": "wǎn shang", "ru": "вечер", "hsk": 2}, {"hz": "星期", "py": "xīng qī", "ru": "неделя", "hsk": 1}, {"hz": "月", "py": "yuè", "ru": "месяц, луна", "hsk": 1}, {"hz": "年", "py": "nián", "ru": "год", "hsk": 1}, {"hz": "雨", "py": "yǔ", "ru": "дождь", "hsk": 2}, {"hz": "雪", "py": "xuě", "ru": "снег", "hsk": 2}, {"hz": "风", "py": "fēng", "ru": "ветер", "hsk": 3}, {"hz": "山", "py": "shān", "ru": "гора", "hsk": 3}, {"hz": "海", "py": "hǎi", "ru": "море", "hsk": 3}, {"hz": "路", "py": "lù", "ru": "дорога", "hsk": 2}, {"hz": "城市", "py": "chéng shì", "ru": "город", "hsk": 3}, {"hz": "房间", "py": "fáng jiān", "ru": "комната", "hsk": 2}, {"hz": "门", "py": "mén", "ru": "дверь", "hsk": 2}, {"hz": "窗户", "py": "chuāng hu", "ru": "окно", "hsk": 3}, {"hz": "东西", "py": "dōng xi", "ru": "вещь", "hsk": 1}, {"hz": "颜色", "py": "yán sè", "ru": "цвет", "hsk": 2}, {"hz": "红", "py": "hóng", "ru": "красный", "hsk": 2}, {"hz": "白", "py": "bái", "ru": "белый", "hsk": 2}, {"hz": "黑", "py": "hēi", "ru": "чёрный", "hsk": 2}, {"hz": "菜", "py": "cài", "ru": "блюдо, овощи", "hsk": 1}, {"hz": "鱼", "py": "yú", "ru": "рыба", "hsk": 2}, {"hz": "肉", "py": "ròu", "ru": "мясо", "hsk": 2}, {"hz": "苹果", "py": "píng guǒ", "ru": "яблоко", "hsk": 1}, {"hz": "牛奶", "py": "niú nǎi", "ru": "молоко", "hsk": 2}, {"hz": "咖啡", "py": "kā fēi", "ru": "кофе", "hsk": 2}, {"hz": "考试", "py": "kǎo shì", "ru": "экзамен", "hsk": 2}, {"hz": "汉字", "py": "hàn zì", "ru": "иероглиф", "hsk": 2}, {"hz": "汉语", "py": "hàn yǔ", "ru": "китайский язык", "hsk": 1}], "составь": [{"итог": "好", "py": "hǎo", "ru": "хорошо", "части": ["女", "子"], "части_ру": ["женщина", "ребёнок"], "объяснение": "Женщина рядом с ребёнком — «хорошо». Один из первых иероглифов, который показывают на уроке."}, {"итог": "明", "py": "míng", "ru": "светлый, ясный", "части": ["日", "月"], "части_ру": ["солнце", "луна"], "объяснение": "Солнце и луна вместе — свет. Отсюда 明天 «завтра»: следующий светлый день."}, {"итог": "休", "py": "xiū", "ru": "отдыхать", "части": ["亻", "木"], "части_ру": ["человек", "дерево"], "объяснение": "Человек прислонился к дереву — отдыхает."}, {"итог": "林", "py": "lín", "ru": "лес, роща", "части": ["木", "木"], "части_ру": ["дерево", "дерево"], "объяснение": "Два дерева — роща. Три дерева 森 — уже густой лес."}, {"итог": "男", "py": "nán", "ru": "мужчина", "части": ["田", "力"], "части_ру": ["поле", "сила"], "объяснение": "Сила в поле — тот, кто работает на земле."}, {"итог": "安", "py": "ān", "ru": "спокойствие", "части": ["宀", "女"], "части_ру": ["крыша", "женщина"], "объяснение": "Женщина под крышей — покой в доме."}, {"итог": "家", "py": "jiā", "ru": "дом, семья", "части": ["宀", "豕"], "части_ру": ["крыша", "свинья"], "объяснение": "Под крышей свинья — в древности это и был признак дома с хозяйством."}, {"итог": "信", "py": "xìn", "ru": "верить, письмо", "части": ["亻", "言"], "части_ру": ["человек", "речь"], "объяснение": "Человек и его слово — доверие. Отсюда же «письмо»."}, {"итог": "看", "py": "kàn", "ru": "смотреть", "части": ["手", "目"], "части_ру": ["рука", "глаз"], "объяснение": "Рука над глазом — козырьком, чтобы вглядеться вдаль."}, {"итог": "尖", "py": "jiān", "ru": "острый", "части": ["小", "大"], "части_ру": ["маленький", "большой"], "объяснение": "Сверху маленькое, снизу большое — форма острия."}, {"итог": "泪", "py": "lèi", "ru": "слеза", "части": ["氵", "目"], "части_ру": ["вода", "глаз"], "объяснение": "Вода у глаза — слеза. 氵 — «водяной» ключ, он же в 河 «река» и 海 «море»."}, {"итог": "鸣", "py": "míng", "ru": "петь (о птице)", "части": ["口", "鸟"], "части_ру": ["рот", "птица"], "объяснение": "Рот птицы — птичий крик."}], "тоны": [{"hz": "妈", "py": "mā", "тон": 1, "ru": "мама", "пара": "má 麻 конопля, mǎ 马 лошадь, mà 骂 ругать"}, {"hz": "马", "py": "mǎ", "тон": 3, "ru": "лошадь", "пара": "mā 妈 мама, má 麻 конопля, mà 骂 ругать"}, {"hz": "买", "py": "mǎi", "тон": 3, "ru": "покупать", "пара": "mài 卖 продавать — тон меняет смысл на противоположный"}, {"hz": "卖", "py": "mài", "тон": 4, "ru": "продавать", "пара": "mǎi 买 покупать"}, {"hz": "问", "py": "wèn", "тон": 4, "ru": "спрашивать", "пара": "wén 闻 слышать, нюхать"}, {"hz": "水", "py": "shuǐ", "тон": 3, "ru": "вода", "пара": "shuì 睡 спать"}, {"hz": "睡", "py": "shuì", "тон": 4, "ru": "спать", "пара": "shuǐ 水 вода"}, {"hz": "书", "py": "shū", "тон": 1, "ru": "книга", "пара": "shú 熟 знакомый, shǔ 数 считать"}, {"hz": "茶", "py": "chá", "тон": 2, "ru": "чай", "пара": "chà 差 плохой, недостающий"}, {"hz": "学", "py": "xué", "тон": 2, "ru": "учиться", "пара": "xuě 雪 снег, xuè 血 кровь"}, {"hz": "雪", "py": "xuě", "тон": 3, "ru": "снег", "пара": "xué 学 учиться"}, {"hz": "四", "py": "sì", "тон": 4, "ru": "четыре", "пара": "sī 思 думать, sǐ 死 умирать"}, {"hz": "十", "py": "shí", "тон": 2, "ru": "десять", "пара": "shì 是 быть, shǐ 使 применять"}, {"hz": "热", "py": "rè", "тон": 4, "ru": "жаркий", "пара": "rén 人 человек — другой слог, но частая путаница"}, {"hz": "冷", "py": "lěng", "тон": 3, "ru": "холодный", "пара": "lèng 愣 остолбенеть"}, {"hz": "贵", "py": "guì", "тон": 4, "ru": "дорогой", "пара": "guǐ 鬼 призрак"}]};/*ИГРА-END*/
+(function () {
+  var TG = window.Telegram && Telegram.WebApp;
+  var вТГ = !!(TG && ((TG.platform && TG.platform !== "unknown") || TG.initData));
+  if (TG) {
+    TG.ready(); TG.expand();
+    document.documentElement.dataset.theme = TG.colorScheme || "dark";
+    TG.onEvent("themeChanged", function () { document.documentElement.dataset.theme = TG.colorScheme; });
+  } else {
+    document.documentElement.dataset.theme = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+  }
+
+  var СЛОВА = ДАННЫЕ.слова || [], СОСТАВЬ = ДАННЫЕ.составь || [], ТОНЫ = ДАННЫЕ.тоны || [];
+  var ВСЕГО = 5, СЕКУНД = 25;
+  var ТОН_ИМЯ = ["", "первый — ровный, высокий", "второй — восходящий", "третий — низкий с подъёмом", "четвёртый — резко падающий"];
+
+  /* ── хранилище: своё у каждого, переживает закрытие ── */
+  function взять(ключ, по_умолчанию) {
+    try { var v = localStorage.getItem("wodao-игра-" + ключ); return v === null ? по_умолчанию : JSON.parse(v); }
+    catch (e) { return по_умолчанию; }
+  }
+  function класть(ключ, знач) { try { localStorage.setItem("wodao-игра-" + ключ, JSON.stringify(знач)); } catch (e) {} }
+  function сегодня() { var d = new Date(); return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); }
+  function вчера() { var d = new Date(Date.now() - 864e5); return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); }
+
+  function серия() { return взять("серия", 0); }
+  function отметить_день() {
+    var был = взять("день", ""), с = серия();
+    if (был === сегодня()) return с;
+    с = (был === вчера()) ? с + 1 : 1;
+    класть("серия", с); класть("день", сегодня());
+    return с;
+  }
+
+  /* ── мелочи ── */
+  function перемешать(м) { m = м.slice(); for (var i = m.length - 1; i > 0; i--) { var j = Math.random() * (i + 1) | 0; var t = m[i]; m[i] = m[j]; m[j] = t; } return m; }
+  function любые(м, n, кроме) {
+    var пул = м.filter(function (x) { return x !== кроме; });
+    return перемешать(пул).slice(0, n);
+  }
+  function эл(id) { return document.getElementById(id); }
+
+  /* ── задания ── */
+  function задание_перевод() {          /* иероглиф → значение */
+    var с = перемешать(СЛОВА)[0], лишние = любые(СЛОВА, 3, с);
+    return {вид: "Что это значит", уровень: с.hsk,
+      вопрос: '<div class="hz">' + с.hz + '</div>',
+      ответы: перемешать([с].concat(лишние)).map(function (x) { return {текст: x.ru, верный: x === с}; }),
+      почему: "<b>" + с.hz + "</b> " + с.py + " — " + с.ru};
+  }
+  function задание_обратно() {          /* значение → иероглиф */
+    var с = перемешать(СЛОВА)[0], лишние = любые(СЛОВА, 3, с);
+    return {вид: "Как это по-китайски", уровень: с.hsk,
+      вопрос: '<div class="ru">' + с.ru + '</div>',
+      ответы: перемешать([с].concat(лишние)).map(function (x) { return {hz: x.hz, текст: x.py, верный: x === с}; }),
+      почему: "<b>" + с.hz + "</b> " + с.py + " — " + с.ru};
+  }
+  function задание_пиньинь() {          /* иероглиф → чтение */
+    var с = перемешать(СЛОВА)[0], лишние = любые(СЛОВА, 3, с);
+    return {вид: "Как это читается", уровень: с.hsk,
+      вопрос: '<div class="hz">' + с.hz + '</div><div class="sub">' + с.ru + '</div>',
+      ответы: перемешать([с].concat(лишние)).map(function (x) { return {текст: x.py, верный: x === с}; }),
+      почему: "<b>" + с.hz + "</b> читается " + с.py};
+  }
+  function задание_составь() {          /* части → целый иероглиф */
+    var с = перемешать(СОСТАВЬ)[0], лишние = любые(СОСТАВЬ, 3, с);
+    var части = с.части.map(function (ч, i) {
+      return '<div class="p">' + ч + '<small>' + (с.части_ру[i] || "") + '</small></div>';
+    }).join('<span class="plus">+</span>');
+    return {вид: "Собери иероглиф", уровень: 1,
+      вопрос: '<div class="parts">' + части + '</div>',
+      ответы: перемешать([с].concat(лишние)).map(function (x) { return {hz: x.итог, текст: x.ru, верный: x === с}; }),
+      почему: с.объяснение};
+  }
+  function задание_тон() {              /* какой тон у слога */
+    var с = перемешать(ТОНЫ)[0];
+    var без = с.py.normalize("NFD").replace(/[̀-̄̌̈]/g, "");
+    return {вид: "Какой тон", уровень: 1,
+      вопрос: '<div class="hz">' + с.hz + '</div><div class="sub">' + с.ru + ' · читается «' + без + '»</div>',
+      ответы: [1, 2, 3, 4].map(function (т) { return {текст: т + "-й тон", подпись: ТОН_ИМЯ[т].split("— ")[1], верный: т === с.тон}; }),
+      почему: "<b>" + с.py + "</b> — " + ТОН_ИМЯ[с.тон] + ". Рядом: " + с.пара};
+  }
+
+  var ВИДЫ = [задание_перевод, задание_обратно, задание_пиньинь, задание_составь, задание_тон];
+
+  function набор() {
+    /* пять заданий: по одному каждого вида — миссия всегда разная, но полная */
+    return перемешать(ВИДЫ).map(function (ф) { return ф(); });
+  }
+
+  /* ── ход игры ── */
+  var игра = null, таймер = null;
+
+  function старт(режим) {
+    игра = {задания: набор(), i: 0, очки: 0, верно: 0, цепь: 0, лучшая: 0, промахи: [], режим: режим};
+    эл("start").classList.add("hidden"); эл("done").classList.add("hidden");
+    эл("play").classList.remove("hidden");
+    эл("dots").innerHTML = игра.задания.map(function () { return '<div class="dot"></div>'; }).join("");
+    показать();
+  }
+
+  function показать() {
+    var з = игра.задания[игра.i];
+    эл("kind").textContent = з.вид;
+    эл("lvl").textContent = "HSK " + (з.уровень || 1);
+    эл("q").innerHTML = з.вопрос;
+    эл("why").classList.add("hidden"); эл("next").classList.add("hidden");
+    var двумя = з.ответы.every(function (о) { return (о.текст || "").length < 14; });
+    var ящик = эл("answers");
+    ящик.className = "answers" + (двумя ? " two" : "");
+    ящик.innerHTML = "";
+    з.ответы.forEach(function (о, n) {
+      var b = document.createElement("button");
+      b.className = "a"; b.type = "button"; b.dataset.n = n;
+      b.innerHTML = (о.hz ? '<span class="hzs">' + о.hz + "</span>" : "") +
+                    "<span>" + о.текст + (о.подпись ? '<br><small style="color:var(--hint)">' + о.подпись + "</small>" : "") + "</span>";
+      b.addEventListener("click", function () { ответили(n, b); });
+      ящик.appendChild(b);
+    });
+    точки();
+    отсчёт();
+  }
+
+  function точки() {
+    var d = эл("dots").children;
+    for (var i = 0; i < d.length; i++) {
+      d[i].className = "dot" + (i < игра.i ? (игра.задания[i].верно ? " ok" : " no") : (i === игра.i ? " now" : ""));
+    }
+  }
+
+  function отсчёт() {
+    clearInterval(таймер);
+    var до = Date.now() + СЕКУНД * 1000;
+    эл("time").textContent = СЕКУНД; эл("time").classList.remove("low");
+    таймер = setInterval(function () {
+      var сек = Math.max(0, Math.ceil((до - Date.now()) / 1000));
+      эл("time").textContent = сек;
+      эл("time").classList.toggle("low", сек <= 5);
+      if (сек === 0) { clearInterval(таймер); ответили(-1, null); }
+    }, 200);
+    игра.начало = Date.now();
+  }
+
+  function ответили(n, кнопка) {
+    clearInterval(таймер);
+    var з = игра.задания[игра.i];
+    if (з.верно !== undefined) return;
+    var верный = з.ответы.findIndex(function (о) { return о.верный; });
+    з.верно = (n === верный);
+    var кнопки = эл("answers").children;
+    for (var i = 0; i < кнопки.length; i++) {
+      if (i === верный) кнопки[i].classList.add("ok");
+      else if (i === n) кнопки[i].classList.add("no");
+      else кнопки[i].classList.add("dim");
+      кнопки[i].disabled = true;
+    }
+    if (з.верно) {
+      var сек = (Date.now() - игра.начало) / 1000;
+      var быстро = Math.max(0, Math.round((СЕКУНД - сек) * 2));   /* награда за скорость */
+      игра.очки += 100 + быстро;
+      игра.верно++; игра.цепь++;
+      игра.лучшая = Math.max(игра.лучшая, игра.цепь);
+      if (TG) try { TG.HapticFeedback.notificationOccurred("success"); } catch (e) {}
+    } else {
+      игра.цепь = 0;
+      игра.промахи.push(з);
+      if (TG) try { TG.HapticFeedback.notificationOccurred("error"); } catch (e) {}
+    }
+    эл("why").innerHTML = з.почему;
+    эл("why").classList.remove("hidden");
+    эл("next").textContent = (игра.i + 1 < ВСЕГО) ? "Дальше" : "Итог";
+    эл("next").classList.remove("hidden");
+    точки();
+  }
+
+  эл("next").addEventListener("click", function () {
+    игра.i++;
+    if (игра.i < игра.задания.length) показать(); else итог();
+  });
+
+  function итог() {
+    clearInterval(таймер);
+    эл("play").classList.add("hidden"); эл("done").classList.remove("hidden");
+    var рекорд = взять("рекорд", 0);
+    if (игра.очки > рекорд) { рекорд = игра.очки; класть("рекорд", рекорд); }
+    var дней = (игра.режим === "миссия") ? отметить_день() : серия();
+    эл("score").textContent = игра.очки;
+    эл("verdict").textContent = игра.верно === ВСЕГО ? "очков · без единой ошибки" : "очков";
+    эл("r-ok").textContent = игра.верно + " из " + ВСЕГО;
+    эл("r-chain").textContent = игра.лучшая;
+    эл("r-best").textContent = рекорд;
+    эл("r-streak").textContent = дней;
+    эл("misses").innerHTML = игра.промахи.length
+      ? '<div style="margin-top:14px" class="kind"><span>Повторить</span></div>' + игра.промахи.map(function (з) {
+          return '<div class="miss"><div class="tx">' + з.почему + "</div></div>";
+        }).join("")
+      : "";
+    var кнопка = эл("send");
+    кнопка.classList.toggle("hidden", !вТГ);
+    кнопка.disabled = false;
+    кнопка.textContent = "Отправить результат в рейтинг";
+    эл("streak").innerHTML = "серия <b>" + дней + "</b> дней";
+  }
+
+  эл("send").addEventListener("click", function () {
+    if (!вТГ) return;
+    var данные = {v: 1, kind: "игра", очки: игра.очки, верно: игра.верно, всего: ВСЕГО,
+                  цепь: игра.лучшая, дней: взять("серия", 1), день: сегодня()};
+    try {
+      TG.sendData(JSON.stringify(данные));       /* работает из кнопки клавиатуры бота */
+      this.textContent = "Отправлено ✓"; this.disabled = true;
+    } catch (e) {
+      this.textContent = "Не отправилось — откройте игру кнопкой в чате бота";
+    }
+  });
+
+  эл("go").addEventListener("click", function () { старт("миссия"); });
+  эл("go-free").addEventListener("click", function () { старт("тренировка"); });
+  эл("again").addEventListener("click", function () { старт("тренировка"); });
+  эл("learn").addEventListener("click", function () {
+    var url = "https://wodao.ru/kursy/";
+    if (TG && TG.openLink) TG.openLink(url); else window.open(url, "_blank");
+  });
+
+  эл("streak").innerHTML = "серия <b>" + серия() + "</b> дней";
+  эл("lvl-cap").textContent = "HSK 1–3";
+  эл("start-py").textContent = "měi tiān wǔ tí · пять заданий в день";
+})();
+</script>
+</body>
+</html>
