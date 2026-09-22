@@ -40,6 +40,12 @@ article p b{color:var(--ink)}
 article ul,article ol{margin:0 0 1rem;padding-left:1.3rem;color:var(--ink-2)}
 article li{margin:.3rem 0}
 article blockquote{margin:1.4rem 0;padding:.2rem 0 .2rem 1.1rem;border-left:3px solid var(--cinnabar);color:var(--ink);font-family:Jost,sans-serif;font-size:1.15rem}
+figure.hero{margin:0 0 1.8rem}
+figure.hero img{width:100%;height:auto;display:block;border:1px solid var(--line)}
+figure figcaption{font-family:"JetBrains Mono",monospace;font-size:.72rem;letter-spacing:.06em;color:var(--ink-3);margin-top:.5rem}
+.list li{display:flex;gap:1rem;align-items:flex-start}
+.list li .thumb{flex:0 0 96px;width:96px;height:72px;object-fit:cover;border:1px solid var(--line)}
+@media (max-width:520px){.list li .thumb{flex-basis:64px;width:64px;height:52px}}
 .src{margin-top:2.4rem;padding-top:1.2rem;border-top:1px solid var(--line);font-size:.86rem;color:var(--ink-3)}
 .src ol{padding-left:1.2rem;margin:.5rem 0 0}
 .src a{word-break:break-all}
@@ -66,7 +72,7 @@ footer a{color:var(--ink-3);text-decoration:none}
 <span class="label">Блог школы</span>
 <h1>О китайском языке, культуре и Китае — коротко и по делу</h1>
 <p class="lead">Раз в неделю — одна небольшая статья от школы китайского языка ВОДАО: как устроен язык, что происходит в культуре и экономике Китая, что важно знать тем, кто учит китайский или работает с Китаем.</p>
-<ul class="list"><li><a href="/blog/novyy-hsk-3-0-chto-menyaetsya/">Новый HSK 3.0 с декабря 2026: что меняется и что делать тем, кто готовится</a><p class="d">Девять уровней вместо шести, обязательная устная часть с HSK 3, перевод на 7–9. Сроки перехода на HSK 3.0 и как готовиться, если сдаёте в 2026–2027 году.</p><div class="m">22 сентября 2026 · Учёба и экзамены</div></li><li><a href="/blog/slozhno-li-vyuchit-kitayskiy/">Сложно ли выучить китайский язык? Честный разбор от школы ВОДАО</a><p class="d">Что в китайском действительно трудно (тоны, иероглифы), что проще, чем в европейских языках, и сколько времени уходит на каждую ступень — по опыту школы с 2013 года.</p><div class="m">22 сентября 2026 · Китайский язык</div></li></ul>
+<ul class="list"><li><img class="thumb" src="галерея/hsk/14.jpg" alt="" loading="lazy" width="96" height="72"><div><a href="/blog/novyy-hsk-3-0-chto-menyaetsya/">Новый HSK 3.0 с декабря 2026: что меняется и что делать тем, кто готовится</a><p class="d">Девять уровней вместо шести, обязательная устная часть с HSK 3, перевод на 7–9. Сроки перехода на HSK 3.0 и как готовиться, если сдаёте в 2026–2027 году.</p><div class="m">22 сентября 2026 · Учёба и экзамены</div></div></li><li><img class="thumb" src="галерея/zanyatiya/12.jpg" alt="" loading="lazy" width="96" height="72"><div><a href="/blog/slozhno-li-vyuchit-kitayskiy/">Сложно ли выучить китайский язык? Честный разбор от школы ВОДАО</a><p class="d">Что в китайском действительно трудно (тоны, иероглифы), что проще, чем в европейских языках, и сколько времени уходит на каждую ступень — по опыту школы с 2013 года.</p><div class="m">22 сентября 2026 · Китайский язык</div></div></li></ul>
 <div class="cta"><span class="label">Читать ещё</span>
 <p>Прямые ответы на вопросы о школе, ценах и HSK — в разделе «Вопросы».</p>
 <a class="btn ghost" href="/voprosy/">Вопросы и ответы</a><a class="btn ghost" href="/kursy/">Курсы и цены</a></div>
