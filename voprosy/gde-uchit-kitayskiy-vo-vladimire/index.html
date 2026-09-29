@@ -925,6 +925,25 @@ header.top {
   font-variant-numeric: tabular-nums;
 }
 .bignum .n em { font-style: normal; color: var(--cinnabar); }
+/* ── франшиза: ступени запуска (раскрываются, JS не нужен — <details>) ── */
+.stairs .stp { background: var(--paper-2); border: 1px solid var(--hairline-2); border-left: 3px solid var(--neon);
+  border-radius: 2px; overflow: hidden; transition: border-left-color .25s, background .25s, transform .35s cubic-bezier(.2,.7,.3,1), box-shadow .3s; }
+.stairs .stp:hover { border-left-color: var(--cinnabar); transform: translateX(6px); box-shadow: -6px 0 24px -18px var(--neon); }
+.stairs .stp[open] { border-left-color: var(--cinnabar); background: var(--paper-3); transform: none; }
+.stairs .stp summary { list-style: none; cursor: pointer; padding: 1.05rem 1.3rem; display: flex; flex-wrap: wrap;
+  align-items: baseline; gap: .4rem 1.1rem; }
+.stairs .stp summary::-webkit-details-marker { display: none; }
+.stairs .stp summary::before { content: "＋"; font-family: var(--f-han); color: var(--cinnabar); flex: none; transition: transform .3s; }
+.stairs .stp[open] summary::before { content: "－"; }
+.stairs .stp .when { font-family: var(--f-mono); font-size: var(--step--2); letter-spacing: .1em;
+  text-transform: uppercase; color: var(--ink-3); flex: none; min-width: 8.5rem; }
+.stairs .stp .what { font-family: var(--f-display); font-size: var(--step-1); font-weight: 700; color: var(--ink); }
+.stairs .stp-body { padding: 0 1.3rem 1.3rem; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 22rem);
+  gap: 1.4rem; align-items: start; }
+.stairs .stp-body p { color: var(--ink-2); font-size: var(--step--1); max-width: 54ch; }
+.stairs .stp-pic { width: 100%; height: auto; aspect-ratio: 4 / 3; flex: none; }
+@media (max-width: 720px) { .stairs .stp-body { grid-template-columns: 1fr; }
+  .stairs .stp .when { min-width: 0; } .stairs .stp:hover { transform: none; } }
 .bignum .n em.word { display: block; font-size: clamp(1.1rem, 4.5vw, 2rem); letter-spacing: .02em; line-height: 1.1; margin-top: .3rem; max-width: 10ch; overflow-wrap: anywhere; }  /* слово-подпись к цифре; max-width — чтобы колонка «auto» не раздвинула сетку за край экрана */
 .bn-text { display: flex; flex-direction: column; gap: .9rem; align-items: flex-start; }
 .bn-text p { color: var(--ink-2); max-width: 46ch; }
@@ -3670,13 +3689,49 @@ footer a:hover { color: var(--neon); }
         <h2>Путь от договора до первой группы — восемь недель</h2>
         <p>Столько занял запуск школ в Элисте и Ставрополе. Каждый шаг закрыт регламентом, а не советом «сделайте как-нибудь».</p>
       </div>
-      <div class="cards">
-        <article class="card"><span class="price">1–2 неделя</span><h3>Договор, доступы, обучение</h3><p>Передаём методику, CRM, документы и маркетинг. Вы регистрируете ИП и выбираете район города.</p></article>
-        <article class="card"><span class="price">3–4 неделя</span><h3>Помещение и ремонт</h3><p>Кабинет от 36 м², чек-лист оснащения, список мебели и техники, идеи по косметическому ремонту, предложение по готовому инвентарю.</p></article>
-        <article class="card"><span class="price">4–6 неделя</span><h3>Преподаватели</h3><p>Ищем вместе по регламенту: вузы города, площадки вакансий, объявления в местных сообществах, тестовый урок и проверка уровня.</p></article>
-        <article class="card"><span class="price">6–7 неделя</span><h3>Реклама и первые заявки</h3><p>Запускаем кампанию по нашим шаблонам, ведём заявки в CRM, считаем стоимость лида и учимся разбирать аналитику.</p></article>
-        <article class="card"><span class="price">8 неделя</span><h3>Открытый урок</h3><p>Приезжаем и проводим вместе: родительское собрание, открытый урок, запись первой группы.</p></article>
-        <article class="card"><span class="price">2–4 месяц</span><h3>Вторая и третья группы</h3><p>Добираем уровни и возрасты — и выходим в плюс уже на второй группе.</p></article>
+      <div class="stairs">
+        <details class="stp">
+          <summary><span class="when">1–2 неделя</span><span class="what">Договор, доступы, обучение</span></summary>
+          <div class="stp-body">
+            <p>Передаём методику, CRM, документы и маркетинговые материалы. Вы регистрируете ИП и выбираете район города. С этого дня у вас есть доступ ко всей нашей базе — и к нам с вопросами в любое время.</p>
+            <button type="button" class="gal-item land stp-pic" data-gal="zanyatiya" data-i="8"><img src="/img/gallery/zanyatiya/09.jpg" alt="Занятие с носителем языка — то, чему учим с первой недели" loading="lazy" width="1400" height="788"><span>Занятие с носителем языка — то, чему учим с первой недели</span></button>
+          </div>
+        </details>
+        <details class="stp">
+          <summary><span class="when">3–4 неделя</span><span class="what">Помещение и ремонт</span></summary>
+          <div class="stp-body">
+            <p>Кабинет от 36 м², чек-лист оснащения, список мебели и техники, идеи по косметическому ремонту и предложение по готовому инвентарю. Смотрим объекты вместе и считаем аренду по реальным ценам вашего города.</p>
+            <button type="button" class="gal-item land stp-pic" data-gal="sobytiya" data-i="0"><img src="/img/gallery/sobytiya/01.jpg" alt="Школа во Владимире — с такого кабинета начинали и мы" loading="lazy" width="1280" height="960"><span>Школа во Владимире — с такого кабинета начинали и мы</span></button>
+          </div>
+        </details>
+        <details class="stp">
+          <summary><span class="when">4–6 неделя</span><span class="what">Преподаватели</span></summary>
+          <div class="stp-body">
+            <p>Ищем вместе по регламенту: вузы города и кафедры, площадки вакансий, объявления в местных сообществах и у блогеров, выход на преподавателей действующих школ. Дальше — тестовый урок и проверка уровня по нашим критериям.</p>
+            <button type="button" class="gal-item land stp-pic" data-gal="zanyatiya" data-i="11"><img src="/img/gallery/zanyatiya/12.jpg" alt="Проверка уровня преподавателя — тестовый урок" loading="lazy" width="1400" height="790"><span>Проверка уровня преподавателя — тестовый урок</span></button>
+          </div>
+        </details>
+        <details class="stp">
+          <summary><span class="when">6–7 неделя</span><span class="what">Реклама и первые заявки</span></summary>
+          <div class="stp-body">
+            <p>Запускаем кампанию по нашим шаблонам, ведём заявки в CRM, считаем стоимость лида. Отдельно учим работать с городскими праздниками и площадками — у нас оттуда приходит заметная часть набора.</p>
+            <button type="button" class="gal-item land stp-pic" data-gal="sobytiya" data-i="13"><img src="/img/gallery/sobytiya/14.jpg" alt="Городской праздник — недорогой источник заявок" loading="lazy" width="1400" height="1400"><span>Городской праздник — недорогой источник заявок</span></button>
+          </div>
+        </details>
+        <details class="stp">
+          <summary><span class="when">8 неделя</span><span class="what">Открытый урок</span></summary>
+          <div class="stp-body">
+            <p>Приезжаем и проводим вместе: родительское собрание, открытый урок, запись первой группы. Это самый важный навык владельца школы, и мы ставим его лично, а не по видеоинструкции.</p>
+            <button type="button" class="gal-item land stp-pic" data-gal="uroki" data-i="1"><img src="/img/gallery/uroki/02.jpg" alt="Открытый урок — первую группу набираем вместе с вами" loading="lazy" width="1280" height="960"><span>Открытый урок — первую группу набираем вместе с вами</span></button>
+          </div>
+        </details>
+        <details class="stp">
+          <summary><span class="when">2–4 месяц</span><span class="what">Вторая и третья группы</span></summary>
+          <div class="stp-body">
+            <p>Добираем уровни и возрасты: взрослые, дети, подготовка к ЕГЭ, корпоративные группы. На второй группе школа выходит в плюс, на третьей — начинает окупать вложения.</p>
+            <button type="button" class="gal-item land stp-pic" data-gal="uroki" data-i="5"><img src="/img/gallery/uroki/06.jpg" alt="Вторая группа — точка, после которой школа зарабатывает" loading="lazy" width="1280" height="720"><span>Вторая группа — точка, после которой школа зарабатывает</span></button>
+          </div>
+        </details>
       </div>
       <figure class="shot wide rv" style="margin-top:3rem;aspect-ratio:21/9">
         <img src="/img/gallery/hsk/09.jpg" alt="Вручение сертификатов HSK ученикам школы ВОДАО" loading="lazy" width="1400" height="788">
@@ -3721,6 +3776,28 @@ footer a:hover { color: var(--neon); }
         <div class="ticker-track back"><span class="ticker-item"><span class="hz">考</span><b style="color:var(--ink);font-weight:400">Москва</b><span class="py">— Институт Конфуция МГЛУ</span></span><span class="ticker-item"><span class="hz">考</span><b style="color:var(--ink);font-weight:400">Санкт-Петербург</b><span class="py">— Институт Конфуция СПбГУ</span></span><span class="ticker-item"><span class="hz">考</span><b style="color:var(--ink);font-weight:400">Екатеринбург</b><span class="py">— Институт Конфуция УрФУ и РГППУ</span></span><span class="ticker-item"><span class="hz">考</span><b style="color:var(--ink);font-weight:400">Нижний Новгород</b><span class="py">— Институт Конфуция НГЛУ</span></span><span class="ticker-item"><span class="hz">考</span><b style="color:var(--ink);font-weight:400">Новосибирск</b><span class="py">— Институт Конфуция НГТУ</span></span><span class="ticker-item"><span class="hz">考</span><b style="color:var(--ink);font-weight:400">Томск</b><span class="py">— Институт Конфуция ТГУ</span></span><span class="ticker-item"><span class="hz">考</span><b style="color:var(--ink);font-weight:400">Иркутск</b><span class="py">— Институт Конфуция ИГУ</span></span><span class="ticker-item"><span class="hz">考</span><b style="color:var(--ink);font-weight:400">Владивосток</b><span class="py">— Институт Конфуция ДВФУ</span></span><span class="ticker-item"><span class="hz">考</span><b style="color:var(--ink);font-weight:400">Благовещенск</b><span class="py">— Институт Конфуция БГПУ</span></span><span class="ticker-item"><span class="hz">考</span><b style="color:var(--ink);font-weight:400">Волгоград</b><span class="py">— Институт Конфуция ВГСПУ</span></span><span class="ticker-item"><span class="hz">考</span><b style="color:var(--ink);font-weight:400">Улан-Удэ</b><span class="py">— Институт Конфуция БГУ</span></span><span class="ticker-item"><span class="hz">考</span><b style="color:var(--ink);font-weight:400">Элиста</b><span class="py">— Институт Конфуция КГУ</span></span><span class="ticker-item"><span class="hz">考</span><b style="color:var(--ink);font-weight:400">Москва</b><span class="py">— Институт Конфуция МГЛУ</span></span><span class="ticker-item"><span class="hz">考</span><b style="color:var(--ink);font-weight:400">Санкт-Петербург</b><span class="py">— Институт Конфуция СПбГУ</span></span><span class="ticker-item"><span class="hz">考</span><b style="color:var(--ink);font-weight:400">Екатеринбург</b><span class="py">— Институт Конфуция УрФУ и РГППУ</span></span><span class="ticker-item"><span class="hz">考</span><b style="color:var(--ink);font-weight:400">Нижний Новгород</b><span class="py">— Институт Конфуция НГЛУ</span></span><span class="ticker-item"><span class="hz">考</span><b style="color:var(--ink);font-weight:400">Новосибирск</b><span class="py">— Институт Конфуция НГТУ</span></span><span class="ticker-item"><span class="hz">考</span><b style="color:var(--ink);font-weight:400">Томск</b><span class="py">— Институт Конфуция ТГУ</span></span><span class="ticker-item"><span class="hz">考</span><b style="color:var(--ink);font-weight:400">Иркутск</b><span class="py">— Институт Конфуция ИГУ</span></span><span class="ticker-item"><span class="hz">考</span><b style="color:var(--ink);font-weight:400">Владивосток</b><span class="py">— Институт Конфуция ДВФУ</span></span><span class="ticker-item"><span class="hz">考</span><b style="color:var(--ink);font-weight:400">Благовещенск</b><span class="py">— Институт Конфуция БГПУ</span></span><span class="ticker-item"><span class="hz">考</span><b style="color:var(--ink);font-weight:400">Волгоград</b><span class="py">— Институт Конфуция ВГСПУ</span></span><span class="ticker-item"><span class="hz">考</span><b style="color:var(--ink);font-weight:400">Улан-Удэ</b><span class="py">— Институт Конфуция БГУ</span></span><span class="ticker-item"><span class="hz">考</span><b style="color:var(--ink);font-weight:400">Элиста</b><span class="py">— Институт Конфуция КГУ</span></span></div>
       </div>
       <p class="note">Нет центра в вашем городе — не препятствие: мы сами дважды в год возим группу на экзамен и передаём этот порядок партнёру.</p>
+    </div>
+  </section>
+
+  <section class="fr-sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="label">Чем занять учеников между экзаменами</span>
+        <h2>Мастер-классы и поездки — это и удержание, и реклама</h2>
+        <p>Каллиграфия, чайная церемония, кунг-фу, роспись вееров, разговорный клуб, летняя стажировка в Шанхае. Бесплатные мастер-классы держат ученика в школе второй и третий год, а в соцсетях дают тот контент, ради которого на вас подписываются. Сценарии всех занятий и поездок партнёр получает готовыми.</p>
+      </div>
+      <div class="gal-strip rv">
+        <button type="button" class="gal-item land" data-gal="master" data-i="6"><img src="/img/gallery/master/07.jpg" alt="Роспись вееров — мастер-класс, он же реклама школы" loading="lazy" width="1400" height="1050"><span>Роспись вееров — мастер-класс, он же реклама школы</span></button>
+        <button type="button" class="gal-item port" data-gal="master" data-i="1"><img src="/img/gallery/master/02.jpg" alt="Роспись масок" loading="lazy" width="1050" height="1400"><span>Роспись масок</span></button>
+        <button type="button" class="gal-item port" data-gal="master" data-i="8"><img src="/img/gallery/master/09.jpg" alt="Кунг-фу" loading="lazy" width="790" height="1400"><span>Кунг-фу</span></button>
+        <button type="button" class="gal-item port" data-gal="master" data-i="5"><img src="/img/gallery/master/06.jpg" alt="Вырезка из бумаги" loading="lazy" width="1050" height="1400"><span>Вырезка из бумаги</span></button>
+        <button type="button" class="gal-item port" data-gal="master" data-i="2"><img src="/img/gallery/master/03.jpg" alt="Разговорный клуб — чем занять учеников летом" loading="lazy" width="1050" height="1400"><span>Разговорный клуб — чем занять учеников летом</span></button>
+        <button type="button" class="gal-item land" data-gal="kitay" data-i="4"><img src="/img/gallery/kitay/05.jpg" alt="Шанхай — учёба в университете" loading="lazy" width="1400" height="1050"><span>Шанхай — учёба в университете</span></button>
+        <button type="button" class="gal-item land" data-gal="kitay" data-i="8"><img src="/img/gallery/kitay/09.jpg" alt="Ханчжоу, выходные во время стажировки" loading="lazy" width="1280" height="960"><span>Ханчжоу, выходные во время стажировки</span></button>
+        <button type="button" class="gal-item port" data-gal="kitay" data-i="5"><img src="/img/gallery/kitay/06.jpg" alt="Ханчжоу, 2025" loading="lazy" width="787" height="1400"><span>Ханчжоу, 2025</span></button>
+        <button type="button" class="gal-item port" data-gal="kitay" data-i="1"><img src="/img/gallery/kitay/02.jpg" alt="Уроки культуры в Шанхае" loading="lazy" width="787" height="1400"><span>Уроки культуры в Шанхае</span></button>
+        <button type="button" class="gal-item port" data-gal="kitay" data-i="11"><img src="/img/gallery/kitay/12.jpg" alt="Шанхай, 2023 — возим группы девятый год" loading="lazy" width="1050" height="1400"><span>Шанхай, 2023 — возим группы девятый год</span></button>
+      </div>
     </div>
   </section>
 
@@ -3811,6 +3888,24 @@ footer a:hover { color: var(--neon); }
       </div>
     </div>
   </section>
+
+  <section class="bleed">
+    <img src="/img/gallery/sobytiya/02.jpg" alt="Школа ВОДАО на городском празднике во Владимире" loading="lazy" width="1400" height="934">
+    <div class="bleed-text">
+      <span class="label">Тринадцать лет назад мы начинали так же</span>
+      <p>Одна группа, один кабинет, один преподаватель. Всё остальное — методика, CRM, регламенты, поездки — выросло из этой первой группы. Вам не нужно повторять этот путь наугад.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <div class="wrap proverb rv" style="padding-block:clamp(3rem,7vw,5.5rem)">
+    <div class="cn" aria-label="千里之行，始于足下"><span>千</span><span>里</span><span>之</span><span>行</span><span>始</span><span>于</span><span>足</span><span>下</span></div>
+    <div class="py">qiān lǐ zhī xíng, shǐ yú zú xià</div>
+    <div class="ru">Путь в тысячу ли начинается с первого шага</div>
+  </div>
+
+  <hr class="rule">
 
   <section class="fr-sec">
     <div class="wrap">
