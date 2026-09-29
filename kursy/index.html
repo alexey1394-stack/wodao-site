@@ -924,6 +924,7 @@ header.top {
   font-variant-numeric: tabular-nums;
 }
 .bignum .n em { font-style: normal; color: var(--cinnabar); }
+.bignum .n em.word { display: block; font-size: clamp(1.1rem, 4.5vw, 2rem); letter-spacing: .02em; line-height: 1.1; margin-top: .3rem; }  /* слово-подпись к цифре, а не второй заголовок */
 .bn-text { display: flex; flex-direction: column; gap: .9rem; align-items: flex-start; }
 .bn-text p { color: var(--ink-2); max-width: 46ch; }
 
@@ -3534,7 +3535,7 @@ footer a:hover { color: var(--neon); }
     <img src="/img/gallery/kitay/08.jpg" alt="Ученики школы ВОДАО в Шанхае с сертификатами HSK" loading="lazy" width="1400" height="787">
     <div class="bleed-text">
       <span class="label">Что вы продаёте на самом деле</span>
-      <p>Не «курсы китайского», а сертификат HSK, поступление в китайский вуз и поездку, из которой ребёнок возвращается другим человеком. За это платят второй и третий год подряд.</p>
+      <p>Не «курсы китайского», а сертификат HSK, поступление в вуз Китая и поездку, из которой возвращаются другим человеком. За это платят второй и третий год подряд.</p>
     </div>
   </section>
 
@@ -3650,9 +3651,9 @@ footer a:hover { color: var(--neon); }
 
   <section class="bignum">
     <div class="wrap">
-      <span class="n">16<em> учеников</em></span>
+      <span class="n">16<em class="word">учеников — и школа в плюсе</em></span>
       <div class="bn-text">
-        <span class="label">Столько нужно, чтобы школа перестала быть расходом</span>
+        <span class="label">Точка, после которой школа зарабатывает</span>
         <p>Две группы — и школа выходит в плюс. Не двести учеников, не «через три года», а две группы по восемь человек. Всё, что мы передаём партнёру, придумано ради того, чтобы он добрал эти две группы быстрее.</p>
         <a class="btn ghost" href="/o-shkole/">Как мы это делаем у себя →</a>
       </div>
