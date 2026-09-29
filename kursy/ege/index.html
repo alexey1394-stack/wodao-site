@@ -924,7 +924,7 @@ header.top {
   font-variant-numeric: tabular-nums;
 }
 .bignum .n em { font-style: normal; color: var(--cinnabar); }
-.bignum .n em.word { display: block; font-size: clamp(1.1rem, 4.5vw, 2rem); letter-spacing: .02em; line-height: 1.1; margin-top: .3rem; }  /* слово-подпись к цифре, а не второй заголовок */
+.bignum .n em.word { display: block; font-size: clamp(1.1rem, 4.5vw, 2rem); letter-spacing: .02em; line-height: 1.1; margin-top: .3rem; max-width: 10ch; overflow-wrap: anywhere; }  /* слово-подпись к цифре; max-width — чтобы колонка «auto» не раздвинула сетку за край экрана */
 .bn-text { display: flex; flex-direction: column; gap: .9rem; align-items: flex-start; }
 .bn-text p { color: var(--ink-2); max-width: 46ch; }
 
@@ -3651,9 +3651,9 @@ footer a:hover { color: var(--neon); }
 
   <section class="bignum">
     <div class="wrap">
-      <span class="n">16<em class="word">учеников — и школа в плюсе</em></span>
+      <span class="n">16<em class="word">учеников</em></span>
       <div class="bn-text">
-        <span class="label">Точка, после которой школа зарабатывает</span>
+        <span class="label">Две группы — и школа в плюсе</span>
         <p>Две группы — и школа выходит в плюс. Не двести учеников, не «через три года», а две группы по восемь человек. Всё, что мы передаём партнёру, придумано ради того, чтобы он добрал эти две группы быстрее.</p>
         <a class="btn ghost" href="/o-shkole/">Как мы это делаем у себя →</a>
       </div>
