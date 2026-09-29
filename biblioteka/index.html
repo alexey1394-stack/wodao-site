@@ -311,6 +311,7 @@ header.top {
 .btn.ghost:hover { border-color: var(--neon); color: var(--ink); box-shadow: 0 0 0 1px var(--neon-soft), 0 10px 30px -18px var(--neon-soft); }
 .btn.neon { background: transparent; color: var(--ink); border-color: var(--neon); box-shadow: 0 0 18px -6px var(--neon-soft); }
 .btn.neon:hover { background: var(--neon); color: var(--seal-text); }
+.nb { white-space: nowrap; }   /* номер телефона не рвём переносом строки */
 
 /* ── переход между страницами: мазок туши ── */
 
@@ -1512,6 +1513,8 @@ footer a:hover { color: var(--neon); }
 @media (max-width: 720px) {
   /* в шапке остаётся только логотип и меню — призыв к действию есть в первом экране */
   .top-in .top-cta { display: none; }
+  /* длинная подпись на кнопке переносится и держится в родителе, а не уезжает за край */
+  .btn { max-width: 100%; white-space: normal; text-align: center; justify-content: center; }
   section { padding-block: clamp(2.6rem, 8vw, 4.2rem); }
   .hero { padding-top: 1.2rem; padding-bottom: 1rem; }
   .hero h1, .hero h2#heroline { margin-block: .8rem 1rem; }
@@ -2090,7 +2093,7 @@ footer a:hover { color: var(--neon); }
         <p style="color: var(--ink-2); margin-top: 1rem; max-width: 46ch;">Приходите на Дворянскую или подключайтесь онлайн. Подберём группу по уровню и расскажем про расписание.</p>
         <div class="hero-cta" style="opacity:1;animation:none">
           <a class="btn" href="/zayavka/">Оставить заявку</a>
-          <a class="btn ghost" href="tel:+79106775143">+7 (910) 677-51-43</a>
+          <a class="btn ghost" href="tel:+79106775143"><span class="nb">+7 (910) 677-51-43</span></a>
         </div>
       </div>
       <div class="rv-r">
@@ -3017,7 +3020,7 @@ footer a:hover { color: var(--neon); }
             <a class="btn" id="z-tg" href="https://t.me/wodao_online">Отправить в Telegram</a>
             <a class="btn ghost" id="z-wa" href="https://wa.me/79106775143">Отправить в WhatsApp</a>
             <button class="btn ghost" type="button" id="z-copy">Скопировать текст заявки</button>
-            <a class="btn ghost" href="tel:+79106775143">Позвонить: +7 (910) 677-51-43</a>
+            <a class="btn ghost" href="tel:+79106775143">Позвонить: <span class="nb">+7 (910) 677-51-43</span></a>
             <button class="btn ghost" type="button" id="z-back">← изменить заявку</button>
           </div>
         </div>
@@ -3158,7 +3161,7 @@ footer a:hover { color: var(--neon); }
           </div>
           <button type="button" class="btn pay-btn" id="book-pay" data-pay="0" data-title="Коворкинг" disabled>Оплатить бронь онлайн</button>
           <a class="btn" id="book-btn" href="https://t.me/wodao_online" disabled>Забронировать в Telegram</a>
-          <a class="btn ghost" href="tel:+79106775143">Позвонить: +7 (910) 677-51-43</a>
+          <a class="btn ghost" href="tel:+79106775143">Позвонить: <span class="nb">+7 (910) 677-51-43</span></a>
           <p class="hintline">Бронь подтверждает администратор — он проверит, свободно ли выбранное место на нужную дату, и ответит в течение рабочего дня.</p>
         </aside>
       </div>
@@ -3190,7 +3193,7 @@ footer a:hover { color: var(--neon); }
         <div class="card"><span class="cn">网络</span><h3>Интернет и климат</h3><p>Скоростной Wi-Fi и проводное подключение без перебоев. Кондиционеры во всех помещениях.</p><span class="wm">网</span></div>
         <div class="card"><span class="cn">位置</span><h3>Дорога и парковка</h3><p>Деловой центр города: транспортные узлы в 5–7 минутах пешком, платная парковка у здания, кафе в соседнем корпусе.</p><span class="wm">位</span></div>
       </div>
-      <div style="margin-top:2.4rem"><a class="btn" href="tel:+79106775143">+7 (910) 677-51-43 — показать пространство</a></div>
+      <div style="margin-top:2.4rem"><a class="btn" href="tel:+79106775143"><span class="nb">+7 (910) 677-51-43</span> — показать пространство</a></div>
     </div>
   </section>
 </div>
@@ -3476,7 +3479,7 @@ footer a:hover { color: var(--neon); }
       </div>
       <div class="hero-cta" style="opacity:1;animation:none">
         <button type="button" class="btn" data-signup="Франшиза: хочу открыть школу ВОДАО в своём городе">Оставить заявку на франшизу</button>
-        <a class="btn ghost" href="tel:+79106775143">+7 (910) 677-51-43</a>
+        <a class="btn ghost" href="tel:+79106775143"><span class="nb">+7 (910) 677-51-43</span></a>
       </div>
       <figure class="shot wide rv" style="margin-top:3rem;aspect-ratio:21/9">
         <img src="/img/gallery/uroki/01.jpg" alt="Открытый урок в школе китайского языка ВОДАО" loading="lazy" width="1280" height="720">
@@ -3818,7 +3821,7 @@ footer a:hover { color: var(--neon); }
       </div>
       <div class="hero-cta" style="opacity:1;animation:none">
         <button type="button" class="btn" data-signup="Франшиза: хочу открыть школу ВОДАО в своём городе">Оставить заявку на франшизу</button>
-        <a class="btn ghost" href="tel:+79106775143">+7 (910) 677-51-43</a>
+        <a class="btn ghost" href="tel:+79106775143"><span class="nb">+7 (910) 677-51-43</span></a>
         <a class="btn ghost" href="https://t.me/wodao_online" target="_blank" rel="noopener">Написать в Telegram</a>
       </div>
       <p class="note">Школа китайского языка ВОДАО · Владимир, Дворянская, 27А, корп. 7 · с 2013 года · <a href="/o-shkole/">о школе</a> · <a href="/kursy/">курсы</a> · <a href="/voprosy/">вопросы</a> · <a href="/kontakty/">контакты</a></p>
