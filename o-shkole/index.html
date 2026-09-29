@@ -278,7 +278,20 @@ header.top {
 }
 
 .burger { display: none; background: none; border: 1px solid var(--hairline); border-radius: 2px; color: inherit; font: inherit; font-size: var(--step--1); padding: .5rem .9rem; cursor: pointer; }
-@media (max-width: 1180px) {
+
+/* Ширина шапки. Логотип, девять пунктов меню, телефон и кнопка «Пробный урок»
+   в сумме просят 1276px, а колонка шапки — это ширина окна минус 2rem. Значит
+   горизонтальное меню помещается только с ~1308px, а бургер включался лишь
+   ниже 1180: в полосе между ними шапка не влезала и кнопка вылезала за край
+   (на ноутбучных 1280 — на 27,9px, страницу тянуло вбок на 12px). Лечим с двух
+   сторон: бургер забирает меню до 1270, а в оставшейся узкой полосе поджимаем
+   зазоры — этого хватает с запасом в 25px и выше 1320 ничего не меняется. */
+@media (min-width: 1271px) and (max-width: 1320px) {
+  .top-in { gap: .65rem; }
+  .nav { gap: .6rem; }
+}
+
+@media (max-width: 1270px) {
   .nav {
     position: absolute; top: 100%; left: 0; right: 0;
     flex-direction: column; gap: 0;
