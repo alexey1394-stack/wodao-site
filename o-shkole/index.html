@@ -443,7 +443,10 @@ header.top {
 .gal-head h3 { font-size: var(--step-1); }
 .gal-head p { grid-column: 2; color: var(--ink-2); font-size: var(--step--1); max-width: 60ch; }
 .gal-head .gal-n { font-family: var(--f-mono); font-size: var(--step--2); color: var(--ink-3); }
-.gal-strip { display: flex; gap: .6rem; overflow-x: auto; scroll-snap-type: x mandatory; padding: .2rem .2rem 1rem; scrollbar-width: thin; -webkit-overflow-scrolling: touch; }
+.gal-strip { display: flex; gap: .6rem; overflow-x: auto; scroll-snap-type: x mandatory; padding: .2rem .2rem 1rem; scrollbar-width: thin; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
+/* на телефоне жёсткий снап ленты воюет с вертикальной прокруткой страницы —
+   там снап мягкий, лента всё так же листается и встаёт по кадру */
+@media (pointer: coarse) { .gal-strip { scroll-snap-type: x proximity; } }
 .gal-item { flex: 0 0 auto; height: clamp(180px, 28vw, 300px); scroll-snap-align: start; border: 1px solid var(--hairline-2); border-radius: 3px; overflow: hidden; padding: 0; background: var(--paper-3); position: relative; cursor: zoom-in; transition: transform .35s cubic-bezier(.2,.7,.3,1), box-shadow .35s; }
 .gal-item.land { aspect-ratio: 4 / 3; } .gal-item.port { aspect-ratio: 3 / 4; }
 .gal-item img { width: 100%; height: 100%; object-fit: cover; display: block; filter: saturate(.9); transition: transform .9s cubic-bezier(.2,.7,.3,1), filter .5s; }
@@ -453,7 +456,7 @@ header.top {
 .lightbox { position: fixed; inset: 0; z-index: 9000; background: rgba(8,12,10,.94); display: grid; place-items: center; padding: 3rem 4rem; }
 .lightbox[hidden] { display: none; }
 .lightbox figure { margin: 0; max-width: 100%; max-height: 100%; display: grid; gap: .8rem; justify-items: center; }
-.lightbox img { max-width: min(1400px, 92vw); max-height: 82vh; object-fit: contain; border-radius: 3px; box-shadow: 0 30px 80px -30px #000; }
+.lightbox img { max-width: min(1400px, 92vw); max-height: 82vh; max-height: 82dvh; object-fit: contain; border-radius: 3px; box-shadow: 0 30px 80px -30px #000; }
 .lightbox figcaption { font-family: var(--f-mono); font-size: var(--step--2); letter-spacing: .08em; color: #cfd6d1; }
 .lightbox button { position: absolute; background: none; border: 0; color: #fff; font-size: 2.6rem; line-height: 1; cursor: pointer; opacity: .75; padding: .6rem 1rem; }
 .lightbox button:hover { opacity: 1; }
@@ -635,7 +638,7 @@ header.top {
 
 .scroll-write { padding: 0; }
 .sw-track { position: relative; height: 340vh; }
-.sw-sticky { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(1.5rem, 4vh, 3rem); overflow: hidden; }
+.sw-sticky { position: sticky; top: 0; height: 100vh; height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(1.5rem, 4vh, 3rem); overflow: hidden; }
 .sw-head { text-align: center; display: flex; flex-direction: column; gap: .5rem; max-width: 46ch; padding-inline: 1.5rem; align-items: center; }
 .sw-head h2 { font-size: var(--step-2); }
 .sw-head p { color: var(--ink-2); font-size: var(--step--1); }
@@ -991,7 +994,7 @@ html.pay-ready .tariff .pay-btn { width: 100%; justify-content: center; }
 .paywin.on { display: flex; }
 .paywin .veil { position: absolute; inset: 0; background: rgba(12, 15, 13, .55); backdrop-filter: blur(4px); }
 .paycard {
-  position: relative; width: min(100%, 440px); max-height: calc(100vh - 2rem); overflow: auto;
+  position: relative; width: min(100%, 440px); max-height: calc(100vh - 2rem); max-height: calc(100dvh - 2rem); overflow: auto;
   background: var(--paper-2); border: 1px solid var(--hairline); border-radius: 4px;
   padding: 1.6rem 1.5rem 1.5rem; display: flex; flex-direction: column; gap: .8rem;
   box-shadow: 0 40px 90px -40px rgba(0,0,0,.7);
@@ -1430,8 +1433,9 @@ html.pay-ready .booking .pay-btn { display: inline-flex; }
 .fr-sec { padding-block: clamp(2.8rem, 6vw, 5rem); }
 .fr-sec.alt { background: var(--paper-2); border-block: 1px solid var(--hairline-2); }
 .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.frtab { margin-top: 2rem; overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--hairline-2); }
+.frtab { margin-top: 2rem; overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--hairline-2); overscroll-behavior-x: contain; }
 .frtab table { width: 100%; border-collapse: collapse; font-size: var(--step--1); min-width: 32rem; }
+.frtab.two table { min-width: 0; }  /* две колонки влезают в телефон — суммы не должны уезжать за край */
 .frtab th, .frtab td { padding: .75rem 1rem; border-bottom: 1px solid var(--hairline-2); text-align: left; }
 .frtab thead th { font-family: var(--f-mono); font-size: var(--step--2); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); font-weight: 400; }
 .frtab td.n, .frtab th.n { font-family: var(--f-mono); font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
@@ -1441,7 +1445,7 @@ html.pay-ready .booking .pay-btn { display: inline-flex; }
 .frtab tr.minus td.n { color: var(--ink-3); }
 .frtab tr.plus td { background: var(--neon-soft); }
 .frtab tr.leto td { color: var(--ink-3); }
-@media (max-width: 640px) { .frtab table { min-width: 28rem; font-size: var(--step--2); } .frtab th, .frtab td { padding: .6rem .7rem; } }
+@media (max-width: 640px) { .frtab table { min-width: 25rem; font-size: var(--step--2); } .frtab th, .frtab td { padding: .55rem .5rem; } }
 .packs { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
 .pack { border: 1px solid var(--hairline); border-radius: 2px; padding: 1.8rem 1.6rem 2rem; display: flex; flex-direction: column; gap: .6rem; background: var(--paper-2); transition: border-color .25s, box-shadow .3s; }
 .pack:hover { border-color: var(--neon); box-shadow: 0 0 0 1px var(--neon-soft); }
@@ -3551,7 +3555,7 @@ footer a:hover { color: var(--neon); }
         <h2>Сколько нужно на старт</h2>
         <p>Ориентир для города-миллионника. Когда выберете район, считаем заново по двум-трём реальным объектам.</p>
       </div>
-      <div class="frtab">
+      <div class="frtab two">
         <table>
           <caption class="vh">Вложения до открытия школы</caption>
           <tbody>
@@ -4362,6 +4366,30 @@ footer a:hover { color: var(--neon); }
 (function () {
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  /* На телефоне адресная строка прячется и появляется прямо во время прокрутки,
+     и браузер шлёт при этом resize, хотя ширина страницы не менялась ни на пиксель.
+     Если по такому resize пересчитывать канвасы (иероглиф героя, тушь, прописи),
+     главный поток встаёт на сотни миллисекунд, браузер не успевает доиграть
+     движение панели и откатывает её — страницу дёргает вверх-вниз.
+     Баг Алексея 29.09.2026. Поэтому тяжёлую работу вешаем через наШирину():
+     она зовёт работу только когда сменилась ШИРИНА (в том числе поворот экрана)
+     или высота ушла разом больше чем на ПОРОГ_ВЫСОТЫ — это уже не панель,
+     а настоящее изменение окна на компьютере.                                   */
+  var ПОРОГ_ВЫСОТЫ = 200;
+  function наШирину(работа) {
+    var w = window.innerWidth, h = window.innerHeight, t = null;
+    window.addEventListener("resize", function () {
+      var nw = window.innerWidth, nh = window.innerHeight;
+      if (nw === w && Math.abs(nh - h) < ПОРОГ_ВЫСОТЫ) return;   /* адресная строка — мимо */
+      w = nw; h = nh;
+      clearTimeout(t);
+      t = setTimeout(работа, 120);
+    });
+    window.addEventListener("orientationchange", function () {
+      w = -1;                                                    /* поворот — пересчитать обязательно */
+    });
+  }
+
   /* картинки подставляются по data-img */
 
   /* короткие видео: постер, а плеер Rutube грузим только по клику — страница лёгкая */
@@ -4719,9 +4747,14 @@ footer a:hover { color: var(--neon); }
   } else {
     swCells.forEach(function (c) { render(c.svg, 0); });
     var swTicking = false;
+    /* высоту берём у самого липкого блока (у него 100svh — «малый» экран,
+       он НЕ скачет от адресной строки), а не у window.innerHeight, который
+       на телефоне гуляет на десятки пикселей и дёргает прогресс анимации */
+    var swSticky = track.querySelector(".sw-sticky");
+    var swVh = function () { return (swSticky && swSticky.offsetHeight) || window.innerHeight; };
     var driveSw = function () {
       if (!track.offsetParent) return;
-      var span = track.offsetHeight - window.innerHeight;
+      var span = track.offsetHeight - swVh();
       if (span <= 0) {
         swCells.forEach(function (c) { render(c.svg, 1); c.cap.classList.add("on"); });
         bar.style.width = "100%";
@@ -4742,7 +4775,7 @@ footer a:hover { color: var(--neon); }
       swTicking = true;
       requestAnimationFrame(function () { driveSw(); swTicking = false; });
     }, { passive: true });
-    window.addEventListener("resize", driveSw);
+    наШирину(driveSw);
     driveSw();
   }
 
@@ -4876,7 +4909,8 @@ footer a:hover { color: var(--neon); }
       if (ticking) return;
       ticking = true;
       requestAnimationFrame(function () {
-        col.style.transform = "translateY(" + (window.scrollY * -0.22) + "px)";
+        /* под 900 px столбец display:none — незачем писать ему стиль на каждый кадр */
+        if (col.offsetParent) col.style.transform = "translateY(" + (window.scrollY * -0.22) + "px)";
         ticking = false;
       });
     }, { passive: true });
@@ -4924,7 +4958,7 @@ footer a:hover { color: var(--neon); }
       requestAnimationFrame(wtick);
     }
     wsize(); wdraw();
-    window.addEventListener("resize", function () { wsize(); wdraw(); });
+    наШирину(function () { wsize(); wdraw(); });
     if (!reduce) requestAnimationFrame(wtick);
   }
 
@@ -5419,7 +5453,7 @@ footer a:hover { color: var(--neon); }
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(function () { hsize(); autoWrite(); });
     }
-    window.addEventListener("resize", function () { hsize(); });
+    наШирину(hsize);
     hsize();
     requestAnimationFrame(hframe);
     setTimeout(autoWrite, 500);
@@ -6719,6 +6753,6 @@ footer a:hover { color: var(--neon); }
     окно.classList.add("on");
     try { history.replaceState(null, "", location.pathname); } catch (e) {}
   })();
-  window.addEventListener("resize", function () { if (document.querySelector('.page[data-page="/kalligrafiya"]').classList.contains("active")) padSize(); });
+  наШирину(function () { if (document.querySelector('.page[data-page="/kalligrafiya"]').classList.contains("active")) padSize(); });
 })();
 </script>
