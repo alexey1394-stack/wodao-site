@@ -499,6 +499,10 @@ header.top {
 }
 .shot::after { content: ""; position: absolute; inset: 0; box-shadow: inset 0 0 0 1px var(--neon-soft); opacity: 0; transition: opacity .4s; pointer-events: none; }
 .shot:hover::after { opacity: 1; }
+/* тушь на мастер-классе: ролик, 人 по чертам (18.10.2026) */
+.ink-film video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .8s; }
+.ink-film video.on { opacity: 1; }
+@media (max-width: 720px) { .ink-film { aspect-ratio: 4 / 3 !important; } }
 .shot-16 { aspect-ratio: 16 / 10; }
 .shot-11 { aspect-ratio: 1; }
 .shot-45 { aspect-ratio: 4 / 5; }
@@ -1940,9 +1944,11 @@ footer a:hover { color: var(--neon); }
         <p>Сверху вниз, слева направо, горизонталь раньше вертикали. Наведите на клетку — иероглиф напишется сам. Все восемь входят в первый уровень HSK.</p>
       </div>
       <div class="grid-write" id="writegrid"></div>
-      <figure class="shot rv" style="margin-top:2.6rem; aspect-ratio: 21/9">
-        <img src="/img/p_culture.jpg" data-img="p_culture" alt="Праздник весны в школе ВОДАО" loading="lazy">
-        <figcaption>Праздник весны в школе — мастер-классы по культуре бесплатны для учеников</figcaption>
+      <!-- 18.10.2026: ролик Higgsfield по нашему фото с мастер-класса (без лиц): 人 пишется по чертам, порядок проверен по кадрам; на телефоне — кадр -->
+      <figure class="shot rv ink-film" id="ink-film" style="margin-top:2.6rem; aspect-ratio: 21/9">
+        <img src="/video/tush.jpg" alt="Мастер-класс каллиграфии в школе ВОДАО: бумага, тушь и кисть" loading="lazy">
+        <video muted loop playsinline preload="none" poster="/video/tush.jpg" data-src="/video/tush.mp4" aria-hidden="true"></video>
+        <figcaption>Мастер-класс каллиграфии в школе. 人 «человек» — две черты: сначала левая, потом правая</figcaption>
       </figure>
       <div style="margin-top:2.4rem"><a class="btn neon" href="/kalligrafiya/">Написать самому — кистью и мышью →</a></div>
     </div>
@@ -4875,6 +4881,21 @@ footer a:hover { color: var(--neon); }
     cell.addEventListener("click", run);
     cell._play = run;
   });
+
+  /* ══════════ тушь на мастер-классе: ролик ══════════ */
+  /* Ролик — только на компьютере и когда блок на экране; на телефоне остаётся кадр с готовым 人. */
+  var inkFilm = document.getElementById("ink-film");
+  if (inkFilm && "IntersectionObserver" in window && window.matchMedia("(min-width: 721px)").matches && !reduce) {
+    var inkVid = inkFilm.querySelector("video");
+    new IntersectionObserver(function (e) {
+      var on = e[0].isIntersecting;
+      if (on && !inkVid.src) {
+        inkVid.src = inkVid.dataset.src;
+        inkVid.addEventListener("playing", function () { inkVid.classList.add("on"); }, { once: true });
+      }
+      if (on) inkVid.play().catch(function () {}); else inkVid.pause();
+    }, { threshold: 0.35 }).observe(inkFilm);
+  }
 
   /* ══════════ свиток 人 → 大 → 天 ══════════ */
 
