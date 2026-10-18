@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Школа искусственного интеллекта во Владимире — ВОДАО</title>
+<meta name="description" content="Курсы ИИ для школьников 11–14 и старшеклассников и студентов 15–20 в центре Владимира. Группы до 10 человек, 8 недель, первое занятие бесплатно.">
+<link rel="canonical" href="https://wodao.ru/ai/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://wodao.ru/ai/">
+<meta property="og:title" content="Школа искусственного интеллекта во Владимире">
+<meta property="og:description" content="Школа ВОДАО с 2013 года. Теперь учим работать с ИИ — на практике, в центре города, с результатом на руках.">
+<meta property="og:image" content="https://wodao.ru/og.png">
+<link rel="icon" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<style>
+@font-face{font-family:"Jost";font-weight:500;font-display:swap;src:url(/fonts/Jost-500-cyrillic.woff2) format("woff2");unicode-range:U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:"Jost";font-weight:500;font-display:swap;src:url(/fonts/Jost-500-latin.woff2) format("woff2");unicode-range:U+0000-00FF,U+2000-206F,U+20AC,U+20BD}
+@font-face{font-family:"Jost";font-weight:600;font-display:swap;src:url(/fonts/Jost-600-cyrillic.woff2) format("woff2");unicode-range:U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:"Jost";font-weight:600;font-display:swap;src:url(/fonts/Jost-600-latin.woff2) format("woff2");unicode-range:U+0000-00FF,U+2000-206F,U+20AC,U+20BD}
+@font-face{font-family:"Golos Text";font-weight:400;font-display:swap;src:url(/fonts/GolosText-400-cyrillic.woff2) format("woff2");unicode-range:U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:"Golos Text";font-weight:400;font-display:swap;src:url(/fonts/GolosText-400-latin.woff2) format("woff2");unicode-range:U+0000-00FF,U+2000-206F,U+20AC,U+20BD}
+@font-face{font-family:"Golos Text";font-weight:600;font-display:swap;src:url(/fonts/GolosText-600-cyrillic.woff2) format("woff2");unicode-range:U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}
+@font-face{font-family:"Golos Text";font-weight:600;font-display:swap;src:url(/fonts/GolosText-600-latin.woff2) format("woff2");unicode-range:U+0000-00FF,U+2000-206F,U+20AC,U+20BD}
+
+/* цвета — те же, что на wodao.ru: селадоновая бумага, тушь, киноварь, нефритовый неон */
+:root{
+  --paper:#E7EAE3;--paper-2:#F1F3EC;--paper-3:#DCE0D7;
+  --ink:#161C18;--ink-2:#4C564E;--ink-3:#626B61;
+  --cinnabar:#B93A22;--cinnabar-2:#9A2F1B;
+  --neon:#0E9C89;--neon-text:#0A7264;--neon-glow:rgba(14,156,137,.16);
+  --hairline:rgba(22,28,24,.14);--on-accent:#F1F3EC;
+  --f-display:"Jost","Golos Text",sans-serif;
+  --f-body:"Golos Text",-apple-system,"Segoe UI",Roboto,sans-serif;
+  --wrap:1120px;
+}
+@media (prefers-color-scheme:dark){:root{
+  --paper:#0C0F0D;--paper-2:#131815;--paper-3:#1B211C;
+  --ink:#E6E9E1;--ink-2:#A3AC9F;--ink-3:#79826F;
+  --cinnabar:#E85C3C;--cinnabar-2:#FF7C5C;
+  --neon:#35F0D2;--neon-text:#35F0D2;--neon-glow:rgba(53,240,210,.18);
+  --hairline:rgba(230,233,225,.16);--on-accent:#0C0F0D;
+}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.55 var(--f-body)}
+a{color:inherit}
+img{max-width:100%;display:block}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 20px}
+h1,h2,h3{font-family:var(--f-display);font-weight:600;line-height:1.12;margin:0;letter-spacing:-.01em}
+h2{font-size:clamp(1.7rem,1.3rem + 1.8vw,2.6rem);margin-bottom:28px}
+h3{font-size:1.3rem}
+section{padding:72px 0;border-top:1px solid var(--hairline)}
+.kicker{font:600 .8rem/1 var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:var(--neon-text);margin-bottom:14px}
+
+/* шапка */
+.top{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--hairline)}
+.top-in{display:flex;align-items:center;justify-content:space-between;gap:16px;height:64px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.brand img{width:38px;height:38px}
+.brand b{font:600 1.05rem/1.1 var(--f-display)}
+.brand small{display:block;font-size:.78rem;color:var(--ink-3)}
+.top-phone{font-weight:600;text-decoration:none;white-space:nowrap}
+
+/* кнопки */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:54px;padding:0 26px;border-radius:999px;
+  background:var(--cinnabar);color:var(--on-accent);font:600 1.05rem/1.2 var(--f-body);text-decoration:none;border:0;cursor:pointer;
+  transition:background .15s, transform .15s}
+.btn:hover{background:var(--cinnabar-2)}
+.btn:active{transform:translateY(1px)}
+.btn svg{width:22px;height:22px;flex:none}
+.btn-ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
+.btn-ghost:hover{background:var(--ink);color:var(--paper)}
+
+/* первый экран */
+.hero{border-top:0;padding:72px 0 80px;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:-20% -10% auto auto;width:60vw;height:60vw;max-width:720px;max-height:720px;
+  background:radial-gradient(closest-side,var(--neon-glow),transparent);pointer-events:none}
+.hero .wrap{position:relative}
+.hero h1{font-size:clamp(2.3rem,1.5rem + 4vw,4.8rem);max-width:17ch;margin-bottom:22px}
+.hero p.lead{font-size:clamp(1.1rem,1rem + .5vw,1.35rem);color:var(--ink-2);max-width:40ch;margin:0 0 32px}
+.trust{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:30px;color:var(--ink-3);font-size:.95rem;list-style:none;padding:0}
+.trust li::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--neon);margin-right:9px;vertical-align:2px}
+
+/* карточки */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+.card{background:var(--paper-2);border:1px solid var(--hairline);border-radius:20px;padding:28px}
+.card .age{font:600 2.4rem/1 var(--f-display);color:var(--neon-text);margin-bottom:10px}
+.card h3{margin-bottom:10px}
+.card p{margin:0;color:var(--ink-2)}
+.card.soon{background:transparent;border-style:dashed;display:flex;flex-direction:column;gap:14px}
+.card.soon .age{color:var(--ink-3)}
+.card.soon .btn{align-self:flex-start;min-height:46px;font-size:.98rem}
+
+/* результат */
+.result{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+.result h3{margin-bottom:16px}
+ol.list{list-style:none;padding:0;margin:0;counter-reset:n}
+ol.list li{counter-increment:n;position:relative;padding:0 0 14px 44px;margin-bottom:14px;border-bottom:1px solid var(--hairline)}
+ol.list li:last-child{border-bottom:0;margin-bottom:0;padding-bottom:0}
+ol.list li::before{content:counter(n);position:absolute;left:0;top:-2px;width:30px;height:30px;border-radius:50%;
+  background:var(--neon-glow);color:var(--neon-text);font:600 .95rem/30px var(--f-display);text-align:center}
+
+/* примеры работ */
+.works{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px}
+.works figure{margin:0}
+.works img{width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:14px;border:1px solid var(--hairline);background:var(--paper-3)}
+.works figcaption{font-size:.88rem;color:var(--ink-2);margin-top:8px}
+.works-note{margin:14px 0 0;font-size:.85rem;color:var(--ink-3)}
+@media (max-width:960px){.works{grid-template-columns:repeat(2,1fr)}}
+
+/* как проходят занятия */
+.how{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+@media (max-width:960px){.how{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:520px){.how{grid-template-columns:1fr;gap:0}}
+.how div{padding:22px 0;border-top:2px solid var(--ink)}
+.how b{display:block;font:600 1.25rem/1.25 var(--f-display);margin-bottom:6px}
+.how span{color:var(--ink-2)}
+
+/* кто учит */
+.teacher{display:grid;grid-template-columns:220px 1fr;gap:36px;align-items:center}
+.photo{aspect-ratio:4/5;border-radius:20px;background:var(--paper-3);border:1px dashed var(--hairline);display:grid;place-items:center;color:var(--ink-3);font-size:.9rem;text-align:center;padding:12px}
+.teacher h3{font-size:1.7rem;margin-bottom:12px}
+.teacher p{margin:0 0 12px;color:var(--ink-2);max-width:56ch}
+.teacher blockquote{margin:18px 0 0;padding-left:18px;border-left:3px solid var(--cinnabar);font:500 1.25rem/1.35 var(--f-display);color:var(--ink)}
+
+/* цена */
+.price{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:24px;background:var(--paper-2);border:1px solid var(--hairline);border-radius:24px;padding:36px}
+.price .sum{font:600 clamp(2.6rem,2rem + 3vw,4rem)/1 var(--f-display)}
+.price .sum small{font-size:.4em;font-weight:500;color:var(--ink-2);margin-left:6px}
+.price p{margin:10px 0 0;color:var(--ink-2)}
+.price .free{display:inline-block;margin-top:14px;padding:6px 14px;border-radius:12px;background:var(--neon-glow);color:var(--neon-text);font-weight:600}
+
+/* FAQ */
+.faq details{border-bottom:1px solid var(--hairline)}
+.faq summary{list-style:none;cursor:pointer;padding:20px 40px 20px 0;position:relative;font:600 1.15rem/1.35 var(--f-display)}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";position:absolute;right:4px;top:16px;font:400 1.6rem/1 var(--f-body);color:var(--neon-text);transition:transform .2s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{margin:0 0 20px;color:var(--ink-2);max-width:62ch}
+
+/* запись */
+.signup{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:stretch}
+.signup .info p{margin:0 0 14px;color:var(--ink-2)}
+.signup .info a.tel{font:600 1.6rem/1.2 var(--f-display);text-decoration:none;color:var(--ink)}
+.signup .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:22px}
+.map{min-height:320px;border-radius:20px;overflow:hidden;border:1px solid var(--hairline);background:var(--paper-3)}
+.map iframe{width:100%;height:100%;min-height:320px;border:0;display:block}
+
+footer{padding:32px 0 48px;color:var(--ink-3);font-size:.9rem;border-top:1px solid var(--hairline)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between}
+footer a{color:var(--ink-2)}
+
+/* липкая кнопка на телефоне */
+.sticky-cta{display:none}
+
+@media (max-width:720px){
+  body{font-size:16px}
+  .wrap{padding:0 16px}
+  section{padding:52px 0}
+  h2{margin-bottom:22px}
+  .top-in{height:58px}
+  .brand small{display:none}
+  .hero{padding:44px 0 56px}
+  .hero .btn{width:100%}
+  .card{padding:22px}
+  .teacher{grid-template-columns:1fr;gap:22px}
+  .teacher .photo{max-width:200px}
+  .price{padding:26px}
+  .price .btn{width:100%}
+  .signup{grid-template-columns:1fr}
+  .signup .actions .btn{width:100%}
+  .sticky-cta{display:block;position:fixed;left:12px;right:12px;bottom:12px;z-index:6;transition:transform .25s}
+  .sticky-cta .btn{width:100%;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+  .sticky-cta.hide{transform:translateY(140%)}
+  footer{padding-bottom:96px}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="/">
+      <img src="/img/logo_seal.png" alt="Печать школы ВОДАО" width="38" height="38">
+      <span><b>Школа ВОДАО</b><small>Дополнительное образование</small></span>
+    </a>
+    <a class="top-phone" href="tel:+79106775143">+7 910 677-51-43</a>
+  </div>
+</header>
+
+<main>
+  <!-- 1. Первый экран -->
+  <section class="hero">
+    <div class="wrap">
+      <div class="kicker">Дополнительное образование ВОДАО</div>
+      <h1>Школа искусственного интеллекта во Владимире</h1>
+      <p class="lead">Школа ВОДАО с 2013 года. Теперь учим работать с ИИ — на практике, в центре города, с результатом на руках.</p>
+      <a class="btn js-bot" href="tel:+79106775143">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.3.2 2.5.57 3.6a1 1 0 0 1-.25 1z"/></svg>
+        Записаться на бесплатное занятие
+      </a>
+      <ul class="trust">
+        <li>школа Wodao с 2013 года</li>
+        <li>центр Владимира</li>
+        <li>группы до 10 человек</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 2. Для кого -->
+  <section id="dlya-kogo">
+    <div class="wrap">
+      <div class="kicker">Для кого</div>
+      <h2>Две группы — два возраста</h2>
+      <div class="cards">
+        <article class="card">
+          <div class="age">11–14</div>
+          <h3>Школьники</h3>
+          <p>Доклады и презентации с ИИ, комиксы и мультфильмы, свой первый бот. Ребёнок учится ставить вопрос и проверять ответ.</p>
+        </article>
+        <article class="card">
+          <div class="age">15–20</div>
+          <h3>Старшеклассники и студенты</h3>
+          <p>ИИ как рабочий инструмент: контент для соцсетей, презентации, бот или сайт без кода, портфолио для первой подработки.</p>
+        </article>
+        <article class="card soon">
+          <div class="age">скоро</div>
+          <h3>Предприниматели</h3>
+          <p>Группа для взрослых, которые хотят применять ИИ в своём деле.</p>
+          <a class="btn btn-ghost js-bot" href="tel:+79106775143">Оставить заявку</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Что получит ученик через 2 месяца -->
+  <section>
+    <div class="wrap">
+      <div class="kicker">Результат</div>
+      <h2>Что получит ученик через 2 месяца</h2>
+      <div class="result">
+        <div class="card">
+          <h3>Школьники 11–14</h3>
+          <ol class="list">
+            <li>Готовит доклад и презентацию с ИИ — и сам проверяет, где нейросеть ошиблась.</li>
+            <li>Рисует свой комикс и собирает короткий мультфильм по своему сюжету.</li>
+            <li>Делает первого чат-бота и может показать его друзьям.</li>
+            <li>Умеет задать нейросети вопрос так, чтобы получить нужный ответ.</li>
+          </ol>
+        </div>
+        <div class="card">
+          <h3>Старшеклассники и студенты 15–20</h3>
+          <ol class="list">
+            <li>Делает контент для соцсетей: тексты, картинки, короткие видео.</li>
+            <li>Собирает презентацию к учёбе или работе за вечер, а не за неделю.</li>
+            <li>Запускает бота или простой сайт без программирования.</li>
+            <li>Уходит с портфолио готовых работ — для первой подработки.</li>
+          </ol>
+        </div>
+      </div>
+      <div class="works">
+        <figure><img src="/ai/primer-1.jpg" alt="Страница комикса: робот и кот находят светящуюся книгу" loading="lazy" width="720" height="540"><figcaption>Комикс · 11–14</figcaption></figure>
+        <figure><img src="/ai/primer-2.jpg" alt="Кадр мультфильма: бумажный кораблик с фонарём плывёт по реке ночью" loading="lazy" width="800" height="600"><figcaption>Кадр мультфильма · 11–14</figcaption></figure>
+        <figure><img src="/ai/primer-3.jpg" alt="Слайд презентации «Как работает фотосинтез»" loading="lazy" width="800" height="600"><figcaption>Презентация · 15–20</figcaption></figure>
+        <figure><img src="/ai/primer-4.jpg" alt="Обложка поста для кофейни «Осенняя неделя — −20%»" loading="lazy" width="800" height="600"><figcaption>Пост для соцсетей · 15–20</figcaption></figure>
+      </div>
+      <p class="works-note">Примеры работ. Сделано с помощью ИИ.</p>
+    </div>
+  </section>
+
+  <!-- 4. Как проходят занятия -->
+  <section>
+    <div class="wrap">
+      <div class="kicker">Формат</div>
+      <h2>Как проходят занятия</h2>
+      <div class="how">
+        <div><b>2 раза в неделю по 1,5 часа</b><span>8 недель — два месяца.</span></div>
+        <div><b>Готовая работа</b><span>Каждое занятие заканчивается готовой работой.</span></div>
+        <div><b>Компьютеры школы</b><span>Работаем на компьютерах школы, дома — на своём телефоне.</span></div>
+        <div><b>Без обходных путей</b><span>Инструменты, которые работают в России без обходных путей.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Кто учит -->
+  <section>
+    <div class="wrap">
+      <div class="kicker">Кто учит</div>
+      <div class="teacher">
+        <div class="photo">Фото скоро</div>
+        <div>
+          <h3>Алексей</h3>
+          <p>В 2013 году открыл во Владимире школу ВОДАО. Много лет торгует с Китаем — и каждый день работает с ИИ: переписка, расчёты, документы, тексты и картинки.</p>
+          <p>На курсе показывает те же приёмы, которыми пользуется сам, — без теории ради теории.</p>
+          <blockquote>«Учу тому, что делаю сам каждый день».</blockquote>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Цена -->
+  <section>
+    <div class="wrap">
+      <div class="kicker">Цена</div>
+      <div class="price">
+        <div>
+          <div class="sum">8 000 ₽<small>за 5 занятий</small></div>
+          <span class="free">Первое открытое занятие — бесплатно</span>
+        </div>
+        <a class="btn js-bot" href="tel:+79106775143">Записаться бесплатно</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Вопросы родителей -->
+  <section class="faq">
+    <div class="wrap">
+      <div class="kicker">Вопросы родителей</div>
+      <h2>Частые вопросы</h2>
+      <details open><summary>Ребёнок не будет просто списывать?</summary><p>Учим проверять и думать, ИИ — помощник. Отдельный блок «где ИИ врёт».</p></details>
+      <details><summary>Нужен свой ноутбук?</summary><p>Нет, в классе компьютеры. Дома достаточно телефона.</p></details>
+      <details><summary>Какие программы?</summary><p>Работающие в России без VPN и зарубежных карт.</p></details>
+      <details><summary>Что если не понравится?</summary><p>Первое занятие бесплатно, оплата по 5 занятий.</p></details>
+    </div>
+  </section>
+
+  <!-- 8. Запись -->
+  <section id="zapis">
+    <div class="wrap">
+      <div class="kicker">Запись</div>
+      <h2>Запишитесь на бесплатное занятие</h2>
+      <div class="signup">
+        <div class="info">
+          <p>Позвоните в школу — запишем на бесплатное открытое занятие и ответим на вопросы.</p>
+          <a class="tel" href="tel:+79106775143">+7 910 677-51-43</a>
+          <p style="margin-top:18px">Владимир, Дворянская, 27А, корп. 7 — 2 этаж, кабинет 10</p>
+          <div class="actions">
+            <a class="btn js-bot" href="tel:+79106775143">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25c1.1.37 2.3.57 3.6.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.3.2 2.5.57 3.6a1 1 0 0 1-.25 1z"/></svg>
+              Позвонить в школу
+            </a>
+            <a class="btn btn-ghost" href="https://yandex.ru/maps/-/CLGU6Hll" target="_blank" rel="noopener">Открыть в Картах</a>
+          </div>
+        </div>
+        <div class="map">
+          <iframe title="Школа ВОДАО на карте" loading="lazy"
+            src="https://yandex.ru/map-widget/v1/?text=%D0%92%D0%BB%D0%B0%D0%B4%D0%B8%D0%BC%D0%B8%D1%80%2C%20%D0%94%D0%B2%D0%BE%D1%80%D1%8F%D0%BD%D1%81%D0%BA%D0%B0%D1%8F%2027%D0%90%20%D0%BA7&amp;z=16"></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Дополнительное образование ВОДАО · Владимир, с 2013 года</span>
+    <span><a href="/">Школа ВОДАО</a> · <a href="/policy/">Политика конфиденциальности</a></span>
+  </div>
+</footer>
+
+<div class="sticky-cta" id="sticky">
+  <a class="btn js-bot" href="tel:+79106775143">Записаться на бесплатное занятие</a>
+</div>
+
+<script>
+// липкая кнопка на телефоне: прячется на первом экране и у блока записи
+(function(){
+  var s=document.getElementById('sticky'),h=document.querySelector('.hero'),z=document.getElementById('zapis');
+  if(!('IntersectionObserver' in window)) return;
+  var vis={h:true,z:false};
+  function upd(){s.classList.toggle('hide',vis.h||vis.z)}
+  new IntersectionObserver(function(e){vis.h=e[0].isIntersecting;upd()}).observe(h);
+  new IntersectionObserver(function(e){vis.z=e[0].isIntersecting;upd()}).observe(z);
+  upd();
+})();
+</script>
+</body>
+</html>
