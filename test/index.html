@@ -421,7 +421,7 @@ header.top {
 }
 
 
-/* ── короткие видео (локальные и Rutube, вертикальные) ── */
+/* ── короткие видео (ВК, вертикальные) ── */
 .vids { display:grid; grid-template-columns:repeat(6, 1fr); gap:1rem; margin-top:2.4rem; }
 .vid { position:relative; aspect-ratio:9/16; border:1px solid var(--hairline-2); border-radius:4px; overflow:hidden; background:var(--paper-3); padding:0; cursor:pointer; color:var(--paper); text-align:left; font:inherit; }
 .vid .poster { position:absolute; inset:0; background-size:cover; background-position:center; filter:saturate(.85) contrast(1.02); transition:transform .9s cubic-bezier(.2,.7,.3,1), filter .5s ease; }
@@ -431,7 +431,7 @@ header.top {
 .vid:hover .play { transform:scale(1.12); background:var(--cinnabar); border-color:transparent; }
 .vid .dur { position:absolute; top:.6rem; right:.6rem; font-family:var(--f-mono); font-size:.68rem; letter-spacing:.08em; background:rgba(8,12,10,.6); padding:.15rem .4rem; border-radius:2px; z-index:1; }
 .vid .vt { position:absolute; left:.8rem; right:.8rem; bottom:.8rem; font-size:.8rem; line-height:1.3; z-index:1; text-shadow:0 1px 6px rgba(0,0,0,.6); }
-.vid iframe, .vid video { position:absolute; inset:0; width:100%; height:100%; border:0; z-index:2; background:#000; }
+.vid iframe { position:absolute; inset:0; width:100%; height:100%; border:0; z-index:2; background:#000; }
 .vid.playing .play, .vid.playing .dur, .vid.playing .vt, .vid.playing::after { display:none; }
 @media (max-width: 1100px) { .vids { grid-template-columns:repeat(3, 1fr); } }
 @media (max-width: 600px) { .vids { grid-template-columns:repeat(2, 1fr); gap:.6rem; } .vid .vt { font-size:.72rem; } }
@@ -1991,18 +1991,18 @@ footer a:hover { color: var(--neon); }
     <div class="wrap">
       <div class="sec-head">
         <span class="label">Короткие уроки</span>
-        <h2>Полминуты — и один иероглиф ваш</h2>
-        <p>Преподаватели школы снимают короткие видео: черта за чертой, с произношением. Нажмите — видео откроется прямо здесь.</p>
+        <h2>Учим китайский в коротких видео</h2>
+        <p>Видео школы из ВКонтакте: нажмите — ролик откроется прямо здесь.</p>
       </div>
       <div class="vids">
-        <button type="button" class="vid rv" data-local-video="/рилсы/panda.mp4" aria-label="Смотреть: Панда по-китайски — медведь плюс кошка"><span class="poster" style="background-image:url('/рилсы/panda.png')"></span><span class="play">▶</span><span class="dur">0:54</span><span class="vt">熊猫: медведь плюс кошка</span></button>
-        <button type="button" class="vid rv" data-local-video="/рилсы/tones.mp4" aria-label="Смотреть: Один тон — покупать или продавать"><span class="poster" style="background-image:url('/рилсы/tones.png')"></span><span class="play">▶</span><span class="dur">0:55</span><span class="vt">Один тон: 买 mǎi или 卖 mài</span></button>
-        <button type="button" class="vid rv" data-local-video="/рилсы/520.mp4" aria-label="Смотреть: 520 в китайском чате — признание"><span class="poster" style="background-image:url('/рилсы/520.png')"></span><span class="play">▶</span><span class="dur">0:54</span><span class="vt">520 в китайском чате — признание</span></button>
-        <button type="button" class="vid rv" data-local-video="/рилсы/666.mp4" aria-label="Смотреть: 666 в китайском чате — короткая похвала"><span class="poster" style="background-image:url('/рилсы/666.png')"></span><span class="play">▶</span><span class="dur">0:55</span><span class="vt">666 в китайском чате — короткая похвала</span></button>
-        <button type="button" class="vid rv" data-local-video="/рилсы/88.mp4" aria-label="Смотреть: 88 в китайском чате — быстрое прощание"><span class="poster" style="background-image:url('/рилсы/88.png')"></span><span class="play">▶</span><span class="dur">0:52</span><span class="vt">88 в китайском чате — быстрое прощание</span></button>
-        <button type="button" class="vid rv" data-video="13cce030a9e5a95a3a42b858380c101d" aria-label="Смотреть: Сложные гласные и тоны: Ли, Лю, Ха"><span class="poster" data-img="v_tones"></span><span class="play">▶</span><span class="dur">0:27</span><span class="vt">Сложные гласные и тоны: Ли, Лю, Ха</span></button>
+        <button type="button" class="vid rv" data-vk-video="https://vkvideo.ru/video_ext.php?oid=-61637969&amp;id=456239826&amp;hash=6cfd200688e51cf1&amp;__ref=vk.kate_mobile&amp;api_hash=179454775861106dda0b_VJZQIAIAAAAAA===" aria-label="Смотреть: Китайский язык с ИИ — урок №1"><span class="poster" style="background-image:url('/вк_обложки/-61637969_456239826.jpg')"></span><span class="play">▶</span><span class="dur">1:22</span><span class="vt">Китайский язык с ИИ — урок №1</span></button>
+        <button type="button" class="vid rv" data-vk-video="https://vkvideo.ru/video_ext.php?oid=-61637969&amp;id=456239488&amp;hash=fdb19471c8a47e92&amp;__ref=vk.kate_mobile&amp;api_hash=1794547758f4cc583086_VJZQIAIAAAAAA===" aria-label="Смотреть: Китайский с нуля — урок №5, первый диалог"><span class="poster" style="background-image:url('/вк_обложки/-61637969_456239488.jpg')"></span><span class="play">▶</span><span class="dur">1:12</span><span class="vt">Китайский с нуля — урок №5: первый диалог</span></button>
+        <button type="button" class="vid rv" data-vk-video="https://vkvideo.ru/video_ext.php?oid=-61637969&amp;id=456239192&amp;hash=9c8d990459fd72a0&amp;__ref=vk.kate_mobile&amp;api_hash=17945477583684fdd4e4_VJZQIAIAAAAAA===" aria-label="Смотреть: Иероглиф 爱 — любовь"><span class="poster" style="background-image:url('/вк_обложки/-61637969_456239192.jpg')"></span><span class="play">▶</span><span class="dur">1:08</span><span class="vt">Иероглиф 爱 «любовь»</span></button>
+        <button type="button" class="vid rv" data-vk-video="https://vkvideo.ru/video_ext.php?oid=-61637969&amp;id=456239185&amp;hash=c5cbe27f78240db4&amp;__ref=vk.kate_mobile&amp;api_hash=17945477580641f0b9da_VJZQIAIAAAAAA===" aria-label="Смотреть: Каллиграфия 安 — спокойствие"><span class="poster" style="background-image:url('/вк_обложки/-61637969_456239185.jpg')"></span><span class="play">▶</span><span class="dur">0:39</span><span class="vt">Каллиграфия 安 «спокойствие»</span></button>
+        <button type="button" class="vid rv" data-vk-video="https://vkvideo.ru/video_ext.php?oid=-61637969&amp;id=456239177&amp;hash=cfcea7c9565600c5&amp;__ref=vk.kate_mobile&amp;api_hash=1794547758199e992d4c_VJZQIAIAAAAAA===" aria-label="Смотреть: 木 [mù] — дерево, иероглиф по чертам"><span class="poster" style="background-image:url('/вк_обложки/-61637969_456239177.jpg')"></span><span class="play">▶</span><span class="dur">0:36</span><span class="vt">木 [mù] — дерево: иероглиф по чертам</span></button>
+        <button type="button" class="vid rv" data-vk-video="https://vkvideo.ru/video_ext.php?oid=-61637969&amp;id=456239181&amp;hash=9e1302dd98ffa68a&amp;__ref=vk.kate_mobile&amp;api_hash=17945477588385f1957e_VJZQIAIAAAAAA===" aria-label="Смотреть: Приглашение на открытый урок в детскую группу"><span class="poster" style="background-image:url('/вк_обложки/-61637969_456239181.jpg')"></span><span class="play">▶</span><span class="dur">0:26</span><span class="vt">Приглашение на открытый урок в детскую группу</span></button>
       </div>
-      <p class="note" style="margin-top:1.4rem">Все ролики — на канале школы: <a href="https://rutube.ru/channel/44747818/" target="_blank" rel="noopener">Rutube · ВОДАО</a> и в <a href="https://t.me/wodao_wodao" target="_blank" rel="noopener">Telegram @wodao_wodao</a>.</p>
+      <p class="note" style="margin-top:1.4rem">Все ролики — в сообществе школы: <a href="https://vk.com/wodao" target="_blank" rel="noopener">ВКонтакте · ВОДАО</a>.</p>
     </div>
   </section>
 
@@ -4554,26 +4554,15 @@ footer a:hover { color: var(--neon); }
 
   /* картинки подставляются по data-img */
 
-  /* короткие видео: локальный ролик или плеер Rutube грузим только по клику */
+  /* короткие видео ВК: плеер грузим только по клику */
   document.addEventListener("click", function (e) {
-    var v = e.target.closest(".vid[data-video], .vid[data-local-video]");
+    var v = e.target.closest(".vid[data-vk-video]");
     if (!v || v.classList.contains("playing")) return;
-    document.querySelectorAll(".vid.playing").forEach(function (o) { o.classList.remove("playing"); var f = o.querySelector("iframe,video"); if (f) f.remove(); });
-    var f;
-    if (v.dataset.localVideo) {
-      f = document.createElement("video");
-      f.src = v.dataset.localVideo;
-      f.controls = true;
-      f.autoplay = true;
-      f.playsInline = true;
-      f.setAttribute("playsinline", "");
-      f.preload = "auto";
-    } else {
-      f = document.createElement("iframe");
-      f.src = "https://rutube.ru/play/embed/" + v.dataset.video + "/?autoStart=1";
-      f.allow = "autoplay; fullscreen; clipboard-write";
-      f.setAttribute("allowfullscreen", "");
-    }
+    document.querySelectorAll(".vid.playing").forEach(function (o) { o.classList.remove("playing"); var f = o.querySelector("iframe"); if (f) f.remove(); });
+    var f = document.createElement("iframe");
+    f.src = v.dataset.vkVideo + (v.dataset.vkVideo.indexOf("?") === -1 ? "?" : "&") + "autoplay=1";
+    f.allow = "autoplay; fullscreen; clipboard-write";
+    f.setAttribute("allowfullscreen", "");
     f.title = v.getAttribute("aria-label");
     v.appendChild(f);
     v.classList.add("playing");
